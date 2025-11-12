@@ -1,0 +1,21 @@
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nscope}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nscope_pwd}
+      POSTGRES_DB: ${POSTGRES_DB:-nscope_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nscope} -d ${POSTGRES_DB:-nscope_db}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pg_data:
