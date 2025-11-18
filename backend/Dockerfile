@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine AS builder
+FROM golang:1.25-alpine AS builder   # <--- cambio clave
 
 RUN apk add --no-cache git
 ENV CGO_ENABLED=0
