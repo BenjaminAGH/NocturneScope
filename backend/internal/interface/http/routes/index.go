@@ -22,7 +22,6 @@ func Register(
 	// públicas
 	RegisterAuthRoutes(api, authService, userService)
 
-	// ===== rutas SOLO para agentes (API token) =====
 	RegisterMetricRoutes(api, metricService, apiTokenService)
 
 	// rutas JWT 

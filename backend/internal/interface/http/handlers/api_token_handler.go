@@ -16,7 +16,6 @@ func NewAPITokenHandler(svc *service.TokenService) *APITokenHandler {
 	return &APITokenHandler{svc: svc}
 }
 
-// POST /api/api-tokens
 func (h *APITokenHandler) Create(c *fiber.Ctx) error {
 	var body struct {
 		Name string `json:"name"`
@@ -45,7 +44,6 @@ func (h *APITokenHandler) Create(c *fiber.Ctx) error {
 	})
 }
 
-// GET /api/api-tokens
 func (h *APITokenHandler) List(c *fiber.Ctx) error {
 	uidAny := c.Locals("user_id")
 	if uidAny == nil {
@@ -61,7 +59,6 @@ func (h *APITokenHandler) List(c *fiber.Ctx) error {
 	return c.JSON(tokens)
 }
 
-// DELETE /api/api-tokens/:id
 func (h *APITokenHandler) Delete(c *fiber.Ctx) error {
 	uidAny := c.Locals("user_id")
 	if uidAny == nil {

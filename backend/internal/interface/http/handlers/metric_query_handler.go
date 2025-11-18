@@ -16,7 +16,6 @@ func NewMetricQueryHandler(s *service.MetricService) *MetricQueryHandler {
 	return &MetricQueryHandler{svc: s}
 }
 
-// GET /api/metrics/devices
 func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 	devs, err := h.svc.ListDevices(context.Background())
 	if err != nil {
@@ -25,7 +24,6 @@ func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 	return c.JSON(devs)
 }
 
-// GET /api/metrics/last?device=<name>
 func (h *MetricQueryHandler) Last(c *fiber.Ctx) error {
 	device := c.Query("device")
 	if device == "" {
