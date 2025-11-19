@@ -44,6 +44,13 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status":  "ok",
+			"service": "nocturnescope-api",
+		})
+	})
+	
 	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService)
 
 	log.Fatal(app.Listen(":3000"))
