@@ -6,7 +6,9 @@
   display: none !important;
 }
 
-html, body, #__next {
+html,
+body,
+#__next {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -15,7 +17,7 @@ html, body, #__next {
 
 .react-flow__controls {
   background-color: var(--input) !important;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
   border-radius: 10px !important;
   overflow: hidden;
 }
@@ -152,11 +154,23 @@ html, body, #__next {
   --sidebar-ring: #c4a7e7;
 }
 
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.5rem;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip * {
+  color: var(--card-foreground) !important;
+}
+
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

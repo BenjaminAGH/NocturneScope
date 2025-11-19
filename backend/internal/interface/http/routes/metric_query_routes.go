@@ -12,4 +12,5 @@ func RegisterMetricQueryRoutes(r fiber.Router, svc *service.MetricService) {
     g.Get("/devices",     h.Devices)
     g.Get("/last",        h.Last)
     g.Get("/timeseries",  h.TimeSeries)
+    g.Get("/history",     h.History)
 }

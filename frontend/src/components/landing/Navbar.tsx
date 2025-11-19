@@ -2,14 +2,25 @@
 import Link from "next/link";
 import ThemeChanger from "./DarkSwitch";
 import Image from "next/image";
-import { Disclosure } from "@headlessui/react";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Fragment, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const Navbar = () => {
-  /*  const navigation = [
-      "",
-      "Red"
-    ];
-  **/
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check for JWT token to determine login status
+    const token = localStorage.getItem("jwt");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    setIsLoggedIn(false);
+    router.push("/auth/login");
+  };
 
   const navigation = [""];
 
@@ -39,13 +50,50 @@ export const Navbar = () => {
           </span>
         </Link>
 
-        <div className="gap-3 nav__item mr-2 lg:flex ml-auto lg:ml-0 lg:order-2">
+        <div className="gap-3 nav__item mr-2 lg:flex ml-auto lg:ml-0 lg:order-2 items-center">
           <ThemeChanger />
-          <div className="hidden mr-3 lg:flex nav__item">
-            <Link href="/auth/login" className="px-6 py-2 text-background font-bold bg-secondary dark:bg-primary rounded-md md:ml-5">
-              Iniciar Sesión
-            </Link>
-          </div>
+
+          {isLoggedIn ? (
+            <Menu as="div" className="relative ml-3">
+              <div>
+                <Menu.Button className="text-gray-500 dark:text-gray-300 rounded-full outline-none focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-800 p-1 transition-colors">
+                  <span className="sr-only">Open user menu</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                </Menu.Button>
+              </div>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-card py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        onClick={handleLogout}
+                        className={`${active ? "bg-muted" : ""
+                          } block px-4 py-2 text-sm text-foreground w-full text-left`}
+                      >
+                        Cerrar Sesión
+                      </button>
+                    )}
+                  </Menu.Item>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          ) : (
+            <div className="hidden mr-3 lg:flex nav__item">
+              <Link href="/auth/login" className="px-6 py-2 text-background font-bold bg-secondary dark:bg-primary rounded-md md:ml-5">
+                Iniciar Sesión
+              </Link>
+            </div>
+          )}
         </div>
 
         <Disclosure>
@@ -56,7 +104,7 @@ export const Navbar = () => {
                 className="px-2 py-1 text-gray-500 rounded-md lg:hidden hover:text-indigo-500 focus:text-indigo-500 focus:bg-indigo-100 focus:outline-none dark:text-gray-300 dark:focus:bg-trueGray-700"
               >
                 <svg
-                  className="w-6 h-6 fill-current"
+                  className="w-6 h-6 fill-foreground"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                 >
@@ -86,12 +134,22 @@ export const Navbar = () => {
                       {item}
                     </Link>
                   ))}
-                  <Link
-                    href="/"
-                    className="w-full px-6 py-2 mt-3 text-center text-white bg-indigo-600 rounded-md lg:ml-5"
-                  >
-                    Get Started
-                  </Link>
+                  {!isLoggedIn && (
+                    <Link
+                      href="/auth/login"
+                      className="w-full px-6 py-2 mt-3 text-center text-white bg-indigo-600 rounded-md lg:ml-5 block"
+                    >
+                      Iniciar Sesión
+                    </Link>
+                  )}
+                  {isLoggedIn && (
+                    <button
+                      onClick={handleLogout}
+                      className="w-full px-6 py-2 mt-3 text-center text-white bg-red-600 rounded-md lg:ml-5 block"
+                    >
+                      Cerrar Sesión
+                    </button>
+                  )}
                 </div>
               </Disclosure.Panel>
             </>

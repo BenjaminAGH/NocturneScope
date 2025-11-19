@@ -17,16 +17,17 @@ import {
   getTimeseries,
 } from "@/lib/api/api";
 import { formatCL, formatTickCL } from "@/lib/time";
+import LogViewer from "@/components/LogViewer";
 
 type Point = { t: string; v: number };
 
 const FIELD_OPTIONS = [
-  { v: "cpu",    l: "CPU (%)" },
-  { v: "ram",    l: "RAM (%)" },
-  { v: "disk",   l: "DISK (%)" },
+  { v: "cpu", l: "CPU (%)" },
+  { v: "ram", l: "RAM (%)" },
+  { v: "disk", l: "DISK (%)" },
   { v: "net_rx", l: "Net RX (B/s)" },
   { v: "net_tx", l: "Net TX (B/s)" },
-  { v: "temp",   l: "Temp (°C)" },
+  { v: "temp", l: "Temp (°C)" },
   { v: "uptime", l: "Uptime (s)" },
 ];
 
@@ -46,7 +47,7 @@ export default function DashboardPage() {
   const [agg, setAgg] = useState<string>("mean");
 
   const [points, setPoints] = useState<Point[]>([]);
-  const [last, setLast] = useState<Record<string, number> | null>(null);
+  const [last, setLast] = useState<Record<string, any> | null>(null);
 
   const [loadingDevices, setLoadingDevices] = useState(false);
   const [loadingSeries, setLoadingSeries] = useState(false);
@@ -81,12 +82,11 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jwt]);
 
-  // Carga últimas métricas + serie
   useEffect(() => {
     if (!jwt || !device) return;
     setLoadingSeries(true);
     setErr("");
-    (async () => {
+    const fetchMetrics = async () => {
       try {
         const [lastStats, ts] = await Promise.all([
           getLastStats(jwt, device),
@@ -99,7 +99,11 @@ export default function DashboardPage() {
       } finally {
         setLoadingSeries(false);
       }
-    })();
+    };
+
+    fetchMetrics();
+    const intervalId = window.setInterval(fetchMetrics, 5000);
+    return () => window.clearInterval(intervalId);
   }, [jwt, device, field, range, agg, interval]);
 
   const subtitle = useMemo(() => {
@@ -116,72 +120,86 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      {/* Filtros */}
       <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50">
         <div className="grid gap-3 grid-cols-1 md:grid-cols-5">
-          <select
-            className="bg-background border rounded px-3 py-2"
-            value={device}
-            onChange={(e) => setDevice(e.target.value)}
-            disabled={loadingDevices || !devices.length}
-          >
-            {!devices.length ? (
-              <option value="">Sin dispositivos</option>
-            ) : null}
-            {devices.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Dispositivo</label>
+            <select
+              className="w-full bg-background border rounded px-3 py-2 text-sm"
+              value={device}
+              onChange={(e) => setDevice(e.target.value)}
+              disabled={loadingDevices || !devices.length}
+            >
+              {!devices.length ? (
+                <option value="">Sin dispositivos</option>
+              ) : null}
+              {devices.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className="bg-background border rounded px-3 py-2"
-            value={field}
-            onChange={(e) => setField(e.target.value)}
-          >
-            {FIELD_OPTIONS.map((f) => (
-              <option key={f.v} value={f.v}>
-                {f.l}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Métrica</label>
+            <select
+              className="w-full bg-background border rounded px-3 py-2 text-sm"
+              value={field}
+              onChange={(e) => setField(e.target.value)}
+            >
+              {FIELD_OPTIONS.map((f) => (
+                <option key={f.v} value={f.v}>
+                  {f.l}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className="bg-background border rounded px-3 py-2"
-            value={range}
-            onChange={(e) => setRange(e.target.value)}
-          >
-            {RANGE_OPTIONS.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Rango de Tiempo</label>
+            <select
+              className="w-full bg-background border rounded px-3 py-2 text-sm"
+              value={range}
+              onChange={(e) => setRange(e.target.value)}
+            >
+              {RANGE_OPTIONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className="bg-background border rounded px-3 py-2"
-            value={interval}
-            onChange={(e) => setInterval(e.target.value)}
-          >
-            {INTERVAL_OPTIONS.map((i) => (
-              <option key={i} value={i}>
-                {i}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Intervalo</label>
+            <select
+              className="w-full bg-background border rounded px-3 py-2 text-sm"
+              value={interval}
+              onChange={(e) => setInterval(e.target.value)}
+            >
+              {INTERVAL_OPTIONS.map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className="bg-background border rounded px-3 py-2"
-            value={agg}
-            onChange={(e) => setAgg(e.target.value)}
-          >
-            {AGG_OPTIONS.map((a) => (
-              <option key={a} value={a}>
-                {a.toUpperCase()}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Agregación</label>
+            <select
+              className="w-full bg-background border rounded px-3 py-2 text-sm"
+              value={agg}
+              onChange={(e) => setAgg(e.target.value)}
+            >
+              {AGG_OPTIONS.map((a) => (
+                <option key={a} value={a}>
+                  {a.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -213,6 +231,25 @@ export default function DashboardPage() {
             </div>
           </div>
         ))}
+
+        {/* Info Dispositivo */}
+        <div className="rounded-lg bg-card text-card-foreground p-4 ring-1 ring-border/50">
+          <div className="text-sm text-muted-foreground">Info Dispositivo</div>
+          <div className="text-sm font-semibold mt-1 space-y-1">
+            {last ? (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-normal">OS:</span>
+                  <span>{last.os || "—"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-normal">IP:</span>
+                  <span>{last.ip || "—"}</span>
+                </div>
+              </>
+            ) : "—"}
+          </div>
+        </div>
       </section>
 
       {/* Gráfico */}
@@ -257,10 +294,13 @@ export default function DashboardPage() {
           {points.length
             ? `Último punto: ${formatCL(points[points.length - 1].t)}`
             : loadingSeries
-            ? "Cargando…"
-            : "Sin datos en el rango seleccionado"}
+              ? "Cargando…"
+              : "Sin datos en el rango seleccionado"}
         </div>
       </section>
+
+      {/* Logs */}
+      {jwt && device && <LogViewer jwt={jwt} device={device} range={range} />}
     </div>
   );
 }

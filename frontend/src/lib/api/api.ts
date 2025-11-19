@@ -34,14 +34,14 @@ export async function login(email: string, password: string): Promise<{
       data?.accessToken,
       data?.token,
       data?.jwt,
-      data?.AccessToken,    
+      data?.AccessToken,
     ) || "";
 
   const refresh =
     pickString(
       data?.refresh_token,
       data?.refreshToken,
-      data?.RefreshToken,    
+      data?.RefreshToken,
     );
 
   if (!access) {
@@ -128,4 +128,13 @@ export async function getTimeseries(
     cache: "no-store",
   });
   return handle(res) as Promise<{ points: { t: string; v: number }[] }>;
+}
+
+export async function getHistory(jwt: string, device: string, range: string) {
+  const q = new URLSearchParams({ device, range }).toString();
+  const res = await fetch(`${BASE}/metrics/history?${q}`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+    cache: "no-store",
+  });
+  return handle(res) as Promise<any[]>;
 }

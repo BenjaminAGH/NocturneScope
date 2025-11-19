@@ -53,3 +53,17 @@ func (h *MetricQueryHandler) TimeSeries(c *fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{"points": points})
 }
+
+func (h *MetricQueryHandler) History(c *fiber.Ctx) error {
+	device := c.Query("device")
+	if device == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "missing device"})
+	}
+	rangeDur := c.Query("range", "1h")
+
+	data, err := h.svc.History(context.Background(), device, rangeDur)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.JSON(data)
+}

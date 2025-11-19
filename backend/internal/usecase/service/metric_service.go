@@ -58,7 +58,7 @@ from(bucket: "%s")
 }
 
 // LastStats retorna el último valor conocido de cada métrica para un dispositivo.
-func (s *MetricService) LastStats(ctx context.Context, device string) (map[string]float64, error) {
+func (s *MetricService) LastStats(ctx context.Context, device string) (map[string]interface{}, error) {
 	q, err := s.queryAPI()
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ from(bucket: "%[1]s")
   |> filter(fn: (r) => contains(value: r._field, set: %[3]s))
   |> last()
   |> pivot(rowKey:["_time"], columnKey:["_field"], valueColumn:"_value")
-  |> keep(columns: ["_time","cpu","ram","disk","net_rx","net_tx","temp","uptime"])
+  |> keep(columns: ["_time","cpu","ram","disk","net_rx","net_tx","temp","uptime","os","ip"])
 `, s.writer.Bucket(), device, fieldsToFluxArray(fields))
 
 	res, err := q.Query(ctx, flux)
@@ -82,9 +82,19 @@ from(bucket: "%[1]s")
 	}
 	defer res.Close()
 
-	out := map[string]float64{}
+	out := map[string]interface{}{}
 	for res.Next() {
 		rec := res.Record()
+
+		// Tags (strings)
+		if v, ok := rec.ValueByKey("os").(string); ok {
+			out["os"] = v
+		}
+		if v, ok := rec.ValueByKey("ip").(string); ok {
+			out["ip"] = v
+		}
+
+		// Fields (floats)
 		for _, k := range fields {
 			if v := rec.ValueByKey(k); v != nil {
 				if f, ok := toFloat(v); ok {
@@ -145,6 +155,51 @@ from(bucket: "%s")
 		if f, ok := toFloat(rec.Value()); ok {
 			out = append(out, Point{T: rec.Time(), V: f})
 		}
+	}
+	return out, res.Err()
+}
+
+// History retorna los últimos N registros para un dispositivo.
+func (s *MetricService) History(ctx context.Context, device, rangeDur string) ([]map[string]interface{}, error) {
+	q, err := s.queryAPI()
+	if err != nil {
+		return nil, err
+	}
+
+	r := durOrDefault(rangeDur, "1h")
+	fields := []string{"cpu", "ram", "disk", "net_rx", "net_tx", "temp", "uptime"}
+
+	flux := fmt.Sprintf(`
+from(bucket: "%[1]s")
+  |> range(start: -%[2]s)
+  |> filter(fn: (r) => r._measurement == "system_metrics" and r.device == "%[3]s")
+  |> filter(fn: (r) => contains(value: r._field, set: %[4]s))
+  |> pivot(rowKey:["_time"], columnKey:["_field"], valueColumn:"_value")
+  |> keep(columns: ["_time","cpu","ram","disk","net_rx","net_tx","temp","uptime"])
+  |> sort(columns: ["_time"], desc: true)
+  |> limit(n: 100)
+`, s.writer.Bucket(), r, device, fieldsToFluxArray(fields))
+
+	res, err := q.Query(ctx, flux)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Close()
+
+	out := make([]map[string]interface{}, 0)
+	for res.Next() {
+		rec := res.Record()
+		row := map[string]interface{}{
+			"time": rec.Time(),
+		}
+		for _, k := range fields {
+			if v := rec.ValueByKey(k); v != nil {
+				if f, ok := toFloat(v); ok {
+					row[k] = f
+				}
+			}
+		}
+		out = append(out, row)
 	}
 	return out, res.Err()
 }
