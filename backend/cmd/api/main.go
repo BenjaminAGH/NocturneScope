@@ -38,7 +38,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3001",
+		AllowOrigins:     "http://localhost:3001, https://scope.nocturnesec.cl",
 		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
@@ -50,7 +50,7 @@ func main() {
 			"service": "nocturnescope-api",
 		})
 	})
-	
+
 	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService)
 
 	log.Fatal(app.Listen(":3000"))
