@@ -1,4 +1,4 @@
-const ORIGIN = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000").replace(/\/+$/, "");
+const ORIGIN = (process.env.NEXT_PUBLIC_API_URL || "https://api.nocturnesec.cl/").replace(/\/+$/, "");
 const BASE = `${ORIGIN}/api`;
 
 function pickString(...vals: any[]) {
@@ -34,19 +34,18 @@ export async function login(email: string, password: string): Promise<{
       data?.accessToken,
       data?.token,
       data?.jwt,
-      data?.AccessToken,     // 👈 backend actual
+      data?.AccessToken,    
     ) || "";
 
   const refresh =
     pickString(
       data?.refresh_token,
       data?.refreshToken,
-      data?.RefreshToken,    // 👈 backend actual
+      data?.RefreshToken,    
     );
 
   if (!access) {
-    // útil para depurar si cambia el backend
-    // eslint-disable-next-line no-console
+
     console.error("Respuesta /auth/login:", data);
     throw new Error("Login OK pero no vino access_token/token/jwt");
   }
@@ -66,7 +65,6 @@ export function clearTokens() {
   localStorage.removeItem("refresh");
 }
 
-// ========== USER / TOKENS ==========
 export async function getUserProfile(jwt: string) {
   const res = await fetch(`${BASE}/users/me`, {
     headers: { Authorization: `Bearer ${jwt}` },
@@ -104,7 +102,6 @@ export async function deleteApiToken(jwt: string, id: number) {
   return handle(res);
 }
 
-// ========== MÉTRICAS ==========
 export async function getDevices(jwt: string) {
   const res = await fetch(`${BASE}/metrics/devices`, {
     headers: { Authorization: `Bearer ${jwt}` },
