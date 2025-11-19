@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const ORIGIN = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000").replace(/\/+$/, "");
+const ORIGIN = (process.env.NEXT_PUBLIC_API_URL || "https://api.nocturnesec.cl").replace(/\/+$/, "");
 const API = `${ORIGIN}/api`;
 
 export default function RegisterPage() {
