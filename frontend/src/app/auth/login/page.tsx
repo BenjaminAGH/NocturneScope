@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { login as apiLogin, saveTokens } from "@/lib/api/api";
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +28,13 @@ export default function LoginPage() {
     try {
       const { accessToken, refreshToken } = await apiLogin(email, password);
       saveTokens(accessToken, refreshToken);
-      router.push("/dashboard");
+
+      // Guardar JWT en cookies para el middleware
+      document.cookie = `jwt=${accessToken}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 días
+
+      // Redirigir a la página solicitada o al dashboard por defecto
+      const redirect = searchParams.get('redirect') || '/dashboard';
+      router.push(redirect);
     } catch (e) {
       console.error("login error:", e);
       setErr("Credenciales inválidas o backend no disponible.");

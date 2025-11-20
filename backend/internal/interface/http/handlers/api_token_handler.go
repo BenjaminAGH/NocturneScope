@@ -18,10 +18,11 @@ func NewAPITokenHandler(svc *service.TokenService) *APITokenHandler {
 
 func (h *APITokenHandler) Create(c *fiber.Ctx) error {
 	var body struct {
-		Name string `json:"name"`
+		Name       string `json:"name"`
+		DeviceName string `json:"device_name"`
 	}
-	if err := c.BodyParser(&body); err != nil || body.Name == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "name required"})
+	if err := c.BodyParser(&body); err != nil || body.Name == "" || body.DeviceName == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "name and device_name required"})
 	}
 
 	uidAny := c.Locals("user_id")
@@ -34,7 +35,7 @@ func (h *APITokenHandler) Create(c *fiber.Ctx) error {
 	}
 	uid := uint(uidFloat)
 
-	raw, err := h.svc.GenerateForUser(body.Name, uid)
+	raw, err := h.svc.GenerateForUser(body.Name, body.DeviceName, uid)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}

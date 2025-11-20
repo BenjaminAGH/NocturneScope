@@ -4,20 +4,27 @@ import ThemeChanger from "./DarkSwitch";
 import Image from "next/image";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export const Navbar = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Rutas públicas donde solo se muestra "Iniciar Sesión"
+  const publicRoutes = ['/', '/auth/login', '/auth/register'];
+  const isPublicRoute = publicRoutes.includes(pathname);
 
   useEffect(() => {
     // Check for JWT token to determine login status
     const token = localStorage.getItem("jwt");
     setIsLoggedIn(!!token);
-  }, []);
+  }, [pathname]); // Re-check when route changes
 
   const handleLogout = () => {
     localStorage.removeItem("jwt");
+    // Limpiar cookie de JWT
+    document.cookie = "jwt=; path=/; max-age=0";
     setIsLoggedIn(false);
     router.push("/auth/login");
   };
@@ -53,7 +60,18 @@ export const Navbar = () => {
         <div className="gap-3 nav__item mr-2 lg:flex ml-auto lg:ml-0 lg:order-2 items-center">
           <ThemeChanger />
 
-          {isLoggedIn ? (
+          {isPublicRoute ? (
+            // En rutas públicas, mostrar "Iniciar Sesión" o "Ir al Dashboard"
+            <div className="hidden mr-3 lg:flex nav__item">
+              <Link
+                href={isLoggedIn ? "/dashboard" : "/auth/login"}
+                className="px-6 py-2 text-background font-bold bg-secondary dark:bg-primary rounded-md md:ml-5"
+              >
+                {isLoggedIn ? "Ir al Dashboard" : "Iniciar Sesión"}
+              </Link>
+            </div>
+          ) : (
+            // En rutas protegidas, mostrar menú de usuario
             <Menu as="div" className="relative ml-3">
               <div>
                 <Menu.Button className="text-gray-500 dark:text-gray-300 rounded-full outline-none focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-800 p-1 transition-colors">
@@ -75,6 +93,39 @@ export const Navbar = () => {
                 <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-card py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <Menu.Item>
                     {({ active }) => (
+                      <Link
+                        href="/dashboard"
+                        className={`${active ? "bg-muted" : ""
+                          } block px-4 py-2 text-sm text-foreground w-full text-left`}
+                      >
+                        Dashboard
+                      </Link>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        href="/topology"
+                        className={`${active ? "bg-muted" : ""
+                          } block px-4 py-2 text-sm text-foreground w-full text-left`}
+                      >
+                        Topología
+                      </Link>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        href="/tokens"
+                        className={`${active ? "bg-muted" : ""
+                          } block px-4 py-2 text-sm text-foreground w-full text-left`}
+                      >
+                        Tokens API
+                      </Link>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
                       <button
                         onClick={handleLogout}
                         className={`${active ? "bg-muted" : ""
@@ -87,12 +138,6 @@ export const Navbar = () => {
                 </Menu.Items>
               </Transition>
             </Menu>
-          ) : (
-            <div className="hidden mr-3 lg:flex nav__item">
-              <Link href="/auth/login" className="px-6 py-2 text-background font-bold bg-secondary dark:bg-primary rounded-md md:ml-5">
-                Iniciar Sesión
-              </Link>
-            </div>
           )}
         </div>
 

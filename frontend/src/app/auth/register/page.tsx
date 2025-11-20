@@ -26,7 +26,7 @@ export default function RegisterPage() {
             });
             if (!res.ok) throw new Error(await res.text());
             setOk(true);
-            setTimeout(() => router.push("/login"), 900);
+            setTimeout(() => router.push("/auth/login"), 900);
         } catch {
             setErr("No se pudo crear la cuenta (email/usuario en uso o backend caído).");
         }

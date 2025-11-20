@@ -115,7 +115,7 @@ export async function getLastStats(jwt: string, device: string) {
     headers: { Authorization: `Bearer ${jwt}` },
     cache: "no-store",
   });
-  return handle(res) as Promise<Record<string, number>>;
+  return handle(res) as Promise<Record<string, any>>;
 }
 
 export async function getTimeseries(

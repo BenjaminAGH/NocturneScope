@@ -18,10 +18,11 @@ func NewAPITokenGormRepository(db *gorm.DB) *APITokenGormRepository {
 
 func (r *APITokenGormRepository) Create(t *domain.APIToken) error {
 	m := persistence.APITokenModel{
-		Name:      t.Name,
-		TokenHash: t.TokenHash,
-		UserID:    t.UserID,
-		RevokedAt: t.RevokedAt,
+		Name:       t.Name,
+		TokenHash:  t.TokenHash,
+		UserID:     t.UserID,
+		DeviceName: t.DeviceName,
+		RevokedAt:  t.RevokedAt,
 	}
 	return r.db.Create(&m).Error
 }

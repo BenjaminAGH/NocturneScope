@@ -9,8 +9,8 @@ import (
 )
 
 func RegisterMetricRoutes(r fiber.Router, metricSvc *service.MetricService, tokenSvc *service.TokenService) {
-    g := r.Group("/metrics")
-    h := handlers.NewMetricHandler(metricSvc)
+	g := r.Group("/metrics")
+	h := handlers.NewMetricHandler(metricSvc)
 
-    g.Post("/", middleware.APITokenRequired(tokenSvc), h.Create)
+	g.Post("/", middleware.APITokenRequired(tokenSvc), h.Create)
 }

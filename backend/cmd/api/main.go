@@ -25,6 +25,7 @@ func main() {
 	// repos
 	userRepo := repository.NewUserGormRepository(db)
 	apiTokenRepo := repository.NewAPITokenGormRepository(db)
+	topologyRepo := repository.NewTopologyGormRepository(db)
 
 	// servicios
 	userService := service.NewUserService(userRepo)
@@ -35,6 +36,7 @@ func main() {
 
 	metricService := service.NewMetricService(influxWriter)
 	apiTokenService := service.NewTokenService(apiTokenRepo)
+	topologyService := service.NewTopologyService(topologyRepo)
 
 	app := fiber.New()
 
@@ -57,7 +59,7 @@ func main() {
 		})
 	})
 
-	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService)
+	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, topologyService)
 
 	log.Fatal(app.Listen(":3000"))
 }

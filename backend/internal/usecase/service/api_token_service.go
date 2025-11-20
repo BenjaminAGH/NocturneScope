@@ -16,15 +16,16 @@ func NewTokenService(repo domain.APITokenRepository) *TokenService {
 	return &TokenService{repo: repo}
 }
 
-func (s *TokenService) GenerateForUser(name string, userID uint) (string, error) {
+func (s *TokenService) GenerateForUser(name string, deviceName string, userID uint) (string, error) {
 	raw := "ntk_" + time.Now().Format("20060102150405.000000000")
 	hash := hashToken(raw)
 
 	t := &domain.APIToken{
-		Name:      name,
-		TokenHash: hash,
-		UserID:    &userID,
-		CreatedAt: time.Now(),
+		Name:       name,
+		TokenHash:  hash,
+		UserID:     &userID,
+		DeviceName: deviceName,
+		CreatedAt:  time.Now(),
 	}
 
 	if err := s.repo.Create(t); err != nil {

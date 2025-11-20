@@ -57,7 +57,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const t = localStorage.getItem("jwt");
     if (!t) {
-      router.replace("/login");
+      router.replace("/auth/login");
       return;
     }
     setJwt(t);

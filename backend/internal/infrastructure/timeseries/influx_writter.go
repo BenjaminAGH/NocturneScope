@@ -31,7 +31,11 @@ func (w *InfluxWriter) Client() influxdb2.Client { return w.client }
 func (w *InfluxWriter) Org() string              { return w.org }
 func (w *InfluxWriter) Bucket() string           { return w.bucket }
 
-func (w *InfluxWriter) Close() { if w.client != nil { w.client.Close() } }
+func (w *InfluxWriter) Close() {
+	if w.client != nil {
+		w.client.Close()
+	}
+}
 
 func (w *InfluxWriter) WriteMetric(m domain.Metric) error {
 	if w == nil || w.client == nil || w.write == nil {
@@ -46,6 +50,9 @@ func (w *InfluxWriter) WriteMetric(m domain.Metric) error {
 	tags := map[string]string{
 		"device": m.DeviceName,
 		"ip":     m.IpAddress,
+	}
+	if m.Gateway != "" {
+		tags["gateway"] = m.Gateway
 	}
 	if m.OS != "" {
 		tags["os"] = m.OS

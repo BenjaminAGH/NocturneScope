@@ -16,6 +16,7 @@ func Register(
 	jwtService *security.JWTService,
 	metricService *service.MetricService,
 	apiTokenService *service.TokenService,
+	topologyService *service.TopologyService,
 ) {
 	api := app.Group("/api")
 
@@ -24,13 +25,13 @@ func Register(
 
 	RegisterMetricRoutes(api, metricService, apiTokenService)
 
-	// rutas JWT 
+	// rutas JWT
 	protected := api.Group("")
 	protected.Use(middleware.JWTProtected(jwtService, authService))
 
 	authHandler := handlers.NewAuthHandler(authService, userService)
 	protected.Post("/auth/logout", authHandler.Logout)
-	
+
 	RegisterMetricQueryRoutes(protected, metricService)
 
 	// api tokens del usuario
@@ -40,4 +41,7 @@ func Register(
 	protected.Delete("/api-tokens/:id", apiTokenHandler.Delete)
 
 	RegisterUserRoutes(protected, userService)
+
+	// topologías del usuario
+	RegisterTopologyRoutes(protected, topologyService)
 }

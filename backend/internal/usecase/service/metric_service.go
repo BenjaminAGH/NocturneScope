@@ -73,7 +73,8 @@ from(bucket: "%[1]s")
   |> filter(fn: (r) => contains(value: r._field, set: %[3]s))
   |> last()
   |> pivot(rowKey:["_time"], columnKey:["_field"], valueColumn:"_value")
-  |> keep(columns: ["_time","cpu","ram","disk","net_rx","net_tx","temp","uptime","os","ip"])
+  |> group()
+  |> keep(columns: ["_time","cpu","ram","disk","net_rx","net_tx","temp","uptime","os","ip","gateway"])
 `, s.writer.Bucket(), device, fieldsToFluxArray(fields))
 
 	res, err := q.Query(ctx, flux)
@@ -92,6 +93,9 @@ from(bucket: "%[1]s")
 		}
 		if v, ok := rec.ValueByKey("ip").(string); ok {
 			out["ip"] = v
+		}
+		if v, ok := rec.ValueByKey("gateway").(string); ok {
+			out["gateway"] = v
 		}
 
 		// Fields (floats)

@@ -1,0 +1,537 @@
+"use client";
+
+import { useCallback, useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import {
+    ReactFlow,
+    Node,
+    Edge,
+    Controls,
+    Background,
+    useNodesState,
+    useEdgesState,
+    addEdge,
+    Connection,
+    ReactFlowProvider,
+    useReactFlow,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+
+import DeviceNode, { DeviceNodeData } from "@/components/topology/DeviceNode";
+import RouterNode, { RouterNodeData } from "@/components/topology/RouterNode";
+import TopologyControls from "@/components/topology/TopologyControls";
+import { getDevices, getLastStats } from "@/lib/api/api";
+import {
+    saveTopology,
+    getTopologies,
+    getTopology,
+    updateTopology,
+    type Topology,
+    type TopologyData,
+} from "@/lib/api/topology";
+import MonitoringNode, { MonitoringNodeData } from "@/components/topology/MonitoringNode";
+
+const nodeTypes = {
+    device: DeviceNode,
+    router: RouterNode,
+    monitoring: MonitoringNode,
+};
+
+function TopologyEditor() {
+    const router = useRouter();
+    const { fitView } = useReactFlow();
+
+    const [jwt, setJwt] = useState<string | null>(null);
+    const [devices, setDevices] = useState<string[]>([]);
+    const [topologies, setTopologies] = useState<Topology[]>([]);
+    const [selectedTopology, setSelectedTopology] = useState<number | null>(null);
+    const [currentTopologyName, setCurrentTopologyName] = useState<string>("");
+    const [autoDetectGateways, setAutoDetectGateways] = useState<boolean>(true);
+    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node<DeviceNodeData | RouterNodeData | MonitoringNodeData>>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+    const nodeIdCounter = useRef(0);
+
+
+    // Autenticación
+    useEffect(() => {
+        const t = localStorage.getItem("jwt");
+        if (!t) {
+            router.replace("/auth/login");
+            return;
+        }
+        setJwt(t);
+    }, [router]);
+
+    // Cargar dispositivos y topologías
+    useEffect(() => {
+        if (!jwt) return;
+
+        const loadData = async () => {
+            try {
+                const [devs, topos] = await Promise.all([
+                    getDevices(jwt),
+                    getTopologies(jwt),
+                ]);
+                setDevices(devs);
+                setTopologies(topos);
+            } catch (e: any) {
+                console.error("Error cargando datos:", e);
+            }
+        };
+
+        loadData();
+    }, [jwt]);
+
+    const nodesRef = useRef(nodes);
+    const edgesRef = useRef(edges);
+
+    // Mantener las referencias actualizadas
+    useEffect(() => {
+        nodesRef.current = nodes;
+    }, [nodes]);
+
+    useEffect(() => {
+        edgesRef.current = edges;
+    }, [edges]);
+
+    // Actualizar estado de dispositivos en tiempo real y detectar gateways
+    useEffect(() => {
+        if (!jwt) return;
+
+        const updateDeviceStatus = async () => {
+            const currentNodes = nodesRef.current;
+            if (currentNodes.length === 0) return;
+
+            const gatewaysFound = new Map<string, { ip: string; devices: string[] }>();
+
+            const updatedNodes = await Promise.all(
+                currentNodes.map(async (node) => {
+                    // Actualizar JWT en nodos de monitoreo si es necesario
+                    if (node.type === "monitoring") {
+                        if ((node.data as MonitoringNodeData).jwt !== jwt) {
+                            return {
+                                ...node,
+                                data: { ...node.data, jwt }
+                            };
+                        }
+                        return node;
+                    }
+
+                    if (node.type !== "device") return node;
+
+                    const deviceData = node.data as DeviceNodeData;
+                    try {
+                        const stats = await getLastStats(jwt, deviceData.deviceName);
+                        // Recolectar info del gateway si existe
+                        if (stats.gateway && typeof stats.gateway === 'string') {
+                            const gwIP = stats.gateway;
+                            if (!gatewaysFound.has(gwIP)) {
+                                gatewaysFound.set(gwIP, { ip: gwIP, devices: [] });
+                            }
+                            gatewaysFound.get(gwIP)?.devices.push(node.id);
+                        }
+
+                        return {
+                            ...node,
+                            data: {
+                                ...deviceData,
+                                status: "online" as const,
+                                ip: stats.ip ? String(stats.ip) : deviceData.ip,
+                            } as DeviceNodeData,
+                        };
+                    } catch {
+                        return {
+                            ...node,
+                            data: {
+                                ...deviceData,
+                                status: "offline" as const,
+                            } as DeviceNodeData,
+                        };
+                    }
+                })
+            );
+
+            // Lógica de detección automática de gateways
+            if (autoDetectGateways && gatewaysFound.size > 0) {
+                const newNodes = [...updatedNodes];
+                const newEdges = [...edgesRef.current];
+                let nodesChanged = false;
+                let edgesChanged = false;
+
+                gatewaysFound.forEach((gwInfo, gwIP) => {
+                    // 1. Buscar si ya existe el nodo router
+                    let routerNodeId = newNodes.find(
+                        n => n.type === 'router' && (n.data as RouterNodeData).gatewayIP === gwIP
+                    )?.id;
+
+                    // 2. Si no existe, crearlo
+                    if (!routerNodeId) {
+                        routerNodeId = `router-${gwIP.replace(/\./g, '-')}`;
+                        // Posicionar el router cerca del primer dispositivo (o en un lugar aleatorio si no)
+                        const firstDevice = newNodes.find(n => n.id === gwInfo.devices[0]);
+                        const position = firstDevice ? { x: firstDevice.position.x, y: firstDevice.position.y - 150 } : { x: Math.random() * 400, y: Math.random() * 400 };
+
+                        newNodes.push({
+                            id: routerNodeId,
+                            type: 'router',
+                            position,
+                            data: {
+                                gatewayIP: gwIP,
+                                label: `Router ${gwIP}`,
+                                deviceCount: gwInfo.devices.length
+                            } as RouterNodeData
+                        });
+                        nodesChanged = true;
+                    } else {
+                        // Actualizar contador de dispositivos
+                        const routerNodeIndex = newNodes.findIndex(n => n.id === routerNodeId);
+                        if (routerNodeIndex !== -1) {
+                            const routerNode = newNodes[routerNodeIndex];
+                            const currentData = routerNode.data as RouterNodeData;
+                            if (currentData.deviceCount !== gwInfo.devices.length) {
+                                newNodes[routerNodeIndex] = {
+                                    ...routerNode,
+                                    data: {
+                                        ...currentData,
+                                        deviceCount: gwInfo.devices.length
+                                    } as RouterNodeData
+                                };
+                                nodesChanged = true;
+                            }
+                        }
+                    }
+
+                    // 3. Crear conexiones (edges)
+                    gwInfo.devices.forEach(deviceId => {
+                        const edgeId = `edge-${routerNodeId}-${deviceId}`;
+                        if (!newEdges.find(e => e.id === edgeId)) {
+                            newEdges.push({
+                                id: edgeId,
+                                source: routerNodeId!,
+                                target: deviceId,
+                                type: 'default',
+                                animated: true,
+                            });
+                            edgesChanged = true;
+                        }
+                    });
+                });
+
+                if (nodesChanged) setNodes(newNodes);
+                else setNodes(updatedNodes); // Solo actualizar estado si no hubo cambios estructurales
+
+                if (edgesChanged) setEdges(newEdges);
+            } else {
+                setNodes(updatedNodes);
+            }
+        };
+
+        updateDeviceStatus();
+        const interval = setInterval(updateDeviceStatus, 5000);
+        return () => clearInterval(interval);
+    }, [jwt, setNodes, setEdges, autoDetectGateways]);
+
+    const onConnect = useCallback(
+        (params: Connection) => {
+            setEdges((eds) => addEdge(params, eds));
+
+            // Verificar si conectamos un dispositivo a un nodo de monitoreo
+            const sourceNode = nodesRef.current.find(n => n.id === params.source);
+            const targetNode = nodesRef.current.find(n => n.id === params.target);
+
+            if (sourceNode && targetNode) {
+                let monitoringNodeId: string | null = null;
+                let deviceName: string | null = null;
+
+                if (sourceNode.type === 'device' && targetNode.type === 'monitoring') {
+                    monitoringNodeId = targetNode.id;
+                    deviceName = (sourceNode.data as DeviceNodeData).deviceName;
+                } else if (sourceNode.type === 'monitoring' && targetNode.type === 'device') {
+                    monitoringNodeId = sourceNode.id;
+                    deviceName = (targetNode.data as DeviceNodeData).deviceName;
+                }
+
+                if (monitoringNodeId && deviceName) {
+                    setNodes(nds => nds.map(n => {
+                        if (n.id === monitoringNodeId) {
+                            return {
+                                ...n,
+                                data: { ...n.data, connectedDevice: deviceName }
+                            };
+                        }
+                        return n;
+                    }));
+                }
+            }
+        },
+        [setEdges, setNodes]
+    );
+
+    // Manejar desconexión (borrado de edges)
+    const onEdgesDelete = useCallback((deletedEdges: Edge[]) => {
+        deletedEdges.forEach(edge => {
+            const sourceNode = nodesRef.current.find(n => n.id === edge.source);
+            const targetNode = nodesRef.current.find(n => n.id === edge.target);
+
+            if (sourceNode && targetNode) {
+                if (sourceNode.type === 'monitoring' || targetNode.type === 'monitoring') {
+                    const monNodeId = sourceNode.type === 'monitoring' ? sourceNode.id : targetNode.id;
+                    setNodes(nds => nds.map(n => {
+                        if (n.id === monNodeId) {
+                            return {
+                                ...n,
+                                data: { ...n.data, connectedDevice: undefined }
+                            };
+                        }
+                        return n;
+                    }));
+                }
+            }
+        });
+    }, [setNodes]);
+
+    const handleAddDevice = useCallback(
+        (deviceName: string) => {
+            const id = `node-${++nodeIdCounter.current}`;
+            const newNode: Node<DeviceNodeData> = {
+                id,
+                type: "device",
+                position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+                data: {
+                    deviceName,
+                    label: deviceName,
+                    status: "unknown",
+                },
+            };
+            setNodes((nds) => [...nds, newNode]);
+        },
+        [setNodes]
+    );
+
+    const handleAddMonitoringNode = useCallback(() => {
+        const id = `mon-${++nodeIdCounter.current}`;
+        const newNode: Node<MonitoringNodeData> = {
+            id,
+            type: "monitoring",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                jwt: jwt || undefined,
+                metric: 'cpu',
+                label: 'Monitoring',
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes, jwt]);
+
+    const handleUpdateNodeData = useCallback((id: string, data: any) => {
+        setNodes(nds => nds.map(n => {
+            if (n.id === id) {
+                return { ...n, data: { ...n.data, ...data } };
+            }
+            return n;
+        }));
+    }, [setNodes]);
+
+    const handleSave = useCallback(
+        async (name: string) => {
+            if (!jwt) return;
+
+            const data: TopologyData = {
+                nodes: nodes.map((n) => ({
+                    id: n.id,
+                    type: n.type,
+                    position: n.position,
+                    data: {
+                        deviceName: (n.data as any).deviceName,
+                        label: (n.data as any).label,
+                        metric: (n.data as any).metric, // Guardar métrica para nodos de monitoreo
+                        // No guardamos connectedDevice explícitamente porque se reconstruye por las edges,
+                        // PERO como el estado connectedDevice es interno del nodo, quizás deberíamos guardarlo
+                        // o reconstruirlo al cargar. Reconstruirlo es más seguro.
+                    },
+                })),
+                edges: edges.map((e) => ({
+                    id: e.id,
+                    source: e.source,
+                    target: e.target,
+                    type: e.type,
+                })),
+            };
+
+            try {
+                if (selectedTopology) {
+                    // Actualizar existente
+                    await updateTopology(jwt, selectedTopology, name, data);
+                } else {
+                    // Crear nueva
+                    const saved = await saveTopology(jwt, name, data);
+                    setSelectedTopology(saved.ID);
+                }
+
+                setCurrentTopologyName(name);
+                // Recargar lista de topologías
+                const topos = await getTopologies(jwt);
+                setTopologies(topos);
+            } catch (e: any) {
+                console.error("Error guardando topología:", e);
+                alert("Error guardando topología: " + e.message);
+            }
+        },
+        [jwt, nodes, edges, selectedTopology]
+    );
+
+    const handleLoad = useCallback(
+        async (id: number) => {
+            if (!jwt) return;
+
+            try {
+                const topo = await getTopology(jwt, id);
+                const data: TopologyData = JSON.parse(topo.Data);
+
+                // Reconstruir connectedDevice basado en edges
+                const edges = data.edges;
+                const nodesWithData = data.nodes.map((n) => {
+                    let extraData = {};
+                    if (n.type === 'monitoring') {
+                        // Buscar edge conectado
+                        const edge = edges.find(e => e.source === n.id || e.target === n.id);
+                        if (edge) {
+                            const otherId = edge.source === n.id ? edge.target : edge.source;
+                            const otherNode = data.nodes.find(on => on.id === otherId);
+                            if (otherNode && otherNode.type === 'device') {
+                                extraData = { connectedDevice: (otherNode.data as any).deviceName };
+                            }
+                        }
+                        extraData = { ...extraData, jwt }; // Inyectar JWT
+                    }
+
+                    return {
+                        ...n,
+                        data: {
+                            ...n.data,
+                            ...extraData,
+                            status: "unknown" as const,
+                        },
+                    };
+                });
+
+                setNodes(nodesWithData);
+                setEdges(data.edges);
+                setSelectedTopology(id);
+                setCurrentTopologyName(topo.Name);
+
+                // Ajustar vista después de cargar
+                setTimeout(() => fitView(), 100);
+            } catch (e: any) {
+                console.error("Error cargando topología:", e);
+                alert("Error cargando topología: " + e.message);
+            }
+        },
+        [jwt, setNodes, setEdges, fitView]
+    );
+
+    const handleNew = useCallback(() => {
+        setNodes([]);
+        setEdges([]);
+        setSelectedTopology(null);
+        setCurrentTopologyName("");
+    }, [setNodes, setEdges]);
+
+    const handleExport = useCallback(() => {
+        const data: TopologyData = {
+            nodes: nodes.map((n) => ({
+                id: n.id,
+                type: n.type,
+                position: n.position,
+                data: n.data,
+            })),
+            edges: edges.map((e) => ({
+                id: e.id,
+                source: e.source,
+                target: e.target,
+                type: e.type,
+            })),
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `topology-${currentTopologyName || "export"}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }, [nodes, edges, currentTopologyName]);
+
+    const handleFitView = useCallback(() => {
+        fitView({ padding: 0.2, duration: 300 });
+    }, [fitView]);
+
+    const selectedNode = nodes.find(n => n.id === selectedNodeId);
+
+    if (!jwt) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <p>Cargando...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex h-screen">
+            <div className="flex-1 relative">
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    onEdgesDelete={onEdgesDelete}
+                    onNodeClick={(_, node) => setSelectedNodeId(node.id)}
+                    onPaneClick={() => setSelectedNodeId(null)}
+                    nodeTypes={nodeTypes}
+                    fitView
+                    className="bg-background"
+                >
+                    <Controls />
+                    <Background />
+                </ReactFlow>
+
+                {/* Header */}
+                <div className="absolute top-4 left-4 bg-card border border-border rounded-lg px-4 py-2 shadow-lg">
+                    <h1 className="text-xl font-semibold">Topología de Red</h1>
+                    {currentTopologyName && (
+                        <p className="text-sm text-muted-foreground">{currentTopologyName}</p>
+                    )}
+                </div>
+            </div>
+
+            <TopologyControls
+                devices={devices}
+                topologies={topologies.map((t) => ({ ID: t.ID, Name: t.Name }))}
+                selectedTopology={selectedTopology}
+                onAddDevice={handleAddDevice}
+                onSave={handleSave}
+                onLoad={handleLoad}
+                onNew={handleNew}
+                onExport={handleExport}
+                onFitView={handleFitView}
+                onAddMonitoringNode={handleAddMonitoringNode}
+                selectedNode={selectedNode}
+                onUpdateNodeData={handleUpdateNodeData}
+            />
+        </div>
+    );
+}
+
+export default function TopologyPage() {
+    return (
+        <ReactFlowProvider>
+            <TopologyEditor />
+        </ReactFlowProvider>
+    );
+}

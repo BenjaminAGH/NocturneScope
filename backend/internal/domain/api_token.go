@@ -3,12 +3,13 @@ package domain
 import "time"
 
 type APIToken struct {
-	ID        uint
-	Name      string
-	TokenHash string
-	UserID    *uint
-	CreatedAt time.Time
-	RevokedAt *time.Time
+	ID         uint
+	Name       string
+	TokenHash  string
+	UserID     *uint
+	DeviceName string
+	CreatedAt  time.Time
+	RevokedAt  *time.Time
 }
 
 type APITokenRepository interface {

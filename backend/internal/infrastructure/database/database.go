@@ -30,7 +30,7 @@ func Connect() *gorm.DB {
 		log.Fatalf("cannot connect db: %v", err)
 	}
 
-	if err := db.AutoMigrate(&persistence.UserModel{}, &persistence.APITokenModel{}); err != nil {
+	if err := db.AutoMigrate(&persistence.UserModel{}, &persistence.APITokenModel{}, &persistence.TopologyModel{}); err != nil {
 		log.Fatalf("auto-migrate error: %v", err)
 	}
 
