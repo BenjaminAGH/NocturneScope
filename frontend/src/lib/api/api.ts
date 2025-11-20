@@ -107,7 +107,8 @@ export async function getDevices(jwt: string) {
     headers: { Authorization: `Bearer ${jwt}` },
     cache: "no-store",
   });
-  return handle(res) as Promise<string[]>;
+  const data = await handle(res);
+  return (Array.isArray(data) ? data : []) as string[];
 }
 
 export async function getLastStats(jwt: string, device: string) {

@@ -45,7 +45,8 @@ export async function getTopologies(jwt: string): Promise<Topology[]> {
         headers: { Authorization: `Bearer ${jwt}` },
         cache: "no-store",
     });
-    return handle(res);
+    const data = await handle(res);
+    return Array.isArray(data) ? data : [];
 }
 
 export async function getTopology(jwt: string, id: number): Promise<Topology> {
