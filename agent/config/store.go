@@ -50,3 +50,11 @@ func Load() (AgentConfig, error) {
 	}
 	return cfg, nil
 }
+
+func Delete() error {
+	path, err := configPath()
+	if err != nil {
+		return err
+	}
+	return os.Remove(path)
+}

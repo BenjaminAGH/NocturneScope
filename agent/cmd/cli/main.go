@@ -78,6 +78,7 @@ func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric
 		metrics.NewNetCollector(),
 		metrics.NewDeviceTypeCollector(cfg.DeviceType),
 		metrics.NewTemperatureCollector(),
+		metrics.NewGatewayCollector(),
 	}
 
 	client := backend.NewHTTPClient(

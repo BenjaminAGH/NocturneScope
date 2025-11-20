@@ -79,6 +79,9 @@ func merge(dst, src domain.Metric) domain.Metric {
 	if src.IpAddress != "" {
 		dst.IpAddress = src.IpAddress
 	}
+	if src.Gateway != "" {
+		dst.Gateway = src.Gateway
+	}
 	if !src.Timestamp.IsZero() {
 		dst.Timestamp = src.Timestamp
 	}

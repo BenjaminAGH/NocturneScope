@@ -111,6 +111,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.exitAndKeepAgent = false
 			return m, tea.Quit
 
+		case "4":
+			_ = config.Delete()
+			m.exitAndKeepAgent = false
+			return m, tea.Quit
+
 		case "b":
 			m.state = stateMenu
 			return m, nil
@@ -148,6 +153,7 @@ func (m Model) View() string {
 			"1) Ver última métrica\n" +
 			"2) Editar configuración\n" +
 			"3) Cerrar TUI y dejar agente en segundo plano\n" +
+			"4) Resetear configuración (borrar y salir)\n" +
 			"x) Salir completamente\n"
 
 	case stateRealtime:
