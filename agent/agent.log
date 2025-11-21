@@ -1,0 +1,1315 @@
+🔗 HTTP Client initialized: https://api.nocturnesec.cl (token: ntk_2025...)
+🚀 Agent service started (interval: 10s)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+✅ Métrica enviada exitosamente (device: nocturne)
+no se pudo enviar métrica después de reintentos, se descarta
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": dial tcp: lookup api.nocturnesec.cl: Temporary failure in name resolution
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": dial tcp: lookup api.nocturnesec.cl: Temporary failure in name resolution
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": dial tcp: lookup api.nocturnesec.cl: Temporary failure in name resolution
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": dial tcp: lookup api.nocturnesec.cl: Temporary failure in name resolution
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": dial tcp: lookup api.nocturnesec.cl: Temporary failure in name resolution
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": dial tcp: lookup api.nocturnesec.cl: Temporary failure in name resolution
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+no se pudo enviar métrica después de reintentos, se descarta
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend respondió 502: error code: 502
+backend no disponible, métrica encolada
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+backend respondió 500: {"error":"502 Bad Gateway: error code: 502"}
+backend no disponible, métrica encolada
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+error enviando métrica: Post "https://api.nocturnesec.cl/api/metrics": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+backend no disponible, métrica encolada
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)
+✅ Métrica enviada exitosamente (device: nocturne)

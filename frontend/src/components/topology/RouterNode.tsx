@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
+import { GlobeAltIcon, LinkIcon } from "@heroicons/react/24/outline";
 
 export interface RouterNodeData extends Record<string, unknown> {
     gatewayIP: string;
@@ -19,7 +20,7 @@ function RouterNode({ data }: NodeProps) {
             <div className="p-4 space-y-2">
                 {/* Header con icono de router */}
                 <div className="flex items-center gap-2">
-                    <span className="text-3xl">🌐</span>
+                    <GlobeAltIcon className="w-8 h-8" />
                     <div className="flex-1 min-w-0">
                         <div className="font-semibold text-sm truncate">{label}</div>
                     </div>
@@ -33,7 +34,7 @@ function RouterNode({ data }: NodeProps) {
                 {/* Dispositivos conectados */}
                 {deviceCount > 0 && (
                     <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
-                        <span>🔗</span>
+                        <LinkIcon className="w-4 h-4" />
                         <span>{deviceCount} {deviceCount === 1 ? "dispositivo" : "dispositivos"}</span>
                     </div>
                 )}

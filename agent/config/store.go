@@ -3,7 +3,9 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 type AgentConfig struct {
@@ -14,11 +16,32 @@ type AgentConfig struct {
 }
 
 func configPath() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
+	var home string
+	var err error
+
+	if sudoUser := os.Getenv("SUDO_USER"); sudoUser != "" {
+		// Running with sudo, try to get original user's home
+		cmd := exec.Command("getent", "passwd", sudoUser)
+		output, err := cmd.Output()
+		if err == nil {
+			parts := strings.Split(string(output), ":")
+			if len(parts) >= 6 {
+				home = parts[5]
+			}
+		}
 	}
+
+	if home == "" {
+		home, err = os.UserHomeDir()
+		if err != nil {
+			return "", err
+		}
+	}
+
 	dir := filepath.Join(home, ".nocturneagent")
+	// If running as root but using user's dir, we shouldn't mess up permissions
+	// But for reading it's fine. For writing, it might be an issue if it doesn't exist.
+	// Assuming it exists or we are careful.
 	_ = os.MkdirAll(dir, 0700)
 	return filepath.Join(dir, "config.json"), nil
 }

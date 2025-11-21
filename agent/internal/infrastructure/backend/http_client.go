@@ -19,6 +19,7 @@ type HTTPClient struct {
 	queue       chan domain.Metric
 	maxRetries  int
 	backoffBase time.Duration
+	silent      bool
 }
 
 type Option func(*HTTPClient)
@@ -36,7 +37,18 @@ func WithRetry(max int, base time.Duration) Option {
 	}
 }
 
+func WithSilent(silent bool) Option {
+	return func(c *HTTPClient) {
+		c.silent = silent
+	}
+}
+
 func NewHTTPClient(baseURL, token string, opts ...Option) *HTTPClient {
+	// Normalize baseURL to remove trailing slash
+	if len(baseURL) > 0 && baseURL[len(baseURL)-1] == '/' {
+		baseURL = baseURL[:len(baseURL)-1]
+	}
+
 	c := &HTTPClient{
 		baseURL:     baseURL,
 		token:       token,
@@ -52,7 +64,18 @@ func NewHTTPClient(baseURL, token string, opts ...Option) *HTTPClient {
 	// lanzamos el worker que vacía la cola
 	go c.worker()
 
+	if !c.silent {
+		fmt.Printf("🔗 HTTP Client initialized: %s (token: %s...)\n", baseURL, token[:min(8, len(token))])
+	}
+
 	return c
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 // este es el método que usa el caso de uso
@@ -66,9 +89,13 @@ func (c *HTTPClient) SendMetric(m domain.Metric) error {
 		// si falla, lo mandamos a la cola
 		select {
 		case c.queue <- m:
-			fmt.Println("backend no disponible, métrica encolada")
+			if !c.silent {
+				fmt.Println("backend no disponible, métrica encolada")
+			}
 		default:
-			fmt.Println("cola llena, se descarta métrica")
+			if !c.silent {
+				fmt.Println("cola llena, se descarta métrica")
+			}
 		}
 		return err
 	}
@@ -80,7 +107,9 @@ func (c *HTTPClient) worker() {
 	for m := range c.queue {
 		ok := c.retrySend(m)
 		if !ok {
-			fmt.Println("no se pudo enviar métrica después de reintentos, se descarta")
+			if !c.silent {
+				fmt.Println("no se pudo enviar métrica después de reintentos, se descarta")
+			}
 		}
 	}
 }
@@ -116,7 +145,9 @@ func (c *HTTPClient) sendOnce(m domain.Metric) error {
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		fmt.Println("error enviando métrica:", err)
+		if !c.silent {
+			fmt.Println("error enviando métrica:", err)
+		}
 		return err
 	}
 	defer resp.Body.Close()
@@ -124,9 +155,14 @@ func (c *HTTPClient) sendOnce(m domain.Metric) error {
 	respBody, _ := io.ReadAll(resp.Body)
 
 	if resp.StatusCode >= 300 {
-		fmt.Printf("backend respondió %d: %s\n", resp.StatusCode, string(respBody))
+		if !c.silent {
+			fmt.Printf("backend respondió %d: %s\n", resp.StatusCode, string(respBody))
+		}
 		return fmt.Errorf("backend status %d", resp.StatusCode)
 	}
 
+	if !c.silent {
+		fmt.Printf("✅ Métrica enviada exitosamente (device: %s)\n", m.DeviceName)
+	}
 	return nil
 }

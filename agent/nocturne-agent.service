@@ -1,0 +1,14 @@
+[Unit]
+Description=NocturneScope Agent Service
+After=network.target
+
+[Service]
+Type=simple
+User=aluc5rd
+ExecStart=/usr/local/bin/nocturne-agent start
+Restart=always
+RestartSec=5
+Environment=HOME=/home/aluc5rd
+
+[Install]
+WantedBy=multi-user.target

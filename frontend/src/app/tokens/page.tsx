@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createAPIToken, getAPITokens, deleteAPIToken, APIToken } from "@/lib/api/tokens";
 import { getDevices } from "@/lib/api/api";
+import { InformationCircleIcon, CheckCircleIcon, ClipboardDocumentIcon } from "@heroicons/react/24/outline";
 
 export default function TokensPage() {
     const router = useRouter();
@@ -194,7 +195,10 @@ export default function TokensPage() {
 
             {/* Info Card */}
             <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-4">
-                <h3 className="font-medium text-blue-600 dark:text-blue-400 mb-2">ℹ️ Información</h3>
+                <h3 className="font-medium text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
+                    <InformationCircleIcon className="w-5 h-5" />
+                    Información
+                </h3>
                 <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• Cada token está asociado a un dispositivo específico</li>
                     <li>• Los tokens permiten que tus dispositivos envíen métricas al sistema</li>
@@ -262,7 +266,10 @@ export default function TokensPage() {
                             </>
                         ) : (
                             <>
-                                <h3 className="text-lg font-semibold">✅ Token Creado</h3>
+                                <h3 className="text-lg font-semibold flex items-center gap-2">
+                                    <CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+                                    Token Creado
+                                </h3>
                                 <div className="space-y-2">
                                     <p className="text-sm text-muted-foreground">
                                         Guarda este token en un lugar seguro. No podrás verlo nuevamente.
@@ -274,9 +281,10 @@ export default function TokensPage() {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => copyToClipboard(createdToken)}
-                                        className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm"
+                                        className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm flex items-center justify-center gap-2"
                                     >
-                                        📋 Copiar
+                                        <ClipboardDocumentIcon className="w-4 h-4" />
+                                        Copiar
                                     </button>
                                     <button
                                         onClick={closeCreateModal}

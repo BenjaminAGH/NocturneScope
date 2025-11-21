@@ -33,6 +33,7 @@ func NewService(cols []Collector, sink Sink, interval time.Duration, out chan do
 }
 
 func (s *Service) Start() {
+	// fmt.Printf("🚀 Agent service started (interval: %s)\n", s.interval)
 	ticker := time.NewTicker(s.interval)
 	go func() {
 		defer ticker.Stop()

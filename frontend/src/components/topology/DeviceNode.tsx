@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
+import { ComputerDesktopIcon, BellAlertIcon } from "@heroicons/react/24/outline";
 
 export interface DeviceNodeData extends Record<string, unknown> {
     deviceName: string;
@@ -61,7 +62,7 @@ function DeviceNode({ data }: NodeProps) {
             <div className="p-4 space-y-2">
                 {/* Header con icono y nombre */}
                 <div className="flex items-center gap-2">
-                    <span className="text-2xl">🖥️</span>
+                    <ComputerDesktopIcon className="w-6 h-6" />
                     <div className="flex-1 min-w-0">
                         <div className="font-semibold text-sm truncate">{label}</div>
                     </div>
@@ -81,7 +82,7 @@ function DeviceNode({ data }: NodeProps) {
                 {/* Notificaciones */}
                 {notifications > 0 && (
                     <div className="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400">
-                        <span>🔔</span>
+                        <BellAlertIcon className="w-4 h-4" />
                         <span>{notifications} {notifications === 1 ? "alerta" : "alertas"}</span>
                     </div>
                 )}

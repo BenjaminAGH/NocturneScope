@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 interface TopologyControlsProps {
     devices: string[];
@@ -85,7 +86,7 @@ export default function TopologyControls({
                         onClick={onAddMonitoringNode}
                         className="flex flex-col items-center justify-center p-3 bg-background hover:bg-accent rounded border border-border transition-colors gap-2"
                     >
-                        <span className="text-2xl">📈</span>
+                        <ChartBarIcon className="w-6 h-6" />
                         <span className="text-xs">Gráfico</span>
                     </button>
                 </div>
@@ -149,9 +150,17 @@ export default function TopologyControls({
                         </div>
 
                         <div className="text-xs text-muted-foreground pt-2 border-t border-border/50">
-                            {selectedNode.data.connectedDevice
-                                ? `✅ Conectado a: ${selectedNode.data.connectedDevice}`
-                                : "⚠️ No conectado a ningún dispositivo"}
+                            {selectedNode.data.connectedDevice ? (
+                                <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                                    <CheckCircleIcon className="w-4 h-4" />
+                                    <span>Conectado a: {selectedNode.data.connectedDevice}</span>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+                                    <ExclamationTriangleIcon className="w-4 h-4" />
+                                    <span>No conectado a ningún dispositivo</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

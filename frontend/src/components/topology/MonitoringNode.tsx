@@ -3,6 +3,7 @@
 import { memo, useEffect, useState } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { PresentationChartLineIcon } from "@heroicons/react/24/outline";
 import { getTimeseries } from "@/lib/api/api";
 import { formatTickCL } from "@/lib/time";
 
@@ -90,7 +91,7 @@ function MonitoringNode({ id, data, selected }: NodeProps) {
             {/* Header */}
             <div className="px-3 py-2 border-b border-border bg-muted/50 flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                    <span className="text-lg">📈</span>
+                    <PresentationChartLineIcon className="w-5 h-5" />
                     <span className="font-medium text-sm">
                         {connectedDevice ? connectedDevice : "Sin conexión"}
                     </span>
