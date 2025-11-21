@@ -149,9 +149,14 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 			emailTo, _ := emailNode.Data["to"].(string)
 			subject, _ := emailNode.Data["subject"].(string)
 			body, _ := emailNode.Data["body"].(string)
+			cooldown, _ := emailNode.Data["cooldown"].(string)
 
 			if metric == "" || operator == "" || emailTo == "" {
 				continue
+			}
+
+			if cooldown == "" {
+				cooldown = "1h" // Default
 			}
 
 			rules = append(rules, domain.AlertRule{
@@ -164,6 +169,7 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 				EmailTo:      emailTo,
 				EmailSubject: subject,
 				EmailBody:    body,
+				Cooldown:     cooldown,
 			})
 		}
 	}

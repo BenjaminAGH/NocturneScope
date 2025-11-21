@@ -8,6 +8,7 @@ export interface EmailNodeData extends Record<string, unknown> {
     subject?: string;
     body?: string;
     to?: string;
+    cooldown?: string; // e.g., "5m", "1h"
     isActive?: boolean;
 }
 

@@ -245,6 +245,22 @@ export default function TopologyControls({
                                     />
                                 </div>
                                 <div>
+                                    <label className="text-xs text-muted-foreground">Frecuencia (Cooldown)</label>
+                                    <select
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.cooldown || '1h'}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { cooldown: e.target.value })}
+                                    >
+                                        <option value="5m">Cada 5 minutos</option>
+                                        <option value="15m">Cada 15 minutos</option>
+                                        <option value="30m">Cada 30 minutos</option>
+                                        <option value="1h">Cada 1 hora</option>
+                                        <option value="6h">Cada 6 horas</option>
+                                        <option value="12h">Cada 12 horas</option>
+                                        <option value="24h">Cada 24 horas</option>
+                                    </select>
+                                </div>
+                                <div>
                                     <label className="text-xs text-muted-foreground">Contenido</label>
                                     <textarea
                                         placeholder="El uso de CPU es alto..."

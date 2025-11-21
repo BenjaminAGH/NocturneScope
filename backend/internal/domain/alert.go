@@ -12,6 +12,7 @@ type AlertRule struct {
 	EmailTo         string
 	EmailSubject    string
 	EmailBody       string
+	Cooldown        string // e.g., "5m", "1h"
 	LastTriggeredAt time.Time
 }
 

@@ -130,8 +130,14 @@ func (s *AlertService) triggerAlert(rule domain.AlertRule, val float64) {
 	s.lastSentMu.Lock()
 	last, ok := s.lastSent[rule.ID]
 
-	// Cooldown logic: Only send if never sent OR if 1 hour has passed since last email
-	if ok && time.Since(last) < 1*time.Hour {
+	// Parse cooldown duration
+	cooldown, err := time.ParseDuration(rule.Cooldown)
+	if err != nil {
+		cooldown = 1 * time.Hour // Fallback default
+	}
+
+	// Cooldown logic
+	if ok && time.Since(last) < cooldown {
 		s.lastSentMu.Unlock()
 		return
 	}
