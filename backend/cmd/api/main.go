@@ -34,9 +34,10 @@ func main() {
 	sessionStore := session.NewMemoryStore()
 	authService := service.NewAuthService(userRepo, jwtService, sessionStore)
 
-	metricService := service.NewMetricService(influxWriter)
+	alertService := service.NewAlertService()
+	metricService := service.NewMetricService(influxWriter, alertService)
 	apiTokenService := service.NewTokenService(apiTokenRepo)
-	topologyService := service.NewTopologyService(topologyRepo)
+	topologyService := service.NewTopologyService(topologyRepo, alertService)
 
 	app := fiber.New()
 

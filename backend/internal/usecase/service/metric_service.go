@@ -12,14 +12,22 @@ import (
 )
 
 type MetricService struct {
-	writer *timeseries.InfluxWriter
+	writer       *timeseries.InfluxWriter
+	alertService domain.AlertService
 }
 
-func NewMetricService(writer *timeseries.InfluxWriter) *MetricService {
-	return &MetricService{writer: writer}
+func NewMetricService(writer *timeseries.InfluxWriter, alertService domain.AlertService) *MetricService {
+	return &MetricService{
+		writer:       writer,
+		alertService: alertService,
+	}
 }
 
 func (s *MetricService) Store(m domain.Metric) error {
+	if s.alertService != nil {
+		go s.alertService.Evaluate(m)
+	}
+
 	if s.writer == nil {
 		fmt.Println("[metrics] Influx no configurado, métrica descartada")
 		return nil
