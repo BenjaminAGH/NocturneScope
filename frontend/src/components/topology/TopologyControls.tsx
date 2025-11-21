@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 
 interface TopologyControlsProps {
     devices: string[];
@@ -14,6 +14,8 @@ interface TopologyControlsProps {
     onExport: () => void;
     onFitView: () => void;
     onAddMonitoringNode: () => void;
+    onAddActionNode: () => void;
+    onAddEmailNode: () => void;
     selectedNode: any;
     onUpdateNodeData: (id: string, data: any) => void;
 }
@@ -60,6 +62,8 @@ export default function TopologyControls({
     onExport,
     onFitView,
     onAddMonitoringNode,
+    onAddActionNode,
+    onAddEmailNode,
     selectedNode,
     onUpdateNodeData,
 }: TopologyControlsProps) {
@@ -89,79 +93,185 @@ export default function TopologyControls({
                         <ChartBarIcon className="w-6 h-6" />
                         <span className="text-xs">Gráfico</span>
                     </button>
+                    <button
+                        onClick={onAddActionNode}
+                        className="flex flex-col items-center justify-center p-3 bg-background hover:bg-accent rounded border border-border transition-colors gap-2"
+                    >
+                        <BoltIcon className="w-6 h-6" />
+                        <span className="text-xs">Acción</span>
+                    </button>
+                    <button
+                        onClick={onAddEmailNode}
+                        className="flex flex-col items-center justify-center p-3 bg-background hover:bg-accent rounded border border-border transition-colors gap-2"
+                    >
+                        <EnvelopeIcon className="w-6 h-6" />
+                        <span className="text-xs">Email</span>
+                    </button>
                 </div>
             </div>
 
             {/* Configuración de Nodo Seleccionado */}
-            {selectedNode && selectedNode.type === 'monitoring' && (
+            {selectedNode && (
                 <div className="space-y-2 border-t border-border pt-4 animate-in fade-in slide-in-from-right-4">
-                    <label className="text-sm font-medium text-primary">Configuración de Gráfico</label>
+                    <label className="text-sm font-medium text-primary">
+                        {selectedNode.type === 'monitoring' && "Configuración de Gráfico"}
+                        {selectedNode.type === 'action' && "Regla de Disparo"}
+                        {selectedNode.type === 'email' && "Configuración de Email"}
+                    </label>
+
                     <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">
-                        <div>
-                            <label className="text-xs text-muted-foreground">Métrica</label>
-                            <select
-                                className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
-                                value={selectedNode.data.metric || 'cpu'}
-                                onChange={(e) => onUpdateNodeData(selectedNode.id, { metric: e.target.value })}
-                            >
-                                {METRIC_OPTIONS.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="text-xs text-muted-foreground">Rango de Tiempo</label>
-                            <select
-                                className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
-                                value={selectedNode.data.range || '1h'}
-                                onChange={(e) => onUpdateNodeData(selectedNode.id, { range: e.target.value })}
-                            >
-                                {RANGE_OPTIONS.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="text-xs text-muted-foreground">Intervalo</label>
-                            <select
-                                className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
-                                value={selectedNode.data.interval || '1m'}
-                                onChange={(e) => onUpdateNodeData(selectedNode.id, { interval: e.target.value })}
-                            >
-                                {INTERVAL_OPTIONS.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="text-xs text-muted-foreground">Agregación</label>
-                            <select
-                                className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
-                                value={selectedNode.data.agg || 'mean'}
-                                onChange={(e) => onUpdateNodeData(selectedNode.id, { agg: e.target.value })}
-                            >
-                                {AGG_OPTIONS.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="text-xs text-muted-foreground pt-2 border-t border-border/50">
-                            {selectedNode.data.connectedDevice ? (
-                                <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                                    <CheckCircleIcon className="w-4 h-4" />
-                                    <span>Conectado a: {selectedNode.data.connectedDevice}</span>
+                        {/* Monitoring Node Config */}
+                        {selectedNode.type === 'monitoring' && (
+                            <>
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Métrica</label>
+                                    <select
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.metric || 'cpu'}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { metric: e.target.value })}
+                                    >
+                                        {METRIC_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                            ) : (
-                                <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
-                                    <ExclamationTriangleIcon className="w-4 h-4" />
-                                    <span>No conectado a ningún dispositivo</span>
+
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Rango de Tiempo</label>
+                                    <select
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.range || '1h'}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { range: e.target.value })}
+                                    >
+                                        {RANGE_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                            )}
-                        </div>
+
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Intervalo</label>
+                                    <select
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.interval || '1m'}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { interval: e.target.value })}
+                                    >
+                                        {INTERVAL_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Agregación</label>
+                                    <select
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.agg || 'mean'}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { agg: e.target.value })}
+                                    >
+                                        {AGG_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Action Node Config */}
+                        {selectedNode.type === 'action' && (
+                            <>
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Métrica</label>
+                                    <select
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.metric || 'cpu'}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { metric: e.target.value })}
+                                    >
+                                        {METRIC_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div className="col-span-1">
+                                        <label className="text-xs text-muted-foreground">Operador</label>
+                                        <select
+                                            className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                            value={selectedNode.data.operator || '>='}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { operator: e.target.value })}
+                                        >
+                                            <option value=">">{'>'}</option>
+                                            <option value=">=">{'>='}</option>
+                                            <option value="<">{'<'}</option>
+                                            <option value="<=">{'<='}</option>
+                                            <option value="==">{'='}</option>
+                                        </select>
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="text-xs text-muted-foreground">Umbral</label>
+                                        <input
+                                            type="number"
+                                            className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                            value={selectedNode.data.threshold || 0}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { threshold: Number(e.target.value) })}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Email Node Config */}
+                        {selectedNode.type === 'email' && (
+                            <>
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Destinatario (To)</label>
+                                    <input
+                                        type="email"
+                                        placeholder="admin@example.com"
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.to || ''}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { to: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Asunto</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Alerta CPU"
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.subject || ''}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { subject: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Contenido</label>
+                                    <textarea
+                                        placeholder="El uso de CPU es alto..."
+                                        className="w-full mt-1 bg-background border border-border rounded px-2 py-1 text-sm min-h-[80px] resize-none"
+                                        value={selectedNode.data.body || ''}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { body: e.target.value })}
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {/* Connection Status for Monitoring and Action */}
+                        {(selectedNode.type === 'monitoring' || selectedNode.type === 'action') && (
+                            <div className="text-xs text-muted-foreground pt-2 border-t border-border/50">
+                                {selectedNode.data.connectedDevice ? (
+                                    <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                                        <CheckCircleIcon className="w-4 h-4" />
+                                        <span>Conectado a: {selectedNode.data.connectedDevice}</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+                                        <ExclamationTriangleIcon className="w-4 h-4" />
+                                        <span>No conectado a ningún dispositivo</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

@@ -30,11 +30,15 @@ import {
     type TopologyData,
 } from "@/lib/api/topology";
 import MonitoringNode, { MonitoringNodeData } from "@/components/topology/MonitoringNode";
+import ActionNode, { ActionNodeData } from "@/components/topology/ActionNode";
+import EmailNode, { EmailNodeData } from "@/components/topology/EmailNode";
 
 const nodeTypes = {
     device: DeviceNode,
     router: RouterNode,
     monitoring: MonitoringNode,
+    action: ActionNode,
+    email: EmailNode,
 };
 
 function TopologyEditor() {
@@ -49,7 +53,7 @@ function TopologyEditor() {
     const [autoDetectGateways, setAutoDetectGateways] = useState<boolean>(true);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
-    const [nodes, setNodes, onNodesChange] = useNodesState<Node<DeviceNodeData | RouterNodeData | MonitoringNodeData>>([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node<DeviceNodeData | RouterNodeData | MonitoringNodeData | ActionNodeData | EmailNodeData>>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
     const nodeIdCounter = useRef(0);
@@ -238,11 +242,12 @@ function TopologyEditor() {
         (params: Connection) => {
             setEdges((eds) => addEdge(params, eds));
 
-            // Verificar si conectamos un dispositivo a un nodo de monitoreo
+            // Verificar si conectamos un dispositivo a un nodo de monitoreo o accion
             const sourceNode = nodesRef.current.find(n => n.id === params.source);
             const targetNode = nodesRef.current.find(n => n.id === params.target);
 
             if (sourceNode && targetNode) {
+                // Monitoring Node Logic
                 let monitoringNodeId: string | null = null;
                 let deviceName: string | null = null;
 
@@ -265,6 +270,27 @@ function TopologyEditor() {
                         return n;
                     }));
                 }
+
+                // Action Node Logic
+                let actionNodeId: string | null = null;
+                let deviceNameForAction: string | null = null;
+
+                if (sourceNode.type === 'device' && targetNode.type === 'action') {
+                    actionNodeId = targetNode.id;
+                    deviceNameForAction = (sourceNode.data as DeviceNodeData).deviceName;
+                }
+
+                if (actionNodeId && deviceNameForAction) {
+                    setNodes(nds => nds.map(n => {
+                        if (n.id === actionNodeId) {
+                            return {
+                                ...n,
+                                data: { ...n.data, connectedDevice: deviceNameForAction }
+                            };
+                        }
+                        return n;
+                    }));
+                }
             }
         },
         [setEdges, setNodes]
@@ -281,6 +307,18 @@ function TopologyEditor() {
                     const monNodeId = sourceNode.type === 'monitoring' ? sourceNode.id : targetNode.id;
                     setNodes(nds => nds.map(n => {
                         if (n.id === monNodeId) {
+                            return {
+                                ...n,
+                                data: { ...n.data, connectedDevice: undefined }
+                            };
+                        }
+                        return n;
+                    }));
+                }
+
+                if (targetNode.type === 'action') {
+                    setNodes(nds => nds.map(n => {
+                        if (n.id === targetNode.id) {
                             return {
                                 ...n,
                                 data: { ...n.data, connectedDevice: undefined }
@@ -325,6 +363,35 @@ function TopologyEditor() {
         };
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes, jwt]);
+
+    const handleAddActionNode = useCallback(() => {
+        const id = `act-${++nodeIdCounter.current}`;
+        const newNode: Node<ActionNodeData> = {
+            id,
+            type: "action",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                metric: 'cpu',
+                operator: '>=',
+                threshold: 70,
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes]);
+
+    const handleAddEmailNode = useCallback(() => {
+        const id = `email-${++nodeIdCounter.current}`;
+        const newNode: Node<EmailNodeData> = {
+            id,
+            type: "email",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                subject: '',
+                body: '',
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes]);
 
     const handleUpdateNodeData = useCallback((id: string, data: any) => {
         setNodes(nds => nds.map(n => {
@@ -521,6 +588,8 @@ function TopologyEditor() {
                 onExport={handleExport}
                 onFitView={handleFitView}
                 onAddMonitoringNode={handleAddMonitoringNode}
+                onAddActionNode={handleAddActionNode}
+                onAddEmailNode={handleAddEmailNode}
                 selectedNode={selectedNode}
                 onUpdateNodeData={handleUpdateNodeData}
             />
