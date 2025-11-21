@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/domain"
 )
@@ -141,7 +142,8 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 			}
 
 			// Extract Action Data
-			metric, _ := n.Data["metric"].(string)
+			metricRaw, _ := n.Data["metric"].(string)
+			metric := strings.ToLower(metricRaw)
 			operator, _ := n.Data["operator"].(string)
 			threshold, _ := n.Data["threshold"].(float64)
 
