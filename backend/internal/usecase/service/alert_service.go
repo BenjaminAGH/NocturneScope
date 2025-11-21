@@ -84,8 +84,11 @@ func (s *AlertService) Evaluate(m domain.Metric) {
 
 			val := getMetricValue(m, rule.Metric)
 			if val == -1 {
-				continue // Metric not found or invalid
+				// fmt.Printf("[AlertService] DEBUG: Metric %s not found in data for device %s\n", rule.Metric, m.DeviceName)
+				continue
 			}
+
+			// fmt.Printf("[AlertService] DEBUG: Evaluating Rule %s: %s %s %f (Current: %f)\n", rule.ID, rule.Metric, rule.Operator, rule.Threshold, val)
 
 			if checkThreshold(val, rule.Operator, rule.Threshold) {
 				s.triggerAlert(rule, val)
@@ -138,6 +141,7 @@ func (s *AlertService) triggerAlert(rule domain.AlertRule, val float64) {
 
 	// Cooldown logic
 	if ok && time.Since(last) < cooldown {
+		fmt.Printf("[AlertService] Cooldown active for rule %s. Time remaining: %v\n", rule.ID, cooldown-time.Since(last))
 		s.lastSentMu.Unlock()
 		return
 	}
@@ -148,6 +152,20 @@ func (s *AlertService) triggerAlert(rule domain.AlertRule, val float64) {
 	fmt.Printf("[AlertService] Triggering alert for rule %s: %s %s %f (Value: %f)\n", rule.ID, rule.Metric, rule.Operator, rule.Threshold, val)
 
 	go s.sendEmail(rule, val)
+}
+
+func (s *AlertService) GetRecentAlerts(window time.Duration) []string {
+	s.lastSentMu.Lock()
+	defer s.lastSentMu.Unlock()
+
+	var recent []string
+	now := time.Now()
+	for id, t := range s.lastSent {
+		if now.Sub(t) < window {
+			recent = append(recent, id)
+		}
+	}
+	return recent
 }
 
 func (s *AlertService) sendEmail(rule domain.AlertRule, val float64) {

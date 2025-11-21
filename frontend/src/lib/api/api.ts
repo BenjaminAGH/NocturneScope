@@ -139,3 +139,12 @@ export async function getHistory(jwt: string, device: string, range: string) {
   });
   return handle(res) as Promise<any[]>;
 }
+
+export async function getRecentAlerts(jwt: string) {
+  const res = await fetch(`${BASE}/alerts/recent`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+    cache: "no-store",
+  });
+  const data = await handle(res);
+  return (data.recent_alerts || []) as string[];
+}

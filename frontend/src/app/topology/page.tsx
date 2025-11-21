@@ -20,7 +20,7 @@ import "@xyflow/react/dist/style.css";
 import DeviceNode, { DeviceNodeData } from "@/components/topology/DeviceNode";
 import RouterNode, { RouterNodeData } from "@/components/topology/RouterNode";
 import TopologyControls from "@/components/topology/TopologyControls";
-import { getDevices, getLastStats } from "@/lib/api/api";
+import { getDevices, getLastStats, getRecentAlerts } from "@/lib/api/api";
 import {
     saveTopology,
     getTopologies,
@@ -237,6 +237,71 @@ function TopologyEditor() {
         const interval = setInterval(updateDeviceStatus, 5000);
         return () => clearInterval(interval);
     }, [jwt, setNodes, setEdges, autoDetectGateways]);
+
+    // Polling de alertas recientes para confirmación visual
+    useEffect(() => {
+        if (!jwt) return;
+
+        const checkAlerts = async () => {
+            try {
+                const recentAlerts = await getRecentAlerts(jwt);
+
+                if (recentAlerts.length > 0) {
+                    setNodes((nds) => nds.map((n) => {
+                        // Si es un nodo de acción y está en la lista de alertas recientes
+                        if (n.type === 'action' && recentAlerts.includes(n.id)) {
+                            return { ...n, data: { ...n.data, isActive: true } };
+                        }
+
+                        // Si es un nodo de email conectado a una acción activa
+                        if (n.type === 'email') {
+                            // Buscar si hay un edge que conecte una acción activa a este email
+                            const isConnectedToActiveAction = edgesRef.current.some(e =>
+                                e.target === n.id && recentAlerts.includes(e.source)
+                            );
+                            if (isConnectedToActiveAction) {
+                                return { ...n, data: { ...n.data, isActive: true } };
+                            }
+                        }
+
+                        // Resetear estado si no está activo (opcional, o dejar que expire)
+                        // Por ahora reseteamos si no está en la lista, asumiendo que la lista
+                        // trae todo lo "reciente" (últimos 10s).
+                        if (n.type === 'action' || n.type === 'email') {
+                            // Para email es más complejo resetear sin saber si la acción sigue activa,
+                            // pero si la acción ya no está en recentAlerts, el email tampoco debería.
+                            if (n.type === 'action' && !recentAlerts.includes(n.id)) {
+                                return { ...n, data: { ...n.data, isActive: false } };
+                            }
+                            if (n.type === 'email') {
+                                const isConnectedToActiveAction = edgesRef.current.some(e =>
+                                    e.target === n.id && recentAlerts.includes(e.source)
+                                );
+                                if (!isConnectedToActiveAction) {
+                                    return { ...n, data: { ...n.data, isActive: false } };
+                                }
+                            }
+                        }
+
+                        return n;
+                    }));
+                } else {
+                    // Si no hay alertas recientes, desactivar todo
+                    setNodes((nds) => nds.map((n) => {
+                        if ((n.type === 'action' || n.type === 'email') && n.data.isActive) {
+                            return { ...n, data: { ...n.data, isActive: false } };
+                        }
+                        return n;
+                    }));
+                }
+            } catch (e) {
+                console.error("Error checking alerts:", e);
+            }
+        };
+
+        const interval = setInterval(checkAlerts, 3000); // Poll cada 3 segundos
+        return () => clearInterval(interval);
+    }, [jwt, setNodes]);
 
     const onConnect = useCallback(
         (params: Connection) => {

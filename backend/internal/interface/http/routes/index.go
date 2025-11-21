@@ -17,6 +17,7 @@ func Register(
 	metricService *service.MetricService,
 	apiTokenService *service.TokenService,
 	topologyService *service.TopologyService,
+	alertService *service.AlertService,
 ) {
 	api := app.Group("/api")
 
@@ -44,4 +45,7 @@ func Register(
 
 	// topologías del usuario
 	RegisterTopologyRoutes(protected, topologyService)
+
+	// alertas
+	RegisterAlertRoutes(protected, alertService)
 }

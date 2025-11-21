@@ -60,7 +60,7 @@ func main() {
 		})
 	})
 
-	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, topologyService)
+	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, topologyService, alertService)
 
 	log.Fatal(app.Listen(":3000"))
 }

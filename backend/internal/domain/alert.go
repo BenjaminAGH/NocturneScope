@@ -19,4 +19,5 @@ type AlertRule struct {
 type AlertService interface {
 	UpdateRules(topologyID uint, rules []AlertRule)
 	Evaluate(metric Metric)
+	GetRecentAlerts(window time.Duration) []string
 }
