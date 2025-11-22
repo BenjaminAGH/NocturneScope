@@ -678,30 +678,30 @@ function TopologyEditor() {
                 </ReactFlow>
 
                 {/* Header */}
-                <div className="absolute top-4 left-4 bg-card border border-border rounded-lg px-4 py-2 shadow-lg">
+                <div className="absolute top-4 left-4 bg-card border border-border rounded-lg px-4 py-2 shadow-lg z-10">
                     <h1 className="text-xl font-semibold">Topología de Red</h1>
                     {currentTopologyName && (
                         <p className="text-sm text-muted-foreground">{currentTopologyName}</p>
                     )}
                 </div>
-            </div>
 
-            <TopologyControls
-                devices={devices}
-                topologies={topologies.map((t) => ({ ID: t.ID, Name: t.Name }))}
-                selectedTopology={selectedTopology}
-                onAddDevice={handleAddDevice}
-                onSave={handleSave}
-                onLoad={handleLoad}
-                onNew={handleNew}
-                onExport={handleExport}
-                onFitView={handleFitView}
-                onAddMonitoringNode={handleAddMonitoringNode}
-                onAddActionNode={handleAddActionNode}
-                onAddEmailNode={handleAddEmailNode}
-                selectedNode={selectedNode}
-                onUpdateNodeData={handleUpdateNodeData}
-            />
+                <TopologyControls
+                    devices={devices}
+                    topologies={topologies.map((t) => ({ ID: t.ID, Name: t.Name }))}
+                    selectedTopology={selectedTopology}
+                    onAddDevice={handleAddDevice}
+                    onSave={handleSave}
+                    onLoad={handleLoad}
+                    onNew={handleNew}
+                    onExport={handleExport}
+                    onFitView={handleFitView}
+                    onAddMonitoringNode={handleAddMonitoringNode}
+                    onAddActionNode={handleAddActionNode}
+                    onAddEmailNode={handleAddEmailNode}
+                    selectedNode={selectedNode}
+                    onUpdateNodeData={handleUpdateNodeData}
+                />
+            </div>
         </div>
     );
 }
