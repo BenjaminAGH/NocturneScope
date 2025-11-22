@@ -658,7 +658,7 @@ function TopologyEditor() {
     }
 
     return (
-        <div className="fixed inset-0 z-0 flex flex-col pt-[75px] bg-background">
+        <div className="fixed inset-0 z-0 flex flex-col pt-[116px] bg-background">
             <div className="flex-1 relative w-full h-full">
                 <ReactFlow
                     nodes={nodes}
