@@ -520,6 +520,8 @@ function TopologyEditor() {
                 })),
             };
 
+            console.log("Saving topology data:", JSON.stringify(data, null, 2));
+
             try {
                 if (selectedTopology) {
                     // Actualizar existente
