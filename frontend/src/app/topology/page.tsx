@@ -356,6 +356,28 @@ function TopologyEditor() {
                         return n;
                     }));
                 }
+
+                // Email Node Logic (Action -> Email)
+                if (sourceNode.type === 'action' && targetNode.type === 'email') {
+                    // Find device connected to action
+                    // Note: edgesRef might not have the new edge yet, but we need the edge CONNECTED TO the action (sourceNode)
+                    const deviceEdge = edgesRef.current.find(e => e.target === sourceNode.id);
+                    if (deviceEdge) {
+                        const deviceNode = nodesRef.current.find(n => n.id === deviceEdge.source);
+                        if (deviceNode && deviceNode.type === 'device') {
+                            const deviceName = (deviceNode.data as DeviceNodeData).deviceName;
+                            setNodes(nds => nds.map(n => {
+                                if (n.id === targetNode.id) {
+                                    return {
+                                        ...n,
+                                        data: { ...n.data, connectedDevice: deviceName }
+                                    };
+                                }
+                                return n;
+                            }));
+                        }
+                    }
+                }
             }
         },
         [setEdges, setNodes]
@@ -468,7 +490,7 @@ function TopologyEditor() {
     }, [setNodes]);
 
     const handleSave = useCallback(
-        async (name: string) => {
+        async (name: string, silent: boolean = false) => {
             if (!jwt) return;
 
             const data: TopologyData = {
@@ -477,12 +499,17 @@ function TopologyEditor() {
                     type: n.type,
                     position: n.position,
                     data: {
+                        ...n.data,
+                        // Explicitly ensure these are saved if present
                         deviceName: (n.data as any).deviceName,
                         label: (n.data as any).label,
-                        metric: (n.data as any).metric, // Guardar métrica para nodos de monitoreo
-                        // No guardamos connectedDevice explícitamente porque se reconstruye por las edges,
-                        // PERO como el estado connectedDevice es interno del nodo, quizás deberíamos guardarlo
-                        // o reconstruirlo al cargar. Reconstruirlo es más seguro.
+                        metric: (n.data as any).metric,
+                        operator: (n.data as any).operator,
+                        threshold: (n.data as any).threshold,
+                        to: (n.data as any).to,
+                        subject: (n.data as any).subject,
+                        body: (n.data as any).body,
+                        cooldown: (n.data as any).cooldown,
                     },
                 })),
                 edges: edges.map((e) => ({
@@ -507,9 +534,15 @@ function TopologyEditor() {
                 // Recargar lista de topologías
                 const topos = await getTopologies(jwt);
                 setTopologies(topos);
+
+                if (!silent) {
+                    alert("Topología guardada correctamente");
+                } else {
+                    console.log("Auto-saved topology");
+                }
             } catch (e: any) {
                 console.error("Error guardando topología:", e);
-                alert("Error guardando topología: " + e.message);
+                if (!silent) alert("Error guardando topología: " + e.message);
             }
         },
         [jwt, nodes, edges, selectedTopology]
@@ -564,6 +597,17 @@ function TopologyEditor() {
         },
         [jwt, setNodes, setEdges, fitView]
     );
+
+    // Auto-save effect
+    useEffect(() => {
+        if (!selectedTopology || !currentTopologyName) return;
+
+        const timer = setTimeout(() => {
+            handleSave(currentTopologyName, true);
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, [nodes, edges, selectedTopology, currentTopologyName, handleSave]);
 
     const handleNew = useCallback(() => {
         setNodes([]);

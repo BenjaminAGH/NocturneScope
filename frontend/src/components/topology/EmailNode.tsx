@@ -10,6 +10,7 @@ export interface EmailNodeData extends Record<string, unknown> {
     to?: string;
     cooldown?: string; // e.g., "5m", "1h"
     isActive?: boolean;
+    connectedDevice?: string;
 }
 
 function EmailNode({ id, data, selected }: NodeProps) {
@@ -38,11 +39,18 @@ function EmailNode({ id, data, selected }: NodeProps) {
             </div>
 
             {/* Status Indicator */}
-            {to && (
-                <div className="px-3 py-1 text-xs text-muted-foreground border-t border-border/50 truncate">
-                    To: {to}
-                </div>
-            )}
+            <div className="px-3 py-2 space-y-1 border-t border-border/50">
+                {typedData.connectedDevice && (
+                    <div className="text-xs text-primary font-medium truncate">
+                        {typedData.connectedDevice}
+                    </div>
+                )}
+                {to && (
+                    <div className="text-xs text-muted-foreground truncate">
+                        To: {to}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
