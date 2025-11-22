@@ -69,3 +69,16 @@ func (r *TopologyGormRepository) Delete(id uint, userID uint) error {
 	return r.db.Where("id = ? AND user_id = ?", id, userID).
 		Delete(&persistence.TopologyModel{}).Error
 }
+
+func (r *TopologyGormRepository) FindAll() ([]domain.Topology, error) {
+	var models []persistence.TopologyModel
+	if err := r.db.Find(&models).Error; err != nil {
+		return nil, err
+	}
+
+	var topologies []domain.Topology
+	for _, m := range models {
+		topologies = append(topologies, m.ToDomain())
+	}
+	return topologies, nil
+}

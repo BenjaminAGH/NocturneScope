@@ -179,6 +179,23 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 	s.alertService.UpdateRules(t.ID, rules)
 }
 
+func (s *TopologyService) LoadRules() error {
+	if s.alertService == nil {
+		return nil
+	}
+
+	topologies, err := s.repo.FindAll()
+	if err != nil {
+		return err
+	}
+
+	for _, t := range topologies {
+		s.processRules(&t)
+	}
+
+	return nil
+}
+
 func findSourceNodeID(edges []Edge, targetID string) string {
 	for _, e := range edges {
 		if e.Target == targetID {

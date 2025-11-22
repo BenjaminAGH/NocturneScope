@@ -17,4 +17,5 @@ type TopologyRepository interface {
 	FindByID(id uint, userID uint) (*Topology, error)
 	Update(topology *Topology) error
 	Delete(id uint, userID uint) error
+	FindAll() ([]Topology, error)
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -59,6 +60,11 @@ func main() {
 			"service": "nocturnescope-api",
 		})
 	})
+
+	// Load alert rules from existing topologies
+	if err := topologyService.LoadRules(); err != nil {
+		fmt.Printf("Error loading alert rules: %v\n", err)
+	}
 
 	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, topologyService, alertService)
 

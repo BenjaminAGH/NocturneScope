@@ -88,7 +88,7 @@ func (s *AlertService) Evaluate(m domain.Metric) {
 				continue
 			}
 
-			// fmt.Printf("[AlertService] DEBUG: Evaluating Rule %s: %s %s %f (Current: %f)\n", rule.ID, rule.Metric, rule.Operator, rule.Threshold, val)
+			fmt.Printf("[AlertService] DEBUG: Evaluating Rule %s: %s %s %f (Current: %f)\n", rule.ID, rule.Metric, rule.Operator, rule.Threshold, val)
 
 			if checkThreshold(val, rule.Operator, rule.Threshold) {
 				s.triggerAlert(rule, val)
