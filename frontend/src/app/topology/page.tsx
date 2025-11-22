@@ -673,10 +673,6 @@ function TopologyEditor() {
         URL.revokeObjectURL(url);
     }, [nodes, edges, currentTopologyName]);
 
-    const handleFitView = useCallback(() => {
-        fitView({ padding: 0.2, duration: 300 });
-    }, [fitView]);
-
     const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
     if (!jwt) {
@@ -724,7 +720,6 @@ function TopologyEditor() {
                     onLoad={handleLoad}
                     onNew={handleNew}
                     onExport={handleExport}
-                    onFitView={handleFitView}
                     onAddMonitoringNode={handleAddMonitoringNode}
                     onAddActionNode={handleAddActionNode}
                     onAddEmailNode={handleAddEmailNode}
