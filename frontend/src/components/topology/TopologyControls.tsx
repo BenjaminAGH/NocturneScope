@@ -12,7 +12,6 @@ interface TopologyControlsProps {
     onLoad: (id: number) => void;
     onNew: () => void;
     onExport: () => void;
-    onFitView: () => void;
     onAddMonitoringNode: () => void;
     onAddActionNode: () => void;
     onAddEmailNode: () => void;
@@ -60,7 +59,6 @@ export default function TopologyControls({
     onLoad,
     onNew,
     onExport,
-    onFitView,
     onAddMonitoringNode,
     onAddActionNode,
     onAddEmailNode,
@@ -404,13 +402,6 @@ export default function TopologyControls({
                         className="w-full px-4 py-2 bg-background/50 hover:bg-accent border border-border rounded text-sm font-medium transition-colors"
                     >
                         Exportar JSON
-                    </button>
-
-                    <button
-                        onClick={onFitView}
-                        className="w-full px-4 py-2 bg-background/50 hover:bg-accent border border-border rounded text-sm font-medium transition-colors"
-                    >
-                        Ajustar Vista
                     </button>
                 </div>
 

@@ -70,6 +70,9 @@ export function getAccessToken(): string | null {
 export function clearTokens() {
   localStorage.removeItem("jwt");
   localStorage.removeItem("refresh");
+  if (typeof document !== "undefined") {
+    document.cookie = "jwt=; path=/; max-age=0";
+  }
 }
 
 export async function getUserProfile(jwt: string) {

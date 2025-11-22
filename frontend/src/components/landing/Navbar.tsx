@@ -2,9 +2,16 @@
 import Link from "next/link";
 import ThemeChanger from "./DarkSwitch";
 import Image from "next/image";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Menu, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import {
+  UserCircleIcon,
+  ArrowRightOnRectangleIcon,
+  KeyIcon,
+  Squares2X2Icon,
+  ShareIcon
+} from "@heroicons/react/24/outline";
 
 export const Navbar = () => {
   const router = useRouter();
@@ -16,20 +23,17 @@ export const Navbar = () => {
   const isPublicRoute = publicRoutes.includes(pathname);
 
   useEffect(() => {
-    // Check for JWT token to determine login status
     const token = localStorage.getItem("jwt");
     setIsLoggedIn(!!token);
-  }, [pathname]); // Re-check when route changes
+  }, [pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("jwt");
-    // Limpiar cookie de JWT
+    localStorage.removeItem("refresh");
     document.cookie = "jwt=; path=/; max-age=0";
     setIsLoggedIn(false);
     router.push("/auth/login");
   };
-
-  const navigation = [""];
 
   const isTopology = pathname === '/topology';
 
@@ -38,54 +42,74 @@ export const Navbar = () => {
       className={`${isTopology ? 'fixed top-0 left-0 right-0' : 'sticky top-0'} z-50 w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60`}
       style={{ height: 'var(--navbar-height)' }}
     >
-      <nav className="container sticky top-0 mx-auto flex flex-wrap items-center justify-between h-full px-4 lg:justify-between xl:px-1">
+      <nav className="container sticky top-0 mx-auto flex items-center justify-between h-full px-4 xl:px-1">
+        {/* Logo */}
         <Link href="/">
-          <span className="flex items-center space-x-2 ">
-            <>
-              <Image
-                src="/nocturneLight.svg"
-                alt="Logo claro"
-                width={60}
-                height={60}
-                className="block dark:hidden"
-                priority
-              />
-              <Image
-                src="/nocturneDark.svg"
-                alt="Logo oscuro"
-                width={60}
-                height={60}
-                className="hidden dark:block"
-                priority
-              />
-            </>
+          <span className="flex items-center space-x-2">
+            <Image
+              src="/nocturneLight.svg"
+              alt="Logo claro"
+              width={50}
+              height={50}
+              className="block dark:hidden"
+              priority
+            />
+            <Image
+              src="/nocturneDark.svg"
+              alt="Logo oscuro"
+              width={50}
+              height={50}
+              className="hidden dark:block"
+              priority
+            />
+            <span className="text-lg font-bold hidden sm:inline-block">NocturneScope</span>
           </span>
         </Link>
 
-        <div className="gap-3 nav__item mr-2 lg:flex ml-auto lg:ml-0 lg:order-2 items-center">
+        {/* Center Navigation (Dashboard / Topology) - Only if logged in */}
+        {!isPublicRoute && isLoggedIn && (
+          <div className="hidden md:flex items-center bg-muted/50 rounded-full p-1 border border-border/50 absolute left-1/2 transform -translate-x-1/2">
+            <Link
+              href="/dashboard"
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${pathname === '/dashboard'
+                  ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+            >
+              <Squares2X2Icon className="w-4 h-4" />
+              Dashboard
+            </Link>
+            <Link
+              href="/topology"
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${pathname === '/topology'
+                  ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+            >
+              <ShareIcon className="w-4 h-4" />
+              Topología
+            </Link>
+          </div>
+        )}
+
+        {/* Right Side: Theme & Profile */}
+        <div className="flex items-center gap-4">
           <ThemeChanger />
 
           {isPublicRoute ? (
-            // En rutas públicas, mostrar "Iniciar Sesión" o "Ir al Dashboard"
-            <div className="hidden mr-3 lg:flex nav__item">
-              <Link
-                href={isLoggedIn ? "/dashboard" : "/auth/login"}
-                className="px-4 py-1.5 text-sm text-background font-bold bg-secondary dark:bg-primary rounded-md md:ml-5"
-              >
-                {isLoggedIn ? "Ir al Dashboard" : "Iniciar Sesión"}
-              </Link>
-            </div>
+            <Link
+              href={isLoggedIn ? "/dashboard" : "/auth/login"}
+              className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors"
+            >
+              {isLoggedIn ? "Ir al Dashboard" : "Iniciar Sesión"}
+            </Link>
           ) : (
-            // En rutas protegidas, mostrar menú de usuario
-            <Menu as="div" className="relative ml-3">
-              <div>
-                <Menu.Button className="text-gray-500 dark:text-gray-300 rounded-full outline-none focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-800 p-1 transition-colors">
-                  <span className="sr-only">Open user menu</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                </Menu.Button>
-              </div>
+            <Menu as="div" className="relative">
+              <Menu.Button className="flex items-center gap-2 p-1 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <UserCircleIcon className="w-6 h-6" />
+                </div>
+              </Menu.Button>
               <Transition
                 as={Fragment}
                 enter="transition ease-out duration-100"
@@ -95,47 +119,34 @@ export const Navbar = () => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-card py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <Link
-                        href="/dashboard"
-                        className={`${active ? "bg-muted" : ""
-                          } block px-4 py-2 text-sm text-foreground w-full text-left`}
-                      >
-                        Dashboard
-                      </Link>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <Link
-                        href="/topology"
-                        className={`${active ? "bg-muted" : ""
-                          } block px-4 py-2 text-sm text-foreground w-full text-left`}
-                      >
-                        Topología
-                      </Link>
-                    )}
-                  </Menu.Item>
+                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-card py-2 shadow-xl ring-1 ring-border focus:outline-none">
+                  <div className="px-4 py-2 border-b border-border/50 mb-1">
+                    <p className="text-xs font-medium text-muted-foreground">Mi Cuenta</p>
+                  </div>
+
                   <Menu.Item>
                     {({ active }) => (
                       <Link
                         href="/tokens"
                         className={`${active ? "bg-muted" : ""
-                          } block px-4 py-2 text-sm text-foreground w-full text-left`}
+                          } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
                       >
+                        <KeyIcon className="w-4 h-4" />
                         Tokens API
                       </Link>
                     )}
                   </Menu.Item>
+
+                  <div className="my-1 border-t border-border/50" />
+
                   <Menu.Item>
                     {({ active }) => (
                       <button
                         onClick={handleLogout}
-                        className={`${active ? "bg-muted" : ""
-                          } block px-4 py-2 text-sm text-foreground w-full text-left`}
+                        className={`${active ? "bg-destructive/10 text-destructive" : "text-foreground"
+                          } flex w-full items-center gap-2 px-4 py-2 text-sm mx-1 rounded-lg transition-colors text-left`}
                       >
+                        <ArrowRightOnRectangleIcon className="w-4 h-4" />
                         Cerrar Sesión
                       </button>
                     )}
@@ -144,81 +155,6 @@ export const Navbar = () => {
               </Transition>
             </Menu>
           )}
-        </div>
-
-        <Disclosure>
-          {({ open }) => (
-            <>
-              <Disclosure.Button
-                aria-label="Toggle Menu"
-                className="px-2 py-1 text-gray-500 rounded-md lg:hidden hover:text-indigo-500 focus:text-indigo-500 focus:bg-indigo-100 focus:outline-none dark:text-gray-300 dark:focus:bg-trueGray-700"
-              >
-                <svg
-                  className="w-6 h-6 fill-foreground"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                >
-                  {open ? (
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 1 1 1.414 1.414l-4.828 4.829 4.828 4.828z"
-                    />
-                  ) : (
-                    <path
-                      fillRule="evenodd"
-                      d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"
-                    />
-                  )}
-                </svg>
-              </Disclosure.Button>
-
-              <Disclosure.Panel className="flex flex-wrap w-full my-5 lg:hidden">
-                <div className="w-full">
-                  {navigation.map((item, index) => (
-                    <Link
-                      key={index}
-                      href="/"
-                      className="w-full px-4 py-2 -ml-4 text-gray-500 rounded-md dark:text-gray-300 hover:text-indigo-500 focus:text-indigo-500 focus:bg-indigo-100 dark:focus:bg-gray-800 focus:outline-none"
-                    >
-                      {item}
-                    </Link>
-                  ))}
-                  {!isLoggedIn && (
-                    <Link
-                      href="/auth/login"
-                      className="w-full px-6 py-2 mt-3 text-center text-white bg-indigo-600 rounded-md lg:ml-5 block"
-                    >
-                      Iniciar Sesión
-                    </Link>
-                  )}
-                  {isLoggedIn && (
-                    <button
-                      onClick={handleLogout}
-                      className="w-full px-6 py-2 mt-3 text-center text-white bg-red-600 rounded-md lg:ml-5 block"
-                    >
-                      Cerrar Sesión
-                    </button>
-                  )}
-                </div>
-              </Disclosure.Panel>
-            </>
-          )}
-        </Disclosure>
-
-        <div className="hidden text-center lg:flex lg:items-center">
-          <ul className="items-center justify-end flex-1 pt-6 list-none lg:pt-0 lg:flex">
-            {navigation.map((menu, index) => (
-              <li className="mr-3 nav__item" key={index}>
-                <Link
-                  href="/"
-                  className="inline-block px-3 py-1 text-base font-normal text-gray-800 no-underline rounded-md dark:text-gray-200 hover:text-indigo-500 focus:text-indigo-500 focus:bg-indigo-100 focus:outline-none dark:focus:bg-gray-800"
-                >
-                  {menu}
-                </Link>
-              </li>
-            ))}
-          </ul>
         </div>
       </nav>
     </div>
