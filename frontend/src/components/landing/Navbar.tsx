@@ -31,25 +31,27 @@ export const Navbar = () => {
 
   const navigation = [""];
 
+  const isTopology = pathname === '/topology';
+
   return (
-    <div className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <nav className="container relative mx-auto flex flex-wrap items-center justify-between p-4 lg:justify-between xl:px-1">
+    <div className={`${isTopology ? 'fixed top-0 left-0 right-0' : 'relative'} z-50 w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60`}>
+      <nav className="container relative mx-auto flex flex-wrap items-center justify-between py-2 px-4 lg:justify-between xl:px-1">
         <Link href="/">
           <span className="flex items-center space-x-2 ">
             <>
               <Image
                 src="/nocturneLight.svg"
                 alt="Logo claro"
-                width={150}
-                height={150}
+                width={100}
+                height={100}
                 className="block dark:hidden"
                 priority
               />
               <Image
                 src="/nocturneDark.svg"
                 alt="Logo oscuro"
-                width={150}
-                height={150}
+                width={100}
+                height={100}
                 className="hidden dark:block"
                 priority
               />
@@ -65,7 +67,7 @@ export const Navbar = () => {
             <div className="hidden mr-3 lg:flex nav__item">
               <Link
                 href={isLoggedIn ? "/dashboard" : "/auth/login"}
-                className="px-6 py-2 text-background font-bold bg-secondary dark:bg-primary rounded-md md:ml-5"
+                className="px-4 py-1.5 text-sm text-background font-bold bg-secondary dark:bg-primary rounded-md md:ml-5"
               >
                 {isLoggedIn ? "Ir al Dashboard" : "Iniciar Sesión"}
               </Link>
@@ -207,7 +209,7 @@ export const Navbar = () => {
               <li className="mr-3 nav__item" key={index}>
                 <Link
                   href="/"
-                  className="inline-block px-4 py-2 text-lg font-normal text-gray-800 no-underline rounded-md dark:text-gray-200 hover:text-indigo-500 focus:text-indigo-500 focus:bg-indigo-100 focus:outline-none dark:focus:bg-gray-800"
+                  className="inline-block px-3 py-1 text-base font-normal text-gray-800 no-underline rounded-md dark:text-gray-200 hover:text-indigo-500 focus:text-indigo-500 focus:bg-indigo-100 focus:outline-none dark:focus:bg-gray-800"
                 >
                   {menu}
                 </Link>

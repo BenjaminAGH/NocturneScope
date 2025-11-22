@@ -658,8 +658,8 @@ function TopologyEditor() {
     }
 
     return (
-        <div className="flex h-screen">
-            <div className="flex-1 relative">
+        <div className="fixed inset-0 z-0 flex flex-col pt-[120px] bg-background">
+            <div className="flex-1 relative w-full h-full">
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
