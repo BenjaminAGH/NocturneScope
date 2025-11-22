@@ -6,7 +6,7 @@ type Topology struct {
 	ID        uint
 	UserID    uint
 	Name      string
-	Data      string // JSON serializado de la topología
+	Data      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

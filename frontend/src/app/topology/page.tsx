@@ -106,130 +106,160 @@ function TopologyEditor() {
         if (!jwt) return;
 
         const updateDeviceStatus = async () => {
-            const currentNodes = nodesRef.current;
-            if (currentNodes.length === 0) return;
+            // Usamos nodesRef para saber QUÉ dispositivos consultar
+            const currentNodesSnapshot = nodesRef.current;
+            if (currentNodesSnapshot.length === 0) return;
 
-            const gatewaysFound = new Map<string, { ip: string; devices: string[] }>();
+            // 1. Fase de Recolección de Datos (Async)
+            const deviceUpdates = new Map<string, { status: 'online' | 'offline', ip?: string, gateway?: string }>();
 
-            const updatedNodes = await Promise.all(
-                currentNodes.map(async (node) => {
-                    // Actualizar JWT en nodos de monitoreo si es necesario
-                    if (node.type === "monitoring") {
-                        if ((node.data as MonitoringNodeData).jwt !== jwt) {
-                            return {
-                                ...node,
-                                data: { ...node.data, jwt }
-                            };
-                        }
-                        return node;
-                    }
-
-                    if (node.type !== "device") return node;
-
+            await Promise.all(
+                currentNodesSnapshot.map(async (node) => {
+                    if (node.type !== "device") return;
                     const deviceData = node.data as DeviceNodeData;
                     try {
                         const stats = await getLastStats(jwt, deviceData.deviceName);
-                        // Recolectar info del gateway si existe
-                        if (stats.gateway && typeof stats.gateway === 'string') {
-                            const gwIP = stats.gateway;
-                            if (!gatewaysFound.has(gwIP)) {
-                                gatewaysFound.set(gwIP, { ip: gwIP, devices: [] });
-                            }
-                            gatewaysFound.get(gwIP)?.devices.push(node.id);
-                        }
-
-                        return {
-                            ...node,
-                            data: {
-                                ...deviceData,
-                                status: "online" as const,
-                                ip: stats.ip ? String(stats.ip) : deviceData.ip,
-                            } as DeviceNodeData,
-                        };
+                        deviceUpdates.set(node.id, {
+                            status: "online",
+                            ip: stats.ip ? String(stats.ip) : undefined,
+                            gateway: (stats.gateway && typeof stats.gateway === 'string') ? stats.gateway : undefined
+                        });
                     } catch {
-                        return {
-                            ...node,
-                            data: {
-                                ...deviceData,
-                                status: "offline" as const,
-                            } as DeviceNodeData,
-                        };
+                        deviceUpdates.set(node.id, { status: "offline" });
                     }
                 })
             );
 
-            // Lógica de detección automática de gateways
-            if (autoDetectGateways && gatewaysFound.size > 0) {
-                const newNodes = [...updatedNodes];
-                const newEdges = [...edgesRef.current];
+            // 2. Fase de Actualización (Síncrona y Atómica)
+            setNodes((prevNodes) => {
+                const gatewaysFound = new Map<string, { ip: string; devices: string[] }>();
                 let nodesChanged = false;
-                let edgesChanged = false;
 
-                gatewaysFound.forEach((gwInfo, gwIP) => {
-                    // 1. Buscar si ya existe el nodo router
-                    let routerNodeId = newNodes.find(
-                        n => n.type === 'router' && (n.data as RouterNodeData).gatewayIP === gwIP
-                    )?.id;
-
-                    // 2. Si no existe, crearlo
-                    if (!routerNodeId) {
-                        routerNodeId = `router-${gwIP.replace(/\./g, '-')}`;
-                        // Posicionar el router cerca del primer dispositivo (o en un lugar aleatorio si no)
-                        const firstDevice = newNodes.find(n => n.id === gwInfo.devices[0]);
-                        const position = firstDevice ? { x: firstDevice.position.x, y: firstDevice.position.y - 150 } : { x: Math.random() * 400, y: Math.random() * 400 };
-
-                        newNodes.push({
-                            id: routerNodeId,
-                            type: 'router',
-                            position,
-                            data: {
-                                gatewayIP: gwIP,
-                                label: `Router ${gwIP}`,
-                                deviceCount: gwInfo.devices.length
-                            } as RouterNodeData
-                        });
-                        nodesChanged = true;
-                    } else {
-                        // Actualizar contador de dispositivos
-                        const routerNodeIndex = newNodes.findIndex(n => n.id === routerNodeId);
-                        if (routerNodeIndex !== -1) {
-                            const routerNode = newNodes[routerNodeIndex];
-                            const currentData = routerNode.data as RouterNodeData;
-                            if (currentData.deviceCount !== gwInfo.devices.length) {
-                                newNodes[routerNodeIndex] = {
-                                    ...routerNode,
-                                    data: {
-                                        ...currentData,
-                                        deviceCount: gwInfo.devices.length
-                                    } as RouterNodeData
-                                };
-                                nodesChanged = true;
-                            }
+                // A. Actualizar nodos existentes
+                const nextNodes = prevNodes.map(node => {
+                    // Actualizar JWT en monitoreo
+                    if (node.type === "monitoring") {
+                        if ((node.data as MonitoringNodeData).jwt !== jwt) {
+                            return { ...node, data: { ...node.data, jwt } };
                         }
+                        return node;
                     }
 
-                    // 3. Crear conexiones (edges)
-                    gwInfo.devices.forEach(deviceId => {
-                        const edgeId = `edge-${routerNodeId}-${deviceId}`;
-                        if (!newEdges.find(e => e.id === edgeId)) {
-                            newEdges.push({
-                                id: edgeId,
-                                source: routerNodeId!,
-                                target: deviceId,
-                                type: 'default',
-                                animated: true,
-                            });
-                            edgesChanged = true;
+                    // Actualizar Dispositivos
+                    if (node.type === "device" && deviceUpdates.has(node.id)) {
+                        const update = deviceUpdates.get(node.id)!;
+                        const currentData = node.data as DeviceNodeData;
+
+                        // Recolectar info de gateway
+                        if (update.gateway) {
+                            if (!gatewaysFound.has(update.gateway)) {
+                                gatewaysFound.set(update.gateway, { ip: update.gateway, devices: [] });
+                            }
+                            gatewaysFound.get(update.gateway)?.devices.push(node.id);
                         }
-                    });
+
+                        // Verificar cambios
+                        if (currentData.status !== update.status || (update.ip && currentData.ip !== update.ip)) {
+                            return {
+                                ...node,
+                                data: {
+                                    ...currentData,
+                                    status: update.status,
+                                    ip: update.ip || currentData.ip,
+                                }
+                            };
+                        }
+                    }
+                    return node;
                 });
 
-                if (nodesChanged) setNodes(newNodes);
-                else setNodes(updatedNodes); // Solo actualizar estado si no hubo cambios estructurales
+                // B. Lógica de Gateways (Router Nodes)
+                if (autoDetectGateways && gatewaysFound.size > 0) {
+                    const finalNodes = [...nextNodes];
 
-                if (edgesChanged) setEdges(newEdges);
-            } else {
-                setNodes(updatedNodes);
+                    gatewaysFound.forEach((gwInfo, gwIP) => {
+                        let routerNodeId = finalNodes.find(
+                            n => n.type === 'router' && (n.data as RouterNodeData).gatewayIP === gwIP
+                        )?.id;
+
+                        if (!routerNodeId) {
+                            routerNodeId = `router-${gwIP.replace(/\./g, '-')}`;
+                            const firstDevice = finalNodes.find(n => n.id === gwInfo.devices[0]);
+                            const position = firstDevice ? { x: firstDevice.position.x, y: firstDevice.position.y - 150 } : { x: Math.random() * 400, y: Math.random() * 400 };
+
+                            finalNodes.push({
+                                id: routerNodeId,
+                                type: 'router',
+                                position,
+                                data: {
+                                    gatewayIP: gwIP,
+                                    label: `Router ${gwIP}`,
+                                    deviceCount: gwInfo.devices.length
+                                } as RouterNodeData
+                            });
+                            nodesChanged = true;
+                        } else {
+                            const idx = finalNodes.findIndex(n => n.id === routerNodeId);
+                            if (idx !== -1) {
+                                const rNode = finalNodes[idx];
+                                const rData = rNode.data as RouterNodeData;
+                                if (rData.deviceCount !== gwInfo.devices.length) {
+                                    finalNodes[idx] = {
+                                        ...rNode,
+                                        data: { ...rData, deviceCount: gwInfo.devices.length }
+                                    };
+                                    nodesChanged = true;
+                                }
+                            }
+                        }
+                    });
+
+                    if (nodesChanged) return finalNodes;
+                }
+
+                return nextNodes;
+            });
+
+            // 3. Actualizar Edges para Gateways
+            if (autoDetectGateways) {
+                const gatewaysFound = new Map<string, { ip: string; devices: string[] }>();
+                currentNodesSnapshot.forEach(node => {
+                    if (node.type === 'device' && deviceUpdates.has(node.id)) {
+                        const update = deviceUpdates.get(node.id)!;
+                        if (update.gateway) {
+                            if (!gatewaysFound.has(update.gateway)) {
+                                gatewaysFound.set(update.gateway, { ip: update.gateway, devices: [] });
+                            }
+                            gatewaysFound.get(update.gateway)?.devices.push(node.id);
+                        }
+                    }
+                });
+
+                if (gatewaysFound.size > 0) {
+                    setEdges(prevEdges => {
+                        const newEdges = [...prevEdges];
+                        let edgesChanged = false;
+
+                        gatewaysFound.forEach((gwInfo, gwIP) => {
+                            const routerNodeId = `router-${gwIP.replace(/\./g, '-')}`;
+                            gwInfo.devices.forEach(deviceId => {
+                                const edgeId = `edge-${routerNodeId}-${deviceId}`;
+                                if (!newEdges.find(e => e.id === edgeId)) {
+                                    newEdges.push({
+                                        id: edgeId,
+                                        source: routerNodeId,
+                                        target: deviceId,
+                                        type: 'default',
+                                        animated: true,
+                                    });
+                                    edgesChanged = true;
+                                }
+                            });
+                        });
+
+                        return edgesChanged ? newEdges : prevEdges;
+                    });
+                }
             }
         };
 
