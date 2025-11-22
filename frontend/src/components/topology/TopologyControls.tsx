@@ -118,21 +118,27 @@ export default function TopologyControls({
                     <div className="grid grid-cols-2 gap-2">
                         <button
                             onClick={onAddMonitoringNode}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2"
+                            draggable
+                            onDragStart={(event) => event.dataTransfer.setData('application/reactflow', 'monitoring')}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                         >
                             <ChartBarIcon className="w-6 h-6" />
                             <span className="text-xs">Gráfico</span>
                         </button>
                         <button
                             onClick={onAddActionNode}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2"
+                            draggable
+                            onDragStart={(event) => event.dataTransfer.setData('application/reactflow', 'action')}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                         >
                             <BoltIcon className="w-6 h-6" />
                             <span className="text-xs">Acción</span>
                         </button>
                         <button
                             onClick={onAddEmailNode}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2"
+                            draggable
+                            onDragStart={(event) => event.dataTransfer.setData('application/reactflow', 'email')}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                         >
                             <EnvelopeIcon className="w-6 h-6" />
                             <span className="text-xs">Email</span>

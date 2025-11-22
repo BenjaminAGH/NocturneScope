@@ -43,7 +43,7 @@ const nodeTypes = {
 
 function TopologyEditor() {
     const router = useRouter();
-    const { fitView } = useReactFlow();
+    const { fitView, screenToFlowPosition } = useReactFlow();
 
     const [jwt, setJwt] = useState<string | null>(null);
     const [devices, setDevices] = useState<string[]>([]);
@@ -510,6 +510,69 @@ function TopologyEditor() {
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes]);
 
+    const onDragOver = useCallback((event: React.DragEvent) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    }, []);
+
+    const onDrop = useCallback(
+        (event: React.DragEvent) => {
+            event.preventDefault();
+
+            const type = event.dataTransfer.getData('application/reactflow');
+
+            if (typeof type === 'undefined' || !type) {
+                return;
+            }
+
+            const position = screenToFlowPosition({
+                x: event.clientX,
+                y: event.clientY,
+            });
+
+            if (type === 'monitoring') {
+                const id = `mon-${++nodeIdCounter.current}`;
+                const newNode: Node<MonitoringNodeData> = {
+                    id,
+                    type: "monitoring",
+                    position,
+                    data: {
+                        jwt: jwt || undefined,
+                        metric: 'cpu',
+                        label: 'Monitoring',
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'action') {
+                const id = `act-${++nodeIdCounter.current}`;
+                const newNode: Node<ActionNodeData> = {
+                    id,
+                    type: "action",
+                    position,
+                    data: {
+                        metric: 'cpu',
+                        operator: '>=',
+                        threshold: 70,
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'email') {
+                const id = `email-${++nodeIdCounter.current}`;
+                const newNode: Node<EmailNodeData> = {
+                    id,
+                    type: "email",
+                    position,
+                    data: {
+                        subject: '',
+                        body: '',
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            }
+        },
+        [screenToFlowPosition, setNodes, jwt],
+    );
+
     const handleUpdateNodeData = useCallback((id: string, data: any) => {
         setNodes(nds => nds.map(n => {
             if (n.id === id) {
@@ -698,6 +761,8 @@ function TopologyEditor() {
                     nodeTypes={nodeTypes}
                     fitView
                     className="bg-background"
+                    onDragOver={onDragOver}
+                    onDrop={onDrop}
                 >
                     <Controls />
                     <Background />
