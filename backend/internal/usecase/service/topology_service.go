@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/domain"
@@ -115,15 +116,22 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 		nodeMap[n.ID] = n
 	}
 
+	fmt.Printf("[TopologyService] Processing topology %d. Nodes: %d, Edges: %d\n", t.ID, len(flow.Nodes), len(flow.Edges))
+
 	// Find Action Nodes
 	var rules []domain.AlertRule
 	for _, n := range flow.Nodes {
 		if n.Type == "action" {
+			fmt.Printf("[TopologyService] Found Action Node: %s\n", n.ID)
+
 			// Find connected Device (input) and Email (output)
 			deviceID := findSourceNodeID(flow.Edges, n.ID)
 			emailID := findTargetNodeID(flow.Edges, n.ID)
 
+			fmt.Printf("[TopologyService] Action %s connections - DeviceID: %s, EmailID: %s\n", n.ID, deviceID, emailID)
+
 			if deviceID == "" || emailID == "" {
+				fmt.Println("[TopologyService] Skipping action: missing input or output connection")
 				continue
 			}
 
