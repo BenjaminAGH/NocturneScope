@@ -1,11 +1,17 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
 import { Container } from "@/components/landing/Container";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
   const navigation = ["", "", "", "", ""];
   const legal = ["", "", ""];
+
+  if (pathname === '/topology') return null;
+
   return (
     <div className="relative border-t-2 border-border-foreground">
       <Container>
