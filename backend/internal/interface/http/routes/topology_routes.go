@@ -12,6 +12,7 @@ func RegisterTopologyRoutes(r fiber.Router, svc *service.TopologyService) {
 
 	g.Post("/", h.Create)
 	g.Get("/", h.List)
+	g.Get("/debug/logs", h.GetDebugLog)
 	g.Get("/:id", h.Get)
 	g.Put("/:id", h.Update)
 	g.Delete("/:id", h.Delete)

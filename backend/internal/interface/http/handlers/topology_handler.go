@@ -155,3 +155,10 @@ func (h *TopologyHandler) Delete(c *fiber.Ctx) error {
 
 	return c.SendStatus(204)
 }
+
+func (h *TopologyHandler) GetDebugLog(c *fiber.Ctx) error {
+	logs := h.svc.GetDebugLog()
+	return c.JSON(fiber.Map{
+		"logs": logs,
+	})
+}

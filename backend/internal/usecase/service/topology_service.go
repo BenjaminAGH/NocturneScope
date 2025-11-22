@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/domain"
 )
@@ -12,6 +13,7 @@ import (
 type TopologyService struct {
 	repo         domain.TopologyRepository
 	alertService domain.AlertService
+	debugLog     []string
 }
 
 func NewTopologyService(repo domain.TopologyRepository, alertService domain.AlertService) *TopologyService {
@@ -116,22 +118,22 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 		nodeMap[n.ID] = n
 	}
 
-	fmt.Printf("[TopologyService] Processing topology %d. Nodes: %d, Edges: %d\n", t.ID, len(flow.Nodes), len(flow.Edges))
+	s.log(fmt.Sprintf("Processing topology %d. Nodes: %d, Edges: %d", t.ID, len(flow.Nodes), len(flow.Edges)))
 
 	// Find Action Nodes
 	var rules []domain.AlertRule
 	for _, n := range flow.Nodes {
 		if n.Type == "action" {
-			fmt.Printf("[TopologyService] Found Action Node: %s\n", n.ID)
+			s.log(fmt.Sprintf("Found Action Node: %s", n.ID))
 
 			// Find connected Device (input) and Email (output)
 			deviceID := findSourceNodeID(flow.Edges, n.ID)
 			emailID := findTargetNodeID(flow.Edges, n.ID)
 
-			fmt.Printf("[TopologyService] Action %s connections - DeviceID: %s, EmailID: %s\n", n.ID, deviceID, emailID)
+			s.log(fmt.Sprintf("Action %s connections - DeviceID: %s, EmailID: %s", n.ID, deviceID, emailID))
 
 			if deviceID == "" || emailID == "" {
-				fmt.Println("[TopologyService] Skipping action: missing input or output connection")
+				s.log("Skipping action: missing input or output connection")
 				continue
 			}
 
@@ -139,15 +141,24 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 			emailNode, ok2 := nodeMap[emailID]
 
 			if !ok1 || !ok2 || emailNode.Type != "email" {
-				fmt.Printf("[TopologyService] Skipping action: Invalid nodes. DeviceFound: %v, EmailFound: %v, EmailNodeType: %s\n", ok1, ok2, emailNode.Type)
+				s.log(fmt.Sprintf("Skipping action: Invalid nodes. DeviceFound: %v, EmailFound: %v, EmailNodeType: %s", ok1, ok2, emailNode.Type))
 				continue
 			}
 
 			// Extract device name from device node label or data
 			// Assuming device node data has 'label' which is the device name
 			deviceName, _ := deviceNode.Data["label"].(string)
+			// Also try 'deviceName' if 'label' is missing (DeviceNode uses 'deviceName')
 			if deviceName == "" {
-				fmt.Printf("[TopologyService] Skipping action: Device name (label) is empty for node %s. Data: %v\n", deviceNode.ID, deviceNode.Data)
+				deviceName, _ = deviceNode.Data["deviceName"].(string)
+			}
+			// Also try 'connectedDevice' if it's a MonitoringNode
+			if deviceName == "" {
+				deviceName, _ = deviceNode.Data["connectedDevice"].(string)
+			}
+
+			if deviceName == "" {
+				s.log(fmt.Sprintf("Skipping action: Device name is empty for node %s. Data: %v", deviceNode.ID, deviceNode.Data))
 				continue
 			}
 
@@ -165,22 +176,22 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 
 			threshold, okThreshold := n.Data["threshold"].(float64)
 			if !okThreshold {
-				fmt.Printf("[TopologyService] Warning: Threshold is not float64. Data: %v\n", n.Data["threshold"])
+				s.log(fmt.Sprintf("Warning: Threshold is not float64. Data: %v", n.Data["threshold"]))
 				// Attempt to recover if it's int or string (though JSON unmarshal usually gives float64 for numbers)
 				threshold = 70.0 // Default
 			}
 
 			// Extract Email Data
-			fmt.Printf("[TopologyService] Email Node Data: %v\n", emailNode.Data) // Log full data
+			s.log(fmt.Sprintf("Email Node Data: %v", emailNode.Data)) // Log full data
 			emailTo, _ := emailNode.Data["to"].(string)
 			subject, _ := emailNode.Data["subject"].(string)
 			body, _ := emailNode.Data["body"].(string)
 			cooldown, _ := emailNode.Data["cooldown"].(string)
 
-			fmt.Printf("[TopologyService] Extracted Data - Device: %s, Metric: %s, Op: %s, Threshold: %f, Email: %s\n", deviceName, metric, operator, threshold, emailTo)
+			s.log(fmt.Sprintf("Extracted Data - Device: %s, Metric: %s, Op: %s, Threshold: %f, Email: %s", deviceName, metric, operator, threshold, emailTo))
 
 			if emailTo == "" {
-				fmt.Println("[TopologyService] Skipping action: EmailTo is empty. User must configure email recipient.")
+				s.log("Skipping action: EmailTo is empty. User must configure email recipient.")
 				continue
 			}
 
@@ -239,4 +250,17 @@ func findTargetNodeID(edges []Edge, sourceID string) string {
 		}
 	}
 	return ""
+}
+
+func (s *TopologyService) GetDebugLog() []string {
+	return s.debugLog
+}
+
+func (s *TopologyService) log(msg string) {
+	s.debugLog = append(s.debugLog, fmt.Sprintf("[%s] %s", time.Now().Format("15:04:05"), msg))
+	// Keep log size manageable
+	if len(s.debugLog) > 100 {
+		s.debugLog = s.debugLog[len(s.debugLog)-100:]
+	}
+	fmt.Println(msg)
 }
