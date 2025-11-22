@@ -34,24 +34,27 @@ export const Navbar = () => {
   const isTopology = pathname === '/topology';
 
   return (
-    <div className={`${isTopology ? 'fixed top-0 left-0 right-0' : 'relative'} z-50 w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60`}>
-      <nav className="container relative mx-auto flex flex-wrap items-center justify-between py-2 px-4 lg:justify-between xl:px-1">
+    <div
+      className={`${isTopology ? 'fixed top-0 left-0 right-0' : 'sticky top-0'} z-50 w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60`}
+      style={{ height: 'var(--navbar-height)' }}
+    >
+      <nav className="container sticky top-0 mx-auto flex flex-wrap items-center justify-between h-full px-4 lg:justify-between xl:px-1">
         <Link href="/">
           <span className="flex items-center space-x-2 ">
             <>
               <Image
                 src="/nocturneLight.svg"
                 alt="Logo claro"
-                width={100}
-                height={100}
+                width={60}
+                height={60}
                 className="block dark:hidden"
                 priority
               />
               <Image
                 src="/nocturneDark.svg"
                 alt="Logo oscuro"
-                width={100}
-                height={100}
+                width={60}
+                height={60}
                 className="hidden dark:block"
                 priority
               />

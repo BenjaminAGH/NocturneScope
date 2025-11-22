@@ -82,6 +82,7 @@ body,
 
 :root {
   --radius: 0.625rem;
+  --navbar-height: 70px;
 
   --background: #faf4ed;
   --foreground: #575279;
