@@ -380,31 +380,6 @@ export default function TopologyControls({
                 >
                     Ajustar Vista
                 </button>
-
-                <button
-                    onClick={async () => {
-                        const jwt = localStorage.getItem("jwt");
-                        if (!jwt) return;
-                        try {
-                            const resRules = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://api.nocturnesec.cl"}/api/alerts/rules`, {
-                                headers: { Authorization: `Bearer ${jwt}` }
-                            });
-                            const dataRules = await resRules.json();
-
-                            const resLogs = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://api.nocturnesec.cl"}/api/topologies/debug/logs`, {
-                                headers: { Authorization: `Bearer ${jwt}` }
-                            });
-                            const dataLogs = await resLogs.json();
-
-                            alert(`Reglas Activas: ${dataRules.count}\n\nLOGS DE EXTRACCIÓN:\n${(dataLogs.logs || []).join("\n")}\n\nREGLAS:\n${JSON.stringify(dataRules.active_rules, null, 2)}`);
-                        } catch (e: any) {
-                            alert("Error al obtener debug info: " + e.message);
-                        }
-                    }}
-                    className="w-full px-4 py-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-600 border border-yellow-500/20 rounded text-sm font-medium transition-colors"
-                >
-                    Ver Logs y Reglas (Debug)
-                </button>
             </div>
 
             {/* Dialog para guardar */}

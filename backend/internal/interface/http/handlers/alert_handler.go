@@ -43,13 +43,7 @@ func (h *AlertHandler) SendTestEmail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return c.JSON(fiber.Map{"message": "Test email sent successfully"})
-}
-
-func (h *AlertHandler) GetActiveRules(c *fiber.Ctx) error {
-	rules := h.service.GetActiveRules()
 	return c.JSON(fiber.Map{
-		"active_rules": rules,
-		"count":        len(rules),
+		"message": "Test email sent",
 	})
 }

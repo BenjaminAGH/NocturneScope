@@ -21,5 +21,4 @@ type AlertService interface {
 	Evaluate(metric Metric)
 	GetRecentAlerts(window time.Duration) []string
 	SendTestEmail(toEmail string) error
-	GetActiveRules() []AlertRule
 }

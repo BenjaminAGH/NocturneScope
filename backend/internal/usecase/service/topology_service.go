@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/domain"
 )
@@ -13,7 +12,6 @@ import (
 type TopologyService struct {
 	repo         domain.TopologyRepository
 	alertService domain.AlertService
-	debugLog     []string
 }
 
 func NewTopologyService(repo domain.TopologyRepository, alertService domain.AlertService) *TopologyService {
@@ -252,15 +250,6 @@ func findTargetNodeID(edges []Edge, sourceID string) string {
 	return ""
 }
 
-func (s *TopologyService) GetDebugLog() []string {
-	return s.debugLog
-}
-
 func (s *TopologyService) log(msg string) {
-	s.debugLog = append(s.debugLog, fmt.Sprintf("[%s] %s", time.Now().Format("15:04:05"), msg))
-	// Keep log size manageable
-	if len(s.debugLog) > 100 {
-		s.debugLog = s.debugLog[len(s.debugLog)-100:]
-	}
 	fmt.Println(msg)
 }
