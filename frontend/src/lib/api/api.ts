@@ -6,6 +6,13 @@ function pickString(...vals: any[]) {
 }
 
 async function handle(res: Response) {
+  if (res.status === 401) {
+    clearTokens();
+    if (typeof window !== "undefined") {
+      window.location.href = "/auth/login";
+    }
+    throw new Error("Unauthorized");
+  }
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(text || res.statusText);
