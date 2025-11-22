@@ -119,7 +119,10 @@ export default function TopologyControls({
                         <button
                             onClick={onAddMonitoringNode}
                             draggable
-                            onDragStart={(event) => event.dataTransfer.setData('application/reactflow', 'monitoring')}
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'monitoring');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
                             className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                         >
                             <ChartBarIcon className="w-6 h-6" />
@@ -128,7 +131,10 @@ export default function TopologyControls({
                         <button
                             onClick={onAddActionNode}
                             draggable
-                            onDragStart={(event) => event.dataTransfer.setData('application/reactflow', 'action')}
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'action');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
                             className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                         >
                             <BoltIcon className="w-6 h-6" />
@@ -137,7 +143,10 @@ export default function TopologyControls({
                         <button
                             onClick={onAddEmailNode}
                             draggable
-                            onDragStart={(event) => event.dataTransfer.setData('application/reactflow', 'email')}
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'email');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
                             className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                         >
                             <EnvelopeIcon className="w-6 h-6" />
@@ -359,7 +368,13 @@ export default function TopologyControls({
                                 <button
                                     key={device}
                                     onClick={() => onAddDevice(device)}
-                                    className="w-full text-left px-3 py-2 text-sm bg-background/50 hover:bg-accent rounded border border-border transition-colors"
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'device');
+                                        event.dataTransfer.setData('device/name', device);
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="w-full text-left px-3 py-2 text-sm bg-background/50 hover:bg-accent rounded border border-border transition-colors cursor-grab active:cursor-grabbing"
                                 >
                                     {device}
                                 </button>

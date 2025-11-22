@@ -568,6 +568,22 @@ function TopologyEditor() {
                     },
                 };
                 setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'device') {
+                const deviceName = event.dataTransfer.getData('device/name');
+                if (deviceName) {
+                    const id = `node-${++nodeIdCounter.current}`;
+                    const newNode: Node<DeviceNodeData> = {
+                        id,
+                        type: "device",
+                        position,
+                        data: {
+                            deviceName,
+                            label: deviceName,
+                            status: "unknown",
+                        },
+                    };
+                    setNodes((nds) => [...nds, newNode]);
+                }
             }
         },
         [screenToFlowPosition, setNodes, jwt],
