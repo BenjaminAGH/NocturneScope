@@ -380,6 +380,25 @@ export default function TopologyControls({
                 >
                     Ajustar Vista
                 </button>
+
+                <button
+                    onClick={async () => {
+                        const jwt = localStorage.getItem("jwt");
+                        if (!jwt) return;
+                        try {
+                            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://api.nocturnesec.cl"}/api/alerts/rules`, {
+                                headers: { Authorization: `Bearer ${jwt}` }
+                            });
+                            const data = await res.json();
+                            alert(`Reglas Activas: ${data.count}\n\n${JSON.stringify(data.active_rules, null, 2)}`);
+                        } catch (e: any) {
+                            alert("Error al obtener reglas: " + e.message);
+                        }
+                    }}
+                    className="w-full px-4 py-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-600 border border-yellow-500/20 rounded text-sm font-medium transition-colors"
+                >
+                    Ver Reglas (Debug)
+                </button>
             </div>
 
             {/* Dialog para guardar */}

@@ -242,3 +242,14 @@ func (s *AlertService) SendTestEmail(toEmail string) error {
 	fmt.Printf("[AlertService] Test email sent to %s\n", toEmail)
 	return nil
 }
+
+func (s *AlertService) GetActiveRules() []domain.AlertRule {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var allRules []domain.AlertRule
+	for _, rules := range s.rules {
+		allRules = append(allRules, rules...)
+	}
+	return allRules
+}
