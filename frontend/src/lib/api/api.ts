@@ -148,3 +148,15 @@ export async function getRecentAlerts(jwt: string) {
   const data = await handle(res);
   return (data.recent_alerts || []) as string[];
 }
+
+export async function sendTestEmail(jwt: string, email: string) {
+  const res = await fetch(`${BASE}/alerts/test-email`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ email }),
+  });
+  return handle(res);
+}

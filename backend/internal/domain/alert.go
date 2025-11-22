@@ -20,4 +20,5 @@ type AlertService interface {
 	UpdateRules(topologyID uint, rules []AlertRule)
 	Evaluate(metric Metric)
 	GetRecentAlerts(window time.Duration) []string
+	SendTestEmail(toEmail string) error
 }

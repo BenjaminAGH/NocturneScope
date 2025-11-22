@@ -264,6 +264,31 @@ export default function TopologyControls({
                                         onChange={(e) => onUpdateNodeData(selectedNode.id, { body: e.target.value })}
                                     />
                                 </div>
+                                <div className="pt-2">
+                                    <button
+                                        onClick={async () => {
+                                            const email = selectedNode.data.to;
+                                            if (!email) {
+                                                alert("Por favor ingresa un destinatario primero.");
+                                                return;
+                                            }
+                                            const jwt = localStorage.getItem("jwt");
+                                            if (!jwt) return;
+
+                                            try {
+                                                const { sendTestEmail } = await import("@/lib/api/api");
+                                                await sendTestEmail(jwt, email);
+                                                alert(`Correo de prueba enviado a ${email}`);
+                                            } catch (err: any) {
+                                                alert(`Error enviando correo: ${err.message}`);
+                                            }
+                                        }}
+                                        className="w-full px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-xs font-medium transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <EnvelopeIcon className="w-3 h-3" />
+                                        Probar Envío
+                                    </button>
+                                </div>
                             </>
                         )}
 

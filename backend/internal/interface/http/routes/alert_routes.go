@@ -10,4 +10,5 @@ func RegisterAlertRoutes(router fiber.Router, service domain.AlertService) {
 	handler := handlers.NewAlertHandler(service)
 
 	router.Get("/alerts/recent", handler.GetRecentAlerts)
+	router.Post("/alerts/test-email", handler.SendTestEmail)
 }

@@ -154,15 +154,24 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 			// Extract Action Data
 			metricRaw, _ := n.Data["metric"].(string)
 			metric := strings.ToLower(metricRaw)
+			if metric == "" {
+				metric = "cpu" // Default
+			}
+
 			operator, _ := n.Data["operator"].(string)
+			if operator == "" {
+				operator = ">=" // Default
+			}
+
 			threshold, okThreshold := n.Data["threshold"].(float64)
 			if !okThreshold {
-				// Try parsing from string or int if float64 assertion fails
-				// This is common with JSON unmarshalling where numbers might be float64 but sometimes interfaces behave differently
 				fmt.Printf("[TopologyService] Warning: Threshold is not float64. Data: %v\n", n.Data["threshold"])
+				// Attempt to recover if it's int or string (though JSON unmarshal usually gives float64 for numbers)
+				threshold = 70.0 // Default
 			}
 
 			// Extract Email Data
+			fmt.Printf("[TopologyService] Email Node Data: %v\n", emailNode.Data) // Log full data
 			emailTo, _ := emailNode.Data["to"].(string)
 			subject, _ := emailNode.Data["subject"].(string)
 			body, _ := emailNode.Data["body"].(string)
@@ -170,8 +179,8 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 
 			fmt.Printf("[TopologyService] Extracted Data - Device: %s, Metric: %s, Op: %s, Threshold: %f, Email: %s\n", deviceName, metric, operator, threshold, emailTo)
 
-			if metric == "" || operator == "" || emailTo == "" {
-				fmt.Println("[TopologyService] Skipping action: Missing required fields (metric, operator, or emailTo)")
+			if emailTo == "" {
+				fmt.Println("[TopologyService] Skipping action: EmailTo is empty. User must configure email recipient.")
 				continue
 			}
 

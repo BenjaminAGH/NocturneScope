@@ -206,3 +206,39 @@ func (s *AlertService) sendEmail(rule domain.AlertRule, val float64) {
 		fmt.Printf("[AlertService] Email sent to %s\n", rule.EmailTo)
 	}
 }
+
+func (s *AlertService) SendTestEmail(toEmail string) error {
+	if s.smtpHost == "" || s.smtpUser == "" {
+		return fmt.Errorf("SMTP not configured")
+	}
+
+	auth := smtp.PlainAuth("", s.smtpUser, s.smtpPass, s.smtpHost)
+	to := []string{toEmail}
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+
+	msg := []byte(fmt.Sprintf("To: %s\r\n"+
+		"Subject: [NocturneScope] Test Email\r\n"+
+		"MIME-Version: 1.0\r\n"+
+		"Content-Type: text/plain; charset=\"utf-8\"\r\n"+
+		"\r\n"+
+		"TEST NOTIFICATION\r\n"+
+		"=================\r\n"+
+		"Time: %s\r\n"+
+		"\r\n"+
+		"This is a test email from your NocturneScope instance.\r\n"+
+		"If you are reading this, your SMTP configuration is correct!\r\n"+
+		"\r\n"+
+		"--\r\n"+
+		"NocturneScope Monitoring System\r\n",
+		toEmail, timestamp))
+
+	addr := fmt.Sprintf("%s:%s", s.smtpHost, s.smtpPort)
+	err := smtp.SendMail(addr, auth, s.smtpUser, to, msg)
+	if err != nil {
+		fmt.Printf("[AlertService] Error sending test email: %v\n", err)
+		return err
+	}
+
+	fmt.Printf("[AlertService] Test email sent to %s\n", toEmail)
+	return nil
+}

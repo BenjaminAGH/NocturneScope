@@ -25,3 +25,23 @@ func (h *AlertHandler) GetRecentAlerts(c *fiber.Ctx) error {
 		"recent_alerts": recent,
 	})
 }
+
+func (h *AlertHandler) SendTestEmail(c *fiber.Ctx) error {
+	var req struct {
+		Email string `json:"email"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	if req.Email == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Email is required"})
+	}
+
+	if err := h.service.SendTestEmail(req.Email); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{"message": "Test email sent successfully"})
+}
