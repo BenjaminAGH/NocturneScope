@@ -42,16 +42,16 @@ export const Navbar = () => {
               <Image
                 src="/nocturneLight.svg"
                 alt="Logo claro"
-                width={100}
-                height={100}
+                width={60}
+                height={60}
                 className="block dark:hidden"
                 priority
               />
               <Image
                 src="/nocturneDark.svg"
                 alt="Logo oscuro"
-                width={100}
-                height={100}
+                width={60}
+                height={60}
                 className="hidden dark:block"
                 priority
               />
