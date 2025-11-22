@@ -71,7 +71,20 @@ export default function TopologyControls({
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [topologyName, setTopologyName] = useState("");
 
-    const handleSave = () => {
+    const handleSaveClick = () => {
+        if (selectedTopology) {
+            // Si ya existe, guardar directamente con el nombre actual
+            // Buscamos el nombre actual en la lista de topologías
+            const currentTopo = topologies.find(t => t.ID === selectedTopology);
+            if (currentTopo) {
+                onSave(currentTopo.Name);
+                return;
+            }
+        }
+        setShowSaveDialog(true);
+    };
+
+    const handleSaveConfirm = () => {
         if (topologyName.trim()) {
             onSave(topologyName.trim());
             setShowSaveDialog(false);
@@ -98,7 +111,7 @@ export default function TopologyControls({
             </button>
 
             {/* Main Content */}
-            <div className="w-full h-full bg-card/90 backdrop-blur-sm border-l border-border p-4 space-y-4 overflow-y-auto flex flex-col shadow-2xl">
+            <div className="w-full h-full bg-card/80 backdrop-blur-md border-l border-border p-4 space-y-4 overflow-y-auto flex flex-col shadow-2xl">
                 <h2 className="text-lg font-semibold">Controles de Topología</h2>
 
                 {/* Herramientas */}
@@ -380,7 +393,7 @@ export default function TopologyControls({
                     </button>
 
                     <button
-                        onClick={() => setShowSaveDialog(true)}
+                        onClick={handleSaveClick}
                         className="w-full px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-medium transition-colors"
                     >
                         Guardar
@@ -414,7 +427,7 @@ export default function TopologyControls({
                                 className="w-full px-3 py-2 bg-background border border-border rounded text-sm"
                                 autoFocus
                                 onKeyDown={(e) => {
-                                    if (e.key === "Enter") handleSave();
+                                    if (e.key === "Enter") handleSaveConfirm();
                                     if (e.key === "Escape") setShowSaveDialog(false);
                                 }}
                             />
@@ -426,7 +439,7 @@ export default function TopologyControls({
                                     Cancelar
                                 </button>
                                 <button
-                                    onClick={handleSave}
+                                    onClick={handleSaveConfirm}
                                     className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm"
                                 >
                                     Guardar
