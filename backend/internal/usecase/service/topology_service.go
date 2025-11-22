@@ -139,6 +139,7 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 			emailNode, ok2 := nodeMap[emailID]
 
 			if !ok1 || !ok2 || emailNode.Type != "email" {
+				fmt.Printf("[TopologyService] Skipping action: Invalid nodes. DeviceFound: %v, EmailFound: %v, EmailNodeType: %s\n", ok1, ok2, emailNode.Type)
 				continue
 			}
 
@@ -146,6 +147,7 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 			// Assuming device node data has 'label' which is the device name
 			deviceName, _ := deviceNode.Data["label"].(string)
 			if deviceName == "" {
+				fmt.Printf("[TopologyService] Skipping action: Device name (label) is empty for node %s. Data: %v\n", deviceNode.ID, deviceNode.Data)
 				continue
 			}
 
@@ -153,7 +155,12 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 			metricRaw, _ := n.Data["metric"].(string)
 			metric := strings.ToLower(metricRaw)
 			operator, _ := n.Data["operator"].(string)
-			threshold, _ := n.Data["threshold"].(float64)
+			threshold, okThreshold := n.Data["threshold"].(float64)
+			if !okThreshold {
+				// Try parsing from string or int if float64 assertion fails
+				// This is common with JSON unmarshalling where numbers might be float64 but sometimes interfaces behave differently
+				fmt.Printf("[TopologyService] Warning: Threshold is not float64. Data: %v\n", n.Data["threshold"])
+			}
 
 			// Extract Email Data
 			emailTo, _ := emailNode.Data["to"].(string)
@@ -161,7 +168,10 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 			body, _ := emailNode.Data["body"].(string)
 			cooldown, _ := emailNode.Data["cooldown"].(string)
 
+			fmt.Printf("[TopologyService] Extracted Data - Device: %s, Metric: %s, Op: %s, Threshold: %f, Email: %s\n", deviceName, metric, operator, threshold, emailTo)
+
 			if metric == "" || operator == "" || emailTo == "" {
+				fmt.Println("[TopologyService] Skipping action: Missing required fields (metric, operator, or emailTo)")
 				continue
 			}
 
