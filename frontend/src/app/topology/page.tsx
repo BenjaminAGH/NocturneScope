@@ -205,19 +205,31 @@ function TopologyEditor() {
 
                 // 3. Actualizar Edges para Gateways
                 if (autoDetectGateways) {
-                    const gatewaysFound = new Map<string, { ip: string; devices: string[] }>();
-                    // Necesitamos recalcular gatewaysFound basado en el estado actual de updates
-                    // (Podríamos optimizar pasando esto desde setNodes pero es complejo por los closures)
-                    // Simplificación: Usamos deviceUpdates que ya tenemos
+                    setEdges(currentEdges => {
+                        const nextEdges = [...currentEdges];
+                        let edgesChanged = false;
+                        const existingEdgeIds = new Set(currentEdges.map(e => e.id));
 
-                    // Iterar sobre nodos actuales para encontrar dispositivos y sus gateways
-                    // Nota: No tenemos acceso directo a 'nodes' actualizado aquí fuera de setNodes,
-                    // pero deviceUpdates tiene la info necesaria.
-                    // Sin embargo, necesitamos saber qué nodos existen realmente.
-                    // Usaremos una estrategia reactiva: si deviceUpdates tiene gateway, asumimos que el nodo existe si está en el mapa.
+                        deviceUpdates.forEach((update, deviceId) => {
+                            if (update.gateway) {
+                                const routerId = `router-${update.gateway.replace(/\./g, '-')}`;
+                                const edgeId = `edge-${deviceId}-${routerId}`;
 
-                    // Mejor enfoque: Hacer esto en un efecto separado o dentro de setNodes (pero setEdges dentro de setNodes es malo).
-                    // Por ahora, lo dejamos como estaba, asumiendo que la lógica de edges funciona.
+                                if (!existingEdgeIds.has(edgeId)) {
+                                    nextEdges.push({
+                                        id: edgeId,
+                                        source: routerId,
+                                        target: deviceId,
+                                        type: 'default',
+                                        animated: true,
+                                    });
+                                    edgesChanged = true;
+                                }
+                            }
+                        });
+
+                        return edgesChanged ? nextEdges : currentEdges;
+                    });
                 }
             } catch (error) {
                 console.error("Error updating device status:", error);
