@@ -387,16 +387,16 @@ function TopologyEditor() {
                                                     timeZone: 'America/Santiago'
                                                 }).format(new Date());
 
-                                                const header = "[Alert System]\n\n";
                                                 const userBody = emailData.body || "An alert has been triggered.";
                                                 const footer = `\n\n--------------------------------\nFecha: ${timestamp}\nGenerado por NocturneScope`;
 
-                                                const fullBody = `${header}${userBody}${footer}`;
+                                                const fullBody = `${userBody}${footer}`;
+                                                const subject = `[Alert System] ${emailData.subject || "Alert from NocturneScope"}`;
 
                                                 await sendCustomEmail(
                                                     jwt,
                                                     emailData.to!,
-                                                    emailData.subject || "Alert from NocturneScope",
+                                                    subject,
                                                     fullBody
                                                 );
                                                 console.log(`Email sent to ${emailData.to}`);
