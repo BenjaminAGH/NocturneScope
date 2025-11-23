@@ -52,4 +52,7 @@ func Register(
 
 	// alertas
 	RegisterAlertRoutes(protected, alertService)
+
+	// admin panel (devadmin only)
+	RegisterAdminRoutes(protected, userService)
 }

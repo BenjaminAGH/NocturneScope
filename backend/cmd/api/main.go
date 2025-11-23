@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 
+	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/bootstrap"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/database"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/repository"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/security"
@@ -30,6 +31,9 @@ func main() {
 
 	// servicios
 	userService := service.NewUserService(userRepo)
+
+	// Ensure devadmin user exists (if env vars are set)
+	bootstrap.EnsureDevAdmin(userRepo)
 
 	jwtService := security.NewJWTServiceFromEnv()
 	sessionStore := session.NewMemoryStore()

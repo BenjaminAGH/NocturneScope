@@ -13,7 +13,8 @@ import {
   ShareIcon,
   BellIcon,
   TrashIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ShieldCheckIcon
 } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 
@@ -21,6 +22,7 @@ export const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const { notifications, unreadCount, markAllAsRead, clearHistory } = useNotification();
 
   // Rutas públicas donde solo se muestra "Iniciar Sesión"
@@ -30,6 +32,24 @@ export const Navbar = () => {
   useEffect(() => {
     const token = localStorage.getItem("jwt");
     setIsLoggedIn(!!token);
+
+    // Fetch user profile to get role
+    if (token) {
+      fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.nocturnesec.cl/").replace(/\/+$/, "")}/api/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.role) {
+            setUserRole(data.role);
+          }
+        })
+        .catch(() => {
+          // Ignore errors
+        });
+    } else {
+      setUserRole(null);
+    }
   }, [pathname]);
 
   const handleLogout = () => {
@@ -52,26 +72,24 @@ export const Navbar = () => {
         <Link href="/">
           <span className="flex items-center space-x-2">
             <Image
-              src="/nocturneLight.svg"
+              src="img/scope_icon.svg"
               alt="Logo claro"
-              width={50}
-              height={50}
+              width={100}
+              height={100}
               className="block dark:hidden"
               priority
             />
             <Image
-              src="/nocturneDark.svg"
+              src="img/scope_icon.svg"
               alt="Logo oscuro"
-              width={50}
-              height={50}
+              width={100}
+              height={100}
               className="hidden dark:block"
               priority
             />
-            <span className="text-lg font-bold hidden sm:inline-block">NocturneScope</span>
           </span>
         </Link>
 
-        {/* Center Navigation (Dashboard / Topology) - Only if logged in */}
         {!isPublicRoute && isLoggedIn && (
           <div className="hidden md:flex items-center bg-muted/50 rounded-full p-1 border border-border/50 absolute left-1/2 transform -translate-x-1/2">
             <Link
@@ -204,6 +222,21 @@ export const Navbar = () => {
                       </Link>
                     )}
                   </Menu.Item>
+
+                  {userRole === "devadmin" && (
+                    <Menu.Item>
+                      {({ active }) => (
+                        <Link
+                          href="/admin/users"
+                          className={`${active ? "bg-muted" : ""
+                            } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
+                        >
+                          <ShieldCheckIcon className="w-4 h-4" />
+                          Admin Panel
+                        </Link>
+                      )}
+                    </Menu.Item>
+                  )}
 
                   <div className="my-1 border-t border-border/50" />
 
