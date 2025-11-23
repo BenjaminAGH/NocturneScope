@@ -98,16 +98,10 @@ function TopologyEditor() {
                 });
 
                 const results = await Promise.all(statsPromises);
-                console.log("DEBUG: results from getLastStats:", results);
                 const stats: Record<string, any> = {};
                 results.forEach(r => {
                     if (r && r.data) {
-                        // La API devuelve { "device_name": { ...stats } }
-                        // Necesitamos extraer el objeto interno
-                        const deviceStats = r.data[r.device];
-                        if (deviceStats) {
-                            stats[r.device] = deviceStats;
-                        }
+                        stats[r.device] = r.data;
                     }
                 });
 
