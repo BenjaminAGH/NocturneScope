@@ -649,7 +649,7 @@ function TopologyEditor() {
 
 
 
-    const loadTopology = async (id: number) => {
+    const loadTopology = useCallback(async (id: number) => {
         const jwt = localStorage.getItem("jwt");
         if (!jwt) return;
 
@@ -682,7 +682,7 @@ function TopologyEditor() {
             console.error("Error loading topology:", error);
             notify("Error al cargar la topología", "error");
         }
-    };
+    }, [setNodes, setEdges, notify]);
 
     // Cargar topologías y última activa al inicio
     useEffect(() => {

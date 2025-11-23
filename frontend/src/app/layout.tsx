@@ -44,7 +44,17 @@ export default function RootLayout({
             <Navbar />
             <div>{children}</div>
             <Footer />
-            <Toaster position="top-left" />
+            <Toaster
+              position="top-left"
+              toastOptions={{
+                style: {
+                  background: 'var(--card)',
+                  color: 'var(--foreground)',
+                  border: '1px solid var(--border)',
+                },
+                className: 'class-group',
+              }}
+            />
           </NotificationProvider>
         </ThemeProvider>
       </body>
