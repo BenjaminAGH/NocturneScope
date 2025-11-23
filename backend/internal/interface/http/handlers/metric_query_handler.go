@@ -23,9 +23,20 @@ func NewMetricQueryHandler(s *service.MetricService, tokenRepo domain.APITokenRe
 
 func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 	// Get user ID from JWT middleware
-	userID, ok := c.Locals("user_id").(uint)
-	if !ok {
+	userIDAny := c.Locals("user_id")
+	if userIDAny == nil {
 		return c.Status(401).JSON(fiber.Map{"error": "unauthorized"})
+	}
+
+	// Convert to uint (handles both uint and float64 from JWT claims)
+	var userID uint
+	switch v := userIDAny.(type) {
+	case uint:
+		userID = v
+	case float64:
+		userID = uint(v)
+	default:
+		return c.Status(401).JSON(fiber.Map{"error": "invalid user_id type"})
 	}
 
 	// Get device names from user's tokens
