@@ -105,17 +105,28 @@ function TopologyEditor() {
                     }
                 });
 
-                const deviceUpdates = new Map<string, { status: "active" | "inactive" | "unknown"; ip?: string; gateway?: string }>();
+                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string }>();
 
                 // Mapear estados
                 Object.entries(stats).forEach(([device, data]: [string, any]) => {
                     const now = Date.now() / 1000;
-                    const lastSeen = data.timestamp;
-                    const isActive = (now - lastSeen) < 300; // 5 minutos
+                    const lastSeen = data.timestamp ? new Date(data.timestamp).getTime() / 1000 : 0;
+                    // El timestamp viene como string ISO8601 desde Go/JSON
+                    // Ojo: si data.timestamp ya es un objeto Date o número, ajustar.
+                    // Asumimos string ISO por defecto en JSON.
+
+                    // Mejor validación del timestamp
+                    let timeDiff = 999999;
+                    if (data.timestamp) {
+                        const ts = new Date(data.timestamp).getTime() / 1000;
+                        timeDiff = now - ts;
+                    }
+
+                    const isActive = timeDiff < 300; // 5 minutos
                     deviceUpdates.set(device, {
-                        status: isActive ? "active" : "inactive",
-                        ip: data.local_ip,
-                        gateway: data.gateway_ip
+                        status: isActive ? "online" : "offline",
+                        ip: data.ip_address,
+                        gateway: data.gateway
                     });
                 });
 
@@ -126,10 +137,6 @@ function TopologyEditor() {
                     const gatewaysFound = new Map<string, { ip: string; devices: string[] }>();
                     let nodesChanged = false;
                     const currentNodesSnapshot = [...currentNodes]; // Para uso en edges
-
-                    // Debug log
-                    console.log("DEBUG: autoDetectGateways:", autoDetectGateways);
-                    console.log("DEBUG: deviceUpdates size:", deviceUpdates.size);
 
                     // A. Actualizar Dispositivos y Recolectar Gateways
                     nextNodes.forEach((node, index) => {
