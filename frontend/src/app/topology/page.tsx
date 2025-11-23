@@ -289,21 +289,37 @@ function TopologyEditor() {
                             );
 
                             const data = node.data as any;
-                            if (data.isActive !== isConnectedToActiveAction || (node.type === 'email' && !data.jwt)) {
-                                nextNodes[index] = {
-                                    ...node,
-                                    data: {
-                                        ...data,
-                                        isActive: isConnectedToActiveAction,
-                                        jwt: jwt // Add JWT for email sending
-                                    }
-                                };
+                            const wasActive = data.isActive;
+
+                            if (data.isActive !== isConnectedToActiveAction) {
+                                nextNodes[index] = { ...node, data: { ...data, isActive: isConnectedToActiveAction } };
                                 nodesChanged = true;
 
+                                // Trigger email sending if becoming active
+                                if (isConnectedToActiveAction && !wasActive && node.type === 'email') {
+                                    const emailData = data as EmailNodeData;
+                                    if (emailData.to && jwt) {
+                                        // Send email asynchronously
+                                        (async () => {
+                                            try {
+                                                const { sendCustomEmail } = await import("@/lib/api/api");
+                                                await sendCustomEmail(
+                                                    jwt,
+                                                    emailData.to!,
+                                                    emailData.subject || "Alert from NocturneScope",
+                                                    emailData.body || "An alert has been triggered."
+                                                );
+                                                console.log(`Email sent to ${emailData.to}`);
+                                            } catch (error) {
+                                                console.error("Error sending email:", error);
+                                            }
+                                        })();
+                                    }
+                                }
+
                                 // Trigger notification logic if becoming active
-                                if (isConnectedToActiveAction && node.type === 'notification') {
+                                if (isConnectedToActiveAction && !wasActive && node.type === 'notification') {
                                     const message = (data as NotificationNodeData).message || "Alerta detectada";
-                                    // Simple debounce check could be added here if needed
                                     notify(message, "warning");
                                 }
                             }

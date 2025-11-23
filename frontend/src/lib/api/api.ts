@@ -171,14 +171,14 @@ export async function sendTestEmail(jwt: string, email: string) {
   return handle(res);
 }
 
-export async function sendCustomEmail(jwt: string, email: string, subject: string, body: string) {
+export async function sendCustomEmail(jwt: string, to: string, subject: string, body: string) {
   const res = await fetch(`${BASE}/alerts/send-email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ email, subject, body }),
+    body: JSON.stringify({ to, subject, body }),
   });
   return handle(res);
 }

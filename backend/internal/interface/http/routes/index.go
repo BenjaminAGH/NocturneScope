@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/BenjaminAGH/nocturnescope/backend/internal/domain"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/security"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/interface/http/handlers"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/interface/http/middleware"
@@ -17,7 +18,7 @@ func Register(
 	metricService *service.MetricService,
 	apiTokenService *service.TokenService,
 	topologyService *service.TopologyService,
-	alertService *service.AlertService,
+	alertService domain.AlertService,
 ) {
 	api := app.Group("/api")
 

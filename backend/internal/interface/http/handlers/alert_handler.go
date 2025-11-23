@@ -50,7 +50,7 @@ func (h *AlertHandler) SendTestEmail(c *fiber.Ctx) error {
 
 func (h *AlertHandler) SendCustomEmail(c *fiber.Ctx) error {
 	var req struct {
-		Email   string `json:"email"`
+		To      string `json:"to"`
 		Subject string `json:"subject"`
 		Body    string `json:"body"`
 	}
@@ -59,19 +59,11 @@ func (h *AlertHandler) SendCustomEmail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
 	}
 
-	if req.Email == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Email is required"})
+	if req.To == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Email recipient is required"})
 	}
 
-	if req.Subject == "" {
-		req.Subject = "NocturneScope Alert"
-	}
-
-	if req.Body == "" {
-		req.Body = "An alert has been triggered."
-	}
-
-	if err := h.service.SendCustomEmail(req.Email, req.Subject, req.Body); err != nil {
+	if err := h.service.SendCustomEmail(req.To, req.Subject, req.Body); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
