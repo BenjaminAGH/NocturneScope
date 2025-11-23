@@ -34,7 +34,9 @@ import ActionNode, { ActionNodeData } from "@/components/topology/ActionNode";
 import EmailNode, { EmailNodeData } from "@/components/topology/EmailNode";
 import NotificationNode, { NotificationNodeData } from "@/components/topology/NotificationNode";
 import DelayNode, { DelayNodeData } from "@/components/topology/DelayNode";
+import SoundNode, { SoundNodeData } from "@/components/topology/SoundNode";
 import { useNotification } from "@/context/NotificationContext";
+import { playSound, SoundType } from "@/lib/soundPlayer";
 
 const nodeTypes = {
     device: DeviceNode,
@@ -44,6 +46,7 @@ const nodeTypes = {
     email: EmailNode,
     notification: NotificationNode,
     delay: DelayNode,
+    sound: SoundNode,
 };
 
 function TopologyEditor() {
@@ -353,9 +356,9 @@ function TopologyEditor() {
                         }
                     });
 
-                    // C. Propagar a Email/Notification Nodes
+                    // C. Propagar a Email/Notification/Sound Nodes
                     nextNodes.forEach((node, index) => {
-                        if (node.type === 'email' || node.type === 'notification') {
+                        if (node.type === 'email' || node.type === 'notification' || node.type === 'sound') {
                             const isConnectedToActiveAction = edgesRef.current.some(e =>
                                 e.target === node.id && activeActionIds.has(e.source)
                             );
@@ -411,6 +414,12 @@ function TopologyEditor() {
                                 if (shouldBeActive && !wasActive && node.type === 'notification') {
                                     const message = (data as NotificationNodeData).message || "Alerta detectada";
                                     notify(message, "warning");
+                                }
+
+                                // Trigger sound if becoming active
+                                if (shouldBeActive && !wasActive && node.type === 'sound') {
+                                    const soundType = (data as SoundNodeData).sound || 'beep';
+                                    playSound(soundType as SoundType);
                                 }
                             }
                         }
@@ -636,6 +645,19 @@ function TopologyEditor() {
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes]);
 
+    const handleAddSoundNode = useCallback(() => {
+        const id = `sound-${++nodeIdCounter.current}`;
+        const newNode: Node<SoundNodeData> = {
+            id,
+            type: "sound",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                sound: 'beep',
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes]);
+
     const onDragOver = useCallback((event: React.DragEvent) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
@@ -713,6 +735,17 @@ function TopologyEditor() {
                     position,
                     data: {
                         delay: 10000,
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'sound') {
+                const id = `sound-${++nodeIdCounter.current}`;
+                const newNode: Node<SoundNodeData> = {
+                    id,
+                    type: "sound",
+                    position,
+                    data: {
+                        sound: 'beep',
                     },
                 };
                 setNodes((nds) => [...nds, newNode]);
@@ -1121,6 +1154,7 @@ function TopologyEditor() {
                     onAddEmailNode={handleAddEmailNode}
                     onAddNotificationNode={handleAddNotificationNode}
                     onAddDelayNode={handleAddDelayNode}
+                    onAddSoundNode={handleAddSoundNode}
                     selectedNode={nodes.find((n) => n.id === selectedNodeId)}
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
+import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 
 interface TopologyControlsProps {
     devices: string[];
@@ -18,7 +19,8 @@ interface TopologyControlsProps {
     onAddActionNode: () => void;
     onAddEmailNode: () => void;
     onAddNotificationNode: () => void;
-    onAddDelayNode: () => void; // Added
+    onAddDelayNode: () => void;
+    onAddSoundNode: () => void; // Added
     selectedNode: any;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
@@ -70,6 +72,7 @@ export default function TopologyControls({
     onAddEmailNode,
     onAddNotificationNode,
     onAddDelayNode,
+    onAddSoundNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,
@@ -205,6 +208,18 @@ export default function TopologyControls({
                             <ClockIcon className="w-6 h-6" />
                             <span className="text-xs">Delay</span>
                         </button>
+                        <button
+                            onClick={onAddSoundNode}
+                            draggable
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'sound');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                        >
+                            <SpeakerWaveIcon className="w-6 h-6" />
+                            <span className="text-xs">Sonido</span>
+                        </button>
                     </div>
                 </div>
 
@@ -218,7 +233,9 @@ export default function TopologyControls({
                             {selectedNode.type === 'email' && "Configuración de Email"}
                             {selectedNode.type === 'email' && "Configuración de Email"}
                             {selectedNode.type === 'notification' && "Configuración de Notificación"}
+                            {selectedNode.type === 'notification' && "Configuración de Notificación"}
                             {selectedNode.type === 'delay' && "Configuración de Delay"}
+                            {selectedNode.type === 'sound' && "Configuración de Sonido"}
                         </label>
 
                         <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">
@@ -410,6 +427,22 @@ export default function TopologyControls({
                                         onChange={(e) => onUpdateNodeData(selectedNode.id, { delay: Number(e.target.value) })}
                                     />
                                     <p className="text-[10px] text-muted-foreground mt-1">1000ms = 1 segundo</p>
+                                </div>
+                            )}
+
+                            {/* Sound Node Config */}
+                            {selectedNode.type === 'sound' && (
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Tipo de Sonido</label>
+                                    <select
+                                        className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.sound || 'beep'}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { sound: e.target.value })}
+                                    >
+                                        {SOUND_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             )}
 
