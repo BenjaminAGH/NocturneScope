@@ -105,6 +105,8 @@ from(bucket: "%[1]s")
 		if v, ok := rec.ValueByKey("gateway").(string); ok {
 			out["gateway"] = v
 		}
+		// Timestamp
+		out["timestamp"] = rec.Time()
 
 		// Fields (floats)
 		for _, k := range fields {
