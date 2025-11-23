@@ -127,6 +127,10 @@ function TopologyEditor() {
                     let nodesChanged = false;
                     const currentNodesSnapshot = [...currentNodes]; // Para uso en edges
 
+                    // Debug log
+                    console.log("DEBUG: autoDetectGateways:", autoDetectGateways);
+                    console.log("DEBUG: deviceUpdates size:", deviceUpdates.size);
+
                     // A. Actualizar Dispositivos y Recolectar Gateways
                     nextNodes.forEach((node, index) => {
                         if (node.type === "device" && deviceUpdates.has(node.id)) {
