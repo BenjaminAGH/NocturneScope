@@ -31,13 +31,13 @@ function EmailNode({ id, data, selected }: NodeProps) {
 
         lastSentRef.current = now;
 
-        // Send custom email with subject and body
-        const emailSubject = subject || "Alert from NocturneScope";
-        const emailBody = body || "An alert condition has been triggered.";
+        // Send email with custom subject and body
+        const emailSubject = subject || "NocturneScope Alert";
+        const emailBody = body || "An alert has been triggered on your monitored device.";
 
         sendCustomEmail(jwt, to, emailSubject, emailBody)
             .then(() => {
-                console.log(`Custom email sent to ${to} from node ${id}`);
+                console.log(`Email sent to ${to} from node ${id}`);
             })
             .catch((err) => {
                 console.error(`Failed to send email from node ${id}:`, err);

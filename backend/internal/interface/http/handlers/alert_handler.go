@@ -63,11 +63,19 @@ func (h *AlertHandler) SendCustomEmail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Email is required"})
 	}
 
+	if req.Subject == "" {
+		req.Subject = "NocturneScope Alert"
+	}
+
+	if req.Body == "" {
+		req.Body = "An alert has been triggered."
+	}
+
 	if err := h.service.SendCustomEmail(req.Email, req.Subject, req.Body); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "Custom email sent",
+		"message": "Email sent successfully",
 	})
 }
