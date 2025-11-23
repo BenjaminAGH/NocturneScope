@@ -415,12 +415,12 @@ function TopologyEditor() {
                                     const message = (data as NotificationNodeData).message || "Alerta detectada";
                                     notify(message, "warning");
                                 }
+                            }
 
-                                // Trigger sound whenever active (plays every polling cycle)
-                                if (shouldBeActive && node.type === 'sound') {
-                                    const soundType = (data as SoundNodeData).sound || 'beep';
-                                    playSound(soundType as SoundType);
-                                }
+                            // Trigger sound whenever active (outside state change check)
+                            if (shouldBeActive && node.type === 'sound') {
+                                const soundType = (data as SoundNodeData).sound || 'beep';
+                                playSound(soundType as SoundType);
                             }
                         }
                     });
