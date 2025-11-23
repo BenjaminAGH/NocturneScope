@@ -317,11 +317,24 @@ function TopologyEditor() {
                                         (async () => {
                                             try {
                                                 const { sendCustomEmail } = await import("@/lib/api/api");
+
+                                                const timestamp = new Intl.DateTimeFormat('es-CL', {
+                                                    dateStyle: 'full',
+                                                    timeStyle: 'medium',
+                                                    timeZone: 'America/Santiago'
+                                                }).format(new Date());
+
+                                                const header = "[Alert System]\n\n";
+                                                const userBody = emailData.body || "An alert has been triggered.";
+                                                const footer = `\n\n--------------------------------\nFecha: ${timestamp}\nGenerado por NocturneScope`;
+
+                                                const fullBody = `${header}${userBody}${footer}`;
+
                                                 await sendCustomEmail(
                                                     jwt,
                                                     emailData.to!,
                                                     emailData.subject || "Alert from NocturneScope",
-                                                    emailData.body || "An alert has been triggered."
+                                                    fullBody
                                                 );
                                                 console.log(`Email sent to ${emailData.to}`);
                                             } catch (error) {
