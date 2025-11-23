@@ -57,16 +57,17 @@ function TopologyEditor() {
 
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+    const edgesRef = useRef<Edge[]>([]);
+
+    // Mantener edgesRef sincronizado
+    useEffect(() => {
+        edgesRef.current = edges;
+    }, [edges]);
+
     const [autoDetectGateways, setAutoDetectGateways] = useState(true);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     const nodeIdCounter = useRef(0);
-    const edgesRef = useRef<Edge[]>([]);
-
-    // Mantener referencia actualizada de edges para los efectos
-    useEffect(() => {
-        edgesRef.current = edges;
-    }, [edges]);
 
     useEffect(() => {
         const token = localStorage.getItem("jwt");
@@ -242,6 +243,69 @@ function TopologyEditor() {
                         return edgesChanged ? nextEdges : currentEdges;
                     });
                 }
+
+                // 4. Evaluar Reglas (Client-Side)
+                setNodes(currentNodes => {
+                    const nextNodes = [...currentNodes];
+                    let nodesChanged = false;
+                    const activeActionIds = new Set<string>();
+
+                    // A. Evaluar Action Nodes
+                    nextNodes.forEach((node, index) => {
+                        if (node.type === 'action') {
+                            const data = node.data as any;
+                            const device = data.connectedDevice;
+                            if (device && stats[device]) {
+                                const metricValue = stats[device][data.metric];
+                                const threshold = data.threshold;
+                                const operator = data.operator;
+
+                                let isActive = false;
+                                if (metricValue !== undefined) {
+                                    switch (operator) {
+                                        case '>': isActive = metricValue > threshold; break;
+                                        case '>=': isActive = metricValue >= threshold; break;
+                                        case '<': isActive = metricValue < threshold; break;
+                                        case '<=': isActive = metricValue <= threshold; break;
+                                        case '==': isActive = metricValue == threshold; break;
+                                    }
+                                }
+
+                                if (isActive) activeActionIds.add(node.id);
+
+                                if (data.isActive !== isActive) {
+                                    nextNodes[index] = { ...node, data: { ...data, isActive } };
+                                    nodesChanged = true;
+                                }
+                            }
+                        }
+                    });
+
+                    // B. Propagar a Email/Notification Nodes
+                    nextNodes.forEach((node, index) => {
+                        if (node.type === 'email' || node.type === 'notification') {
+                            const isConnectedToActiveAction = edgesRef.current.some(e =>
+                                e.target === node.id && activeActionIds.has(e.source)
+                            );
+
+                            const data = node.data as any;
+                            if (data.isActive !== isConnectedToActiveAction) {
+                                nextNodes[index] = { ...node, data: { ...data, isActive: isConnectedToActiveAction } };
+                                nodesChanged = true;
+
+                                // Trigger notification logic if becoming active
+                                if (isConnectedToActiveAction && node.type === 'notification') {
+                                    const message = (data as NotificationNodeData).message || "Alerta detectada";
+                                    // Simple debounce check could be added here if needed
+                                    notify(message, "warning");
+                                }
+                            }
+                        }
+                    });
+
+                    return nodesChanged ? nextNodes : currentNodes;
+                });
+
             } catch (error) {
                 console.error("Error updating device status:", error);
             }
