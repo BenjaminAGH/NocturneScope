@@ -64,6 +64,20 @@ function TopologyEditor() {
         edgesRef.current = edges;
     }, [edges]);
 
+    // Persist draft to localStorage
+    useEffect(() => {
+        if (nodes.length > 0 || edges.length > 0) {
+            const draft = {
+                nodes,
+                edges,
+                selectedTopology,
+                currentTopologyName,
+                timestamp: Date.now()
+            };
+            localStorage.setItem("topology_draft", JSON.stringify(draft));
+        }
+    }, [nodes, edges, selectedTopology, currentTopologyName]);
+
     const [autoDetectGateways, setAutoDetectGateways] = useState(true);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
@@ -685,7 +699,26 @@ function TopologyEditor() {
                 const topos = await getTopologies(jwt);
                 setTopologies(topos);
 
-                // 2. Obtener usuario para ver última topología activa
+                // 2. Check for local draft first
+                const draftJson = localStorage.getItem("topology_draft");
+                if (draftJson) {
+                    try {
+                        const draft = JSON.parse(draftJson);
+                        // Optional: Check if draft is too old? For now, just load it.
+                        if (draft.nodes && draft.edges) {
+                            setNodes(draft.nodes);
+                            setEdges(draft.edges);
+                            setSelectedTopology(draft.selectedTopology);
+                            setCurrentTopologyName(draft.currentTopologyName || "");
+                            notify("Borrador local restaurado", "info");
+                            return; // Skip loading from backend if draft exists
+                        }
+                    } catch (e) {
+                        console.error("Error parsing local draft:", e);
+                    }
+                }
+
+                // 3. Obtener usuario para ver última topología activa (fallback)
                 const { getUser } = await import("@/lib/api/api");
                 const user = await getUser(jwt);
 
@@ -702,7 +735,7 @@ function TopologyEditor() {
         };
 
         init();
-    }, [router, loadTopology, setTopologies]);
+    }, [router, loadTopology, setTopologies, notify]);
 
     const handleSave = useCallback(
         async (name: string, silent: boolean = false) => {
@@ -807,6 +840,16 @@ function TopologyEditor() {
                 setSelectedTopology(id);
                 setCurrentTopologyName(topo.Name);
 
+                // Update draft with loaded topology
+                const draft = {
+                    nodes: nodesWithData,
+                    edges: data.edges,
+                    selectedTopology: id,
+                    currentTopologyName: topo.Name,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem("topology_draft", JSON.stringify(draft));
+
                 // Ajustar vista después de cargar
                 setTimeout(() => fitView(), 100);
             } catch (e: any) {
@@ -878,6 +921,7 @@ function TopologyEditor() {
                 setCurrentTopologyName("");
                 setNodes([]);
                 setEdges([]);
+                localStorage.removeItem("topology_draft");
             }
 
             const topos = await getTopologies(jwt);
@@ -893,6 +937,7 @@ function TopologyEditor() {
         setEdges([]);
         setSelectedTopology(null);
         setCurrentTopologyName("");
+        localStorage.removeItem("topology_draft");
     }, [setNodes, setEdges]);
 
     const handleExport = useCallback(() => {
