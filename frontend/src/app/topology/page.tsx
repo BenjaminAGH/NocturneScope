@@ -318,10 +318,7 @@ function TopologyEditor() {
         return () => clearInterval(interval);
     }, [jwt, setNodes, notify]);
 
-    const onConnect = useCallback(
-        (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges]
-    );
+
 
     const onEdgesDelete = useCallback(
         (deleted: Edge[]) => {
@@ -348,6 +345,49 @@ function TopologyEditor() {
             return [...nds, newNode];
         });
     }, [setNodes]);
+
+    const onConnect = useCallback(
+        (params: Connection) => {
+            setEdges((eds) => addEdge(params, eds));
+
+            // Lógica para conectar nodos de monitoreo a dispositivos
+            const { source, target } = params;
+            if (!source || !target) return;
+
+            setNodes((nds) => nds.map((node) => {
+                if (node.id === target && node.type === 'monitoring') {
+                    // Si el target es un nodo de monitoreo, buscamos el source (dispositivo)
+                    const sourceNode = nds.find(n => n.id === source);
+                    if (sourceNode && sourceNode.type === 'device') {
+                        return {
+                            ...node,
+                            data: {
+                                ...node.data,
+                                connectedDevice: sourceNode.data.deviceName,
+                                jwt: jwt
+                            }
+                        };
+                    }
+                }
+                if (node.id === source && node.type === 'monitoring') {
+                    // Si el source es un nodo de monitoreo (caso raro pero posible si se conecta al revés)
+                    const targetNode = nds.find(n => n.id === target);
+                    if (targetNode && targetNode.type === 'device') {
+                        return {
+                            ...node,
+                            data: {
+                                ...node.data,
+                                connectedDevice: targetNode.data.deviceName,
+                                jwt: jwt
+                            }
+                        };
+                    }
+                }
+                return node;
+            }));
+        },
+        [setEdges, setNodes, jwt],
+    );
 
     const handleAddMonitoringNode = useCallback(() => {
         const id = `mon-${++nodeIdCounter.current}`;
