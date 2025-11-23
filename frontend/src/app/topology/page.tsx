@@ -460,7 +460,8 @@ function TopologyEditor() {
             } else if (type === 'device') {
                 const deviceName = event.dataTransfer.getData('device/name');
                 if (deviceName) {
-                    const id = `node-${++nodeIdCounter.current}`;
+                    // Usar el nombre del dispositivo como ID para que coincida con deviceUpdates
+                    const id = deviceName;
                     const newNode: Node<DeviceNodeData> = {
                         id,
                         type: "device",
