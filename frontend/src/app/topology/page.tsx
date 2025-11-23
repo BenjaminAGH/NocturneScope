@@ -120,6 +120,9 @@ function TopologyEditor() {
                     if (data.timestamp) {
                         const ts = new Date(data.timestamp).getTime() / 1000;
                         timeDiff = now - ts;
+                        console.log(`DEBUG: Device ${device} - Timestamp: ${data.timestamp}, Parsed: ${ts}, Now: ${now}, Diff: ${timeDiff}`);
+                    } else {
+                        console.log(`DEBUG: Device ${device} - No timestamp found in data`, data);
                     }
 
                     const isActive = timeDiff < 300; // 5 minutos
