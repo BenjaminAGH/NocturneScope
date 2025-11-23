@@ -90,3 +90,40 @@ func (h *UserHandler) Delete(c *fiber.Ctx) error {
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+func (h *UserHandler) UpdateLastTopology(c *fiber.Ctx) error {
+	// Get user ID from JWT token
+	uidAny := c.Locals("user_id")
+	if uidAny == nil {
+		return c.Status(401).JSON(fiber.Map{"error": "unauthorized"})
+	}
+	uid := uint(uidAny.(float64))
+
+	var body struct {
+		TopologyID uint `json:"topology_id"`
+	}
+	if err := c.BodyParser(&body); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "bad request"})
+	}
+
+	if err := h.service.UpdateLastTopology(uid, body.TopologyID); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func (h *UserHandler) Me(c *fiber.Ctx) error {
+	uidAny := c.Locals("user_id")
+	if uidAny == nil {
+		return c.Status(401).JSON(fiber.Map{"error": "unauthorized"})
+	}
+	uid := uint(uidAny.(float64))
+
+	u, err := h.service.Get(uid)
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"error": "not found"})
+	}
+
+	return c.JSON(u)
+}

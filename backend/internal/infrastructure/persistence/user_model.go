@@ -7,31 +7,34 @@ import (
 )
 
 type UserModel struct {
-	ID        uint      `gorm:"primaryKey;autoIncrement"`
-	Username  string    `gorm:"unique;not null"`
-	Email     string    `gorm:"unique;not null"`
-	Role      string    `gorm:"not null;default:'user'"`
-	Password  string    `gorm:"not null"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID             uint   `gorm:"primaryKey;autoIncrement"`
+	Username       string `gorm:"unique;not null"`
+	Email          string `gorm:"unique;not null"`
+	Role           string `gorm:"not null;default:'user'"`
+	Password       string `gorm:"not null"`
+	LastTopologyID *uint
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 func (m *UserModel) ToDomain() domain.User {
 	return domain.User{
-		ID:       m.ID,
-		Username: m.Username,
-		Email:    m.Email,
-		Role:     m.Role,
-		Password: m.Password,
+		ID:             m.ID,
+		Username:       m.Username,
+		Email:          m.Email,
+		Role:           m.Role,
+		Password:       m.Password,
+		LastTopologyID: m.LastTopologyID,
 	}
 }
 
 func UserModelFromDomain(u domain.User) UserModel {
 	return UserModel{
-		ID:       u.ID,
-		Username: u.Username,
-		Email:    u.Email,
-		Role:     u.Role,
-		Password: u.Password,
+		ID:             u.ID,
+		Username:       u.Username,
+		Email:          u.Email,
+		Role:           u.Role,
+		Password:       u.Password,
+		LastTopologyID: u.LastTopologyID,
 	}
 }

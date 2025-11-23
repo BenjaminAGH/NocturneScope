@@ -143,27 +143,19 @@ func (s *AlertService) SendCustomEmail(toEmail, subject, body string) error {
 		return fmt.Errorf("SMTP not configured")
 	}
 
-	auth := smtp.PlainAuth("", s.smtpUser, s.smtpPassword, s.smtpHost)
-
-	// Construct email with proper MIME headers
 	from := s.smtpFrom
 	if from == "" {
 		from = s.smtpUser
 	}
 
-	headers := make(map[string]string)
-	headers["From"] = from
-	headers["To"] = toEmail
-	headers["Subject"] = subject
-	headers["MIME-Version"] = "1.0"
-	headers["Content-Type"] = "text/plain; charset=\"utf-8\""
+	// Simple message format that Gmail accepts
+	message := []byte("To: " + toEmail + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" +
+		body + "\r\n")
 
-	message := ""
-	for k, v := range headers {
-		message += fmt.Sprintf("%s: %s\r\n", k, v)
-	}
-	message += "\r\n" + body
-
+	auth := smtp.PlainAuth("", s.smtpUser, s.smtpPassword, s.smtpHost)
 	addr := fmt.Sprintf("%s:%s", s.smtpHost, s.smtpPort)
-	return smtp.SendMail(addr, auth, from, []string{toEmail}, []byte(message))
+
+	return smtp.SendMail(addr, auth, from, []string{toEmail}, message)
 }

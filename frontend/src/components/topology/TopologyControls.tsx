@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 
 interface TopologyControlsProps {
@@ -19,6 +19,8 @@ interface TopologyControlsProps {
     onAddNotificationNode: () => void; // Added
     selectedNode: any;
     onUpdateNodeData: (id: string, data: any) => void;
+    onDelete: (id: number) => void;
+    onRename: (id: number, newName: string) => void;
 }
 
 const METRIC_OPTIONS = [
@@ -67,10 +69,14 @@ export default function TopologyControls({
     onAddNotificationNode,
     selectedNode,
     onUpdateNodeData,
+    onDelete,
+    onRename,
 }: TopologyControlsProps) {
     const { notify } = useNotification();
     const [isOpen, setIsOpen] = useState(true);
     const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const [showRenameDialog, setShowRenameDialog] = useState(false);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [topologyName, setTopologyName] = useState("");
 
     const handleSaveClick = () => {
@@ -83,6 +89,7 @@ export default function TopologyControls({
                 return;
             }
         }
+        setTopologyName("");
         setShowSaveDialog(true);
     };
 
@@ -91,6 +98,21 @@ export default function TopologyControls({
             onSave(topologyName.trim());
             setShowSaveDialog(false);
             setTopologyName("");
+        }
+    };
+
+    const handleRenameConfirm = () => {
+        if (selectedTopology && topologyName.trim()) {
+            onRename(selectedTopology, topologyName.trim());
+            setShowRenameDialog(false);
+            setTopologyName("");
+        }
+    };
+
+    const handleDeleteConfirm = () => {
+        if (selectedTopology) {
+            onDelete(selectedTopology);
+            setShowDeleteDialog(false);
         }
     };
 
@@ -417,21 +439,49 @@ export default function TopologyControls({
 
                 <div className="border-t border-border pt-4 space-y-2">
                     <label className="text-sm font-medium">Topologías Guardadas</label>
-                    <select
-                        className="w-full bg-background/80 border border-border rounded px-3 py-2 text-sm"
-                        value={selectedTopology || ""}
-                        onChange={(e) => {
-                            const id = parseInt(e.target.value);
-                            if (!isNaN(id)) onLoad(id);
-                        }}
-                    >
-                        <option value="">Seleccionar topología...</option>
-                        {topologies.map((t) => (
-                            <option key={t.ID} value={t.ID}>
-                                {t.Name}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="flex gap-2">
+                        <select
+                            className="flex-1 bg-background/80 border border-border rounded px-3 py-2 text-sm"
+                            value={selectedTopology || ""}
+                            onChange={(e) => {
+                                const id = parseInt(e.target.value);
+                                if (!isNaN(id)) onLoad(id);
+                            }}
+                        >
+                            <option value="">Seleccionar topología...</option>
+                            {topologies.map((t) => (
+                                <option key={t.ID} value={t.ID}>
+                                    {t.Name}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            onClick={() => {
+                                if (selectedTopology) {
+                                    const topo = topologies.find(t => t.ID === selectedTopology);
+                                    if (topo) {
+                                        setTopologyName(topo.Name);
+                                        setShowRenameDialog(true);
+                                    }
+                                }
+                            }}
+                            disabled={!selectedTopology}
+                            className="p-2 bg-background/50 hover:bg-accent border border-border rounded disabled:opacity-50"
+                            title="Renombrar"
+                        >
+                            <PencilIcon className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (selectedTopology) setShowDeleteDialog(true);
+                            }}
+                            disabled={!selectedTopology}
+                            className="p-2 bg-background/50 hover:bg-destructive/20 border border-border rounded text-destructive disabled:opacity-50"
+                            title="Eliminar"
+                        >
+                            <TrashIcon className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Acciones */}
@@ -487,6 +537,67 @@ export default function TopologyControls({
                                     className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm"
                                 >
                                     Guardar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Dialog para renombrar */}
+                {showRenameDialog && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4">
+                            <h3 className="text-lg font-semibold">Renombrar Topología</h3>
+                            <input
+                                type="text"
+                                placeholder="Nuevo nombre"
+                                value={topologyName}
+                                onChange={(e) => setTopologyName(e.target.value)}
+                                className="w-full px-3 py-2 bg-background border border-border rounded text-sm"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") handleRenameConfirm();
+                                    if (e.key === "Escape") setShowRenameDialog(false);
+                                }}
+                            />
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setShowRenameDialog(false)}
+                                    className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleRenameConfirm}
+                                    className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm"
+                                >
+                                    Renombrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Dialog para eliminar */}
+                {showDeleteDialog && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4">
+                            <h3 className="text-lg font-semibold text-destructive">Eliminar Topología</h3>
+                            <p className="text-sm text-muted-foreground">
+                                ¿Estás seguro de que deseas eliminar esta topología? Esta acción no se puede deshacer.
+                            </p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setShowDeleteDialog(false)}
+                                    className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleDeleteConfirm}
+                                    className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded text-sm"
+                                >
+                                    Eliminar
                                 </button>
                             </div>
                         </div>

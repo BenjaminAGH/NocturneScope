@@ -182,3 +182,79 @@ export async function sendCustomEmail(jwt: string, to: string, subject: string, 
   });
   return handle(res);
 }
+
+export async function updateLastTopology(jwt: string, topologyId: number) {
+  const res = await fetch(`${BASE}/users/me/last-topology`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ topology_id: topologyId }),
+  });
+  if (!res.ok) throw new Error("Failed to update last topology");
+}
+
+export async function deleteTopology(jwt: string, id: number) {
+  const res = await fetch(`${BASE}/topologies/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${jwt}` },
+  });
+  if (!res.ok) throw new Error("Failed to delete topology");
+}
+
+export async function updateTopology(jwt: string, id: number, name: string, data: any) {
+  const res = await fetch(`${BASE}/topologies/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ name, data }),
+  });
+  return handle(res);
+}
+
+export async function getTopologies(jwt: string) {
+  const res = await fetch(`${BASE}/topologies`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+  });
+  return handle(res);
+}
+
+export async function getTopology(jwt: string, id: number) {
+  const res = await fetch(`${BASE}/topologies/${id}`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+  });
+  return handle(res);
+}
+
+export async function createTopology(jwt: string, name: string, data: any) {
+  const res = await fetch(`${BASE}/topologies`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ name, data }),
+  });
+  return handle(res);
+}
+
+export async function getUser(jwt: string) {
+  // Assuming there's a /users/me endpoint or similar to get user details including LastTopologyID
+  // If not, we might need to add it or use an existing one.
+  // Let's check if there is a 'me' endpoint.
+  // Based on routes, there is RegisterUserRoutes(protected, userService).
+  // Let's assume there is a GET /users/me or similar.
+  // Actually, looking at user_handlers.go, there is Get(id).
+  // We need a way to get the current user.
+  // For now, let's assume we can get it via ID if we decode the token, OR add a /users/me endpoint.
+  // Let's add a /users/me endpoint in the backend first if it doesn't exist.
+  // Wait, I can just use the ID from the token in the frontend if I decode it, but better to have an endpoint.
+  // Let's check user_routes.go if it exists.
+  const res = await fetch(`${BASE}/users/me`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+  });
+  return handle(res);
+}

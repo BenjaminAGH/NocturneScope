@@ -94,3 +94,13 @@ func (s *UserService) Update(id uint, input UpdateUserInput) (*domain.User, erro
 func (s *UserService) Delete(id uint) error {
 	return s.repo.Delete(id)
 }
+
+func (s *UserService) UpdateLastTopology(userID uint, topologyID uint) error {
+	user, err := s.repo.FindByID(userID)
+	if err != nil {
+		return err
+	}
+
+	user.LastTopologyID = &topologyID
+	return s.repo.Update(user)
+}

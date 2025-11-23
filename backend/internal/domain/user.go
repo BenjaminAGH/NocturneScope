@@ -1,11 +1,12 @@
 package domain
 
 type User struct {
-	ID       uint
-	Username string
-	Email    string
-	Role     string
-	Password string
+	ID             uint
+	Username       string
+	Email          string
+	Role           string
+	Password       string
+	LastTopologyID *uint
 }
 
 type UserRepository interface {

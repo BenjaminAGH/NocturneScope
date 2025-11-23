@@ -63,6 +63,7 @@ func (r *UserGormRepository) Update(user *domain.User) error {
 	m.Email = user.Email
 	m.Role = user.Role
 	m.Password = user.Password
+	m.LastTopologyID = user.LastTopologyID
 
 	return r.db.Save(&m).Error
 }

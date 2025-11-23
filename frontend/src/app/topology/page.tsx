@@ -633,6 +633,77 @@ function TopologyEditor() {
         }));
     }, [setNodes]);
 
+
+
+    const loadTopology = async (id: number) => {
+        const jwt = localStorage.getItem("jwt");
+        if (!jwt) return;
+
+        try {
+            const { getTopology, updateLastTopology } = await import("@/lib/api/api");
+            const topo = await getTopology(jwt, id);
+
+            // Parsear data
+            let parsedData = topo.Data;
+            if (typeof parsedData === 'string') {
+                try {
+                    parsedData = JSON.parse(parsedData);
+                } catch (e) {
+                    console.error("Error parsing topology data JSON:", e);
+                }
+            }
+
+            // Restaurar nodos y edges
+            if (parsedData && parsedData.nodes && parsedData.edges) {
+                setNodes(parsedData.nodes);
+                setEdges(parsedData.edges);
+                setSelectedTopology(id);
+                setCurrentTopologyName(topo.Name);
+                notify(`Topología "${topo.Name}" cargada`, "success");
+
+                // Actualizar preferencia de última topología
+                updateLastTopology(jwt, id).catch(console.error);
+            }
+        } catch (error) {
+            console.error("Error loading topology:", error);
+            notify("Error al cargar la topología", "error");
+        }
+    };
+
+    // Cargar topologías y última activa al inicio
+    useEffect(() => {
+        const jwt = localStorage.getItem("jwt");
+        if (!jwt) {
+            router.push("/auth/login");
+            return;
+        }
+
+        const init = async () => {
+            try {
+                // 1. Cargar lista de topologías
+                const { getTopologies } = await import("@/lib/api/api");
+                const topos = await getTopologies(jwt);
+                setTopologies(topos);
+
+                // 2. Obtener usuario para ver última topología activa
+                const { getUser } = await import("@/lib/api/api");
+                const user = await getUser(jwt);
+
+                if (user.LastTopologyID) {
+                    // Verificar que la topología aún exista
+                    const exists = topos.find((t: any) => t.ID === user.LastTopologyID);
+                    if (exists) {
+                        loadTopology(user.LastTopologyID);
+                    }
+                }
+            } catch (error) {
+                console.error("Error initializing topology:", error);
+            }
+        };
+
+        init();
+    }, [router, loadTopology, setTopologies]);
+
     const handleSave = useCallback(
         async (name: string, silent: boolean = false) => {
             if (!jwt) return;
@@ -666,22 +737,25 @@ function TopologyEditor() {
             };
 
             try {
+                const { createTopology, updateTopology, getTopologies } = await import("@/lib/api/api");
                 if (selectedTopology) {
                     // Actualizar existente
                     await updateTopology(jwt, selectedTopology, name, data);
+                    if (!silent) notify("Topología actualizada", "success");
                 } else {
                     // Crear nueva
-                    const saved = await saveTopology(jwt, name, data);
-                    setSelectedTopology(saved.ID);
+                    const newTopo = await createTopology(jwt, name, data);
+                    setSelectedTopology(newTopo.ID);
+                    if (!silent) notify("Topología guardada", "success");
                 }
-
                 setCurrentTopologyName(name);
                 // Recargar lista de topologías
                 const topos = await getTopologies(jwt);
                 setTopologies(topos);
 
                 if (!silent) {
-                    notify("Topología guardada correctamente", "success");
+                    // This notification is now handled inside the if/else block
+                    // notify("Topología guardada correctamente", "success");
                 } else {
                     console.log("Auto-saved topology");
                 }
@@ -753,6 +827,66 @@ function TopologyEditor() {
 
         return () => clearTimeout(timer);
     }, [nodes, edges, selectedTopology, currentTopologyName, handleSave]);
+
+    const handleRenameTopology = async (id: number, newName: string) => {
+        const jwt = localStorage.getItem("jwt");
+        if (!jwt) return;
+
+        try {
+            const { updateTopology, getTopologies } = await import("@/lib/api/api");
+
+            const topologyData = {
+                nodes: nodes.map((n) => ({
+                    id: n.id,
+                    type: n.type,
+                    position: n.position,
+                    data: n.data,
+                })),
+                edges: edges.map((e) => ({
+                    id: e.id,
+                    source: e.source,
+                    target: e.target,
+                    type: e.type,
+                })),
+            };
+
+            await updateTopology(jwt, id, newName, topologyData);
+            notify("Topología renombrada", "success");
+
+            const topos = await getTopologies(jwt);
+            setTopologies(topos);
+            if (selectedTopology === id) {
+                setCurrentTopologyName(newName);
+            }
+        } catch (error) {
+            console.error("Error renaming topology:", error);
+            notify("Error al renombrar", "error");
+        }
+    };
+
+    const handleDeleteTopology = async (id: number) => {
+        const jwt = localStorage.getItem("jwt");
+        if (!jwt) return;
+
+        try {
+            const { deleteTopology, getTopologies } = await import("@/lib/api/api");
+            await deleteTopology(jwt, id);
+            notify("Topología eliminada", "success");
+
+            if (selectedTopology === id) {
+                setSelectedTopology(null);
+                setCurrentTopologyName("");
+                setNodes([]);
+                setEdges([]);
+            }
+
+            const topos = await getTopologies(jwt);
+            setTopologies(topos);
+        } catch (error) {
+            console.error("Error deleting topology:", error);
+            notify("Error al eliminar", "error");
+        }
+    };
 
     const handleNew = useCallback(() => {
         setNodes([]);
@@ -843,6 +977,8 @@ function TopologyEditor() {
                     onAddNotificationNode={handleAddNotificationNode}
                     selectedNode={selectedNode}
                     onUpdateNodeData={handleUpdateNodeData}
+                    onDelete={handleDeleteTopology}
+                    onRename={handleRenameTopology}
                 />
             </div>
         </div>
