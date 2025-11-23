@@ -416,8 +416,8 @@ function TopologyEditor() {
                                     notify(message, "warning");
                                 }
 
-                                // Trigger sound if becoming active
-                                if (shouldBeActive && !wasActive && node.type === 'sound') {
+                                // Trigger sound whenever active (plays every polling cycle)
+                                if (shouldBeActive && node.type === 'sound') {
                                     const soundType = (data as SoundNodeData).sound || 'beep';
                                     playSound(soundType as SoundType);
                                 }
