@@ -100,7 +100,14 @@ function TopologyEditor() {
                 const results = await Promise.all(statsPromises);
                 const stats: Record<string, any> = {};
                 results.forEach(r => {
-                    if (r) stats[r.device] = r.data;
+                    if (r && r.data) {
+                        // La API devuelve { "device_name": { ...stats } }
+                        // Necesitamos extraer el objeto interno
+                        const deviceStats = r.data[r.device];
+                        if (deviceStats) {
+                            stats[r.device] = deviceStats;
+                        }
+                    }
                 });
 
                 const deviceUpdates = new Map<string, { status: "active" | "inactive" | "unknown"; ip?: string; gateway?: string }>();
