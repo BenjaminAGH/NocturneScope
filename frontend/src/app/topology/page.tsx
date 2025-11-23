@@ -355,8 +355,8 @@ function TopologyEditor() {
             if (!source || !target) return;
 
             setNodes((nds) => nds.map((node) => {
-                if (node.id === target && node.type === 'monitoring') {
-                    // Si el target es un nodo de monitoreo, buscamos el source (dispositivo)
+                // Caso 1: Target es Monitoring o Action
+                if (node.id === target && (node.type === 'monitoring' || node.type === 'action')) {
                     const sourceNode = nds.find(n => n.id === source);
                     if (sourceNode && sourceNode.type === 'device') {
                         return {
@@ -369,8 +369,8 @@ function TopologyEditor() {
                         };
                     }
                 }
-                if (node.id === source && node.type === 'monitoring') {
-                    // Si el source es un nodo de monitoreo (caso raro pero posible si se conecta al revés)
+                // Caso 2: Source es Monitoring o Action (conexión inversa)
+                if (node.id === source && (node.type === 'monitoring' || node.type === 'action')) {
                     const targetNode = nds.find(n => n.id === target);
                     if (targetNode && targetNode.type === 'device') {
                         return {
