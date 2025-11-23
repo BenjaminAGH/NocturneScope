@@ -47,3 +47,27 @@ func (h *AlertHandler) SendTestEmail(c *fiber.Ctx) error {
 		"message": "Test email sent",
 	})
 }
+
+func (h *AlertHandler) SendCustomEmail(c *fiber.Ctx) error {
+	var req struct {
+		Email   string `json:"email"`
+		Subject string `json:"subject"`
+		Body    string `json:"body"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	if req.Email == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Email is required"})
+	}
+
+	if err := h.service.SendCustomEmail(req.Email, req.Subject, req.Body); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Custom email sent",
+	})
+}

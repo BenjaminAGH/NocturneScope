@@ -3,7 +3,7 @@
 import { memo, useState, useEffect, useRef } from "react";
 import { Handle, Position, NodeProps, useReactFlow } from "@xyflow/react";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
-import { sendTestEmail } from "@/lib/api/api";
+import { sendCustomEmail } from "@/lib/api/api";
 
 export interface EmailNodeData extends Record<string, unknown> {
     subject?: string;
@@ -17,7 +17,7 @@ export interface EmailNodeData extends Record<string, unknown> {
 
 function EmailNode({ id, data, selected }: NodeProps) {
     const typedData = data as EmailNodeData;
-    const { isActive, to, jwt } = typedData;
+    const { isActive, to, jwt, subject, body } = typedData;
     const lastSentRef = useRef<number>(0);
 
     useEffect(() => {
@@ -31,15 +31,18 @@ function EmailNode({ id, data, selected }: NodeProps) {
 
         lastSentRef.current = now;
 
-        // Send email
-        sendTestEmail(jwt, to)
+        // Send custom email with subject and body
+        const emailSubject = subject || "Alert from NocturneScope";
+        const emailBody = body || "An alert condition has been triggered.";
+
+        sendCustomEmail(jwt, to, emailSubject, emailBody)
             .then(() => {
-                console.log(`Email sent to ${to} from node ${id}`);
+                console.log(`Custom email sent to ${to} from node ${id}`);
             })
             .catch((err) => {
                 console.error(`Failed to send email from node ${id}:`, err);
             });
-    }, [isActive, to, jwt, id]);
+    }, [isActive, to, jwt, subject, body, id]);
 
     return (
         <div
