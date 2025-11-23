@@ -1,16 +1,17 @@
 package routes
 
 import (
+	"github.com/gofiber/fiber/v2"
+
+	"github.com/BenjaminAGH/nocturnescope/backend/internal/domain"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/interface/http/handlers"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/usecase/service"
-	"github.com/gofiber/fiber/v2"
 )
 
-func RegisterMetricQueryRoutes(r fiber.Router, svc *service.MetricService) {
-    h := handlers.NewMetricQueryHandler(svc)
-    g := r.Group("/metrics")
-    g.Get("/devices",     h.Devices)
-    g.Get("/last",        h.Last)
-    g.Get("/timeseries",  h.TimeSeries)
-    g.Get("/history",     h.History)
+func RegisterMetricQueryRoutes(r fiber.Router, svc *service.MetricService, tokenRepo domain.APITokenRepository) {
+	h := handlers.NewMetricQueryHandler(svc, tokenRepo)
+	r.Get("/metrics/devices", h.Devices)
+	r.Get("/metrics/last", h.Last)
+	r.Get("/metrics/timeseries", h.TimeSeries)
+	r.Get("/metrics/history", h.History)
 }

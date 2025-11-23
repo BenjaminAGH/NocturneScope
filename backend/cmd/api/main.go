@@ -70,7 +70,7 @@ func main() {
 		fmt.Printf("Error loading alert rules: %v\n", err)
 	}
 
-	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, topologyService, alertService)
+	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, apiTokenRepo, topologyService, alertService)
 
 	log.Fatal(app.Listen(":3000"))
 }

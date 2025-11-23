@@ -17,4 +17,5 @@ type APITokenRepository interface {
 	FindByHash(hash string) (*APIToken, error)
 	FindByUser(userID uint) ([]APIToken, error)
 	Revoke(id uint, userID uint) error
+	GetDeviceNamesByUser(userID uint) ([]string, error)
 }

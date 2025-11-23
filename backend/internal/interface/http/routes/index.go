@@ -17,6 +17,7 @@ func Register(
 	jwtService *security.JWTService,
 	metricService *service.MetricService,
 	apiTokenService *service.TokenService,
+	apiTokenRepo domain.APITokenRepository,
 	topologyService *service.TopologyService,
 	alertService domain.AlertService,
 ) {
@@ -34,7 +35,7 @@ func Register(
 	authHandler := handlers.NewAuthHandler(authService, userService)
 	protected.Post("/auth/logout", authHandler.Logout)
 
-	RegisterMetricQueryRoutes(protected, metricService)
+	RegisterMetricQueryRoutes(protected, metricService, apiTokenRepo)
 
 	// api tokens del usuario
 	apiTokenHandler := handlers.NewAPITokenHandler(apiTokenService)

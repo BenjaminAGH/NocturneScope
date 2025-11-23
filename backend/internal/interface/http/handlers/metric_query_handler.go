@@ -5,23 +5,36 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/BenjaminAGH/nocturnescope/backend/internal/domain"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/usecase/service"
 )
 
 type MetricQueryHandler struct {
-	svc *service.MetricService
+	svc       *service.MetricService
+	tokenRepo domain.APITokenRepository
 }
 
-func NewMetricQueryHandler(s *service.MetricService) *MetricQueryHandler {
-	return &MetricQueryHandler{svc: s}
+func NewMetricQueryHandler(s *service.MetricService, tokenRepo domain.APITokenRepository) *MetricQueryHandler {
+	return &MetricQueryHandler{
+		svc:       s,
+		tokenRepo: tokenRepo,
+	}
 }
 
 func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
-	devs, err := h.svc.ListDevices(context.Background())
+	// Get user ID from JWT middleware
+	userID, ok := c.Locals("user_id").(uint)
+	if !ok {
+		return c.Status(401).JSON(fiber.Map{"error": "unauthorized"})
+	}
+
+	// Get device names from user's tokens
+	devices, err := h.tokenRepo.GetDeviceNamesByUser(userID)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(devs)
+
+	return c.JSON(devices)
 }
 
 func (h *MetricQueryHandler) Last(c *fiber.Ctx) error {

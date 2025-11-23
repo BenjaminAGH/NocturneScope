@@ -54,3 +54,16 @@ func (r *APITokenGormRepository) Revoke(id uint, userID uint) error {
 		Update("revoked_at", time.Now()).
 		Error
 }
+
+func (r *APITokenGormRepository) GetDeviceNamesByUser(userID uint) ([]string, error) {
+	var deviceNames []string
+	err := r.db.Model(&persistence.APITokenModel{}).
+		Where("user_id = ? AND revoked_at IS NULL", userID).
+		Distinct("device_name").
+		Pluck("device_name", &deviceNames).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return deviceNames, nil
+}
