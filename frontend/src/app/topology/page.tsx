@@ -98,6 +98,7 @@ function TopologyEditor() {
                 });
 
                 const results = await Promise.all(statsPromises);
+                console.log("DEBUG: results from getLastStats:", results);
                 const stats: Record<string, any> = {};
                 results.forEach(r => {
                     if (r && r.data) {
