@@ -64,9 +64,11 @@ export default function TopologyControls({
     onAddMonitoringNode,
     onAddActionNode,
     onAddEmailNode,
+    onAddNotificationNode,
     selectedNode,
     onUpdateNodeData,
 }: TopologyControlsProps) {
+    const { notify } = useNotification();
     const [isOpen, setIsOpen] = useState(true);
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [topologyName, setTopologyName] = useState("");
@@ -154,6 +156,18 @@ export default function TopologyControls({
                             <EnvelopeIcon className="w-6 h-6" />
                             <span className="text-xs">Email</span>
                         </button>
+                        <button
+                            onClick={onAddNotificationNode}
+                            draggable
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'notification');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                        >
+                            <BellIcon className="w-6 h-6" />
+                            <span className="text-xs">Notificación</span>
+                        </button>
                     </div>
                 </div>
 
@@ -163,7 +177,9 @@ export default function TopologyControls({
                         <label className="text-sm font-medium text-primary">
                             {selectedNode.type === 'monitoring' && "Configuración de Gráfico"}
                             {selectedNode.type === 'action' && "Regla de Disparo"}
+                            {selectedNode.type === 'action' && "Regla de Disparo"}
                             {selectedNode.type === 'email' && "Configuración de Email"}
+                            {selectedNode.type === 'notification' && "Configuración de Notificación"}
                         </label>
 
                         <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">
@@ -316,7 +332,7 @@ export default function TopologyControls({
                                             onClick={async () => {
                                                 const email = selectedNode.data.to;
                                                 if (!email) {
-                                                    alert("Por favor ingresa un destinatario primero.");
+                                                    notify("Por favor ingresa un destinatario primero.", "error");
                                                     return;
                                                 }
                                                 const jwt = localStorage.getItem("jwt");
@@ -325,9 +341,9 @@ export default function TopologyControls({
                                                 try {
                                                     const { sendTestEmail } = await import("@/lib/api/api");
                                                     await sendTestEmail(jwt, email);
-                                                    alert(`Correo de prueba enviado a ${email}`);
+                                                    notify(`Correo de prueba enviado a ${email}`, "success");
                                                 } catch (err: any) {
-                                                    alert(`Error enviando correo: ${err.message}`);
+                                                    notify(`Error enviando correo: ${err.message}`, "error");
                                                 }
                                             }}
                                             className="w-full px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-xs font-medium transition-colors flex items-center justify-center gap-2"
@@ -337,6 +353,20 @@ export default function TopologyControls({
                                         </button>
                                     </div>
                                 </>
+                            )}
+
+                            {/* Notification Node Config */}
+                            {selectedNode.type === 'notification' && (
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Mensaje</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Mensaje de alerta..."
+                                        className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.message || ''}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { message: e.target.value })}
+                                    />
+                                </div>
                             )}
 
                             {/* Connection Status for Monitoring and Action */}
@@ -463,6 +493,6 @@ export default function TopologyControls({
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }
