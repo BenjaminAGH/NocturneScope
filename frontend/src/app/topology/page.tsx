@@ -289,8 +289,15 @@ function TopologyEditor() {
                             );
 
                             const data = node.data as any;
-                            if (data.isActive !== isConnectedToActiveAction) {
-                                nextNodes[index] = { ...node, data: { ...data, isActive: isConnectedToActiveAction } };
+                            if (data.isActive !== isConnectedToActiveAction || (node.type === 'email' && !data.jwt)) {
+                                nextNodes[index] = {
+                                    ...node,
+                                    data: {
+                                        ...data,
+                                        isActive: isConnectedToActiveAction,
+                                        jwt: jwt // Add JWT for email sending
+                                    }
+                                };
                                 nodesChanged = true;
 
                                 // Trigger notification logic if becoming active

@@ -1,8 +1,9 @@
 "use client";
 
-import { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect, useRef } from "react";
 import { Handle, Position, NodeProps, useReactFlow } from "@xyflow/react";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import { sendTestEmail } from "@/lib/api/api";
 
 export interface EmailNodeData extends Record<string, unknown> {
     subject?: string;
@@ -11,11 +12,34 @@ export interface EmailNodeData extends Record<string, unknown> {
     cooldown?: string; // e.g., "5m", "1h"
     isActive?: boolean;
     connectedDevice?: string;
+    jwt?: string;
 }
 
 function EmailNode({ id, data, selected }: NodeProps) {
     const typedData = data as EmailNodeData;
-    const { isActive, to } = typedData;
+    const { isActive, to, jwt } = typedData;
+    const lastSentRef = useRef<number>(0);
+
+    useEffect(() => {
+        if (!isActive || !to || !jwt) return;
+
+        // Debounce: only send if at least 30 seconds have passed since last send
+        const now = Date.now();
+        if (now - lastSentRef.current < 30000) {
+            return;
+        }
+
+        lastSentRef.current = now;
+
+        // Send email
+        sendTestEmail(jwt, to)
+            .then(() => {
+                console.log(`Email sent to ${to} from node ${id}`);
+            })
+            .catch((err) => {
+                console.error(`Failed to send email from node ${id}:`, err);
+            });
+    }, [isActive, to, jwt, id]);
 
     return (
         <div
