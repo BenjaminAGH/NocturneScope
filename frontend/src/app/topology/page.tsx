@@ -33,6 +33,7 @@ import MonitoringNode, { MonitoringNodeData } from "@/components/topology/Monito
 import ActionNode, { ActionNodeData } from "@/components/topology/ActionNode";
 import EmailNode, { EmailNodeData } from "@/components/topology/EmailNode";
 import NotificationNode, { NotificationNodeData } from "@/components/topology/NotificationNode";
+import DelayNode, { DelayNodeData } from "@/components/topology/DelayNode";
 import { useNotification } from "@/context/NotificationContext";
 
 const nodeTypes = {
@@ -42,6 +43,7 @@ const nodeTypes = {
     action: ActionNode,
     email: EmailNode,
     notification: NotificationNode,
+    delay: DelayNode,
 };
 
 function TopologyEditor() {
@@ -295,22 +297,83 @@ function TopologyEditor() {
                         }
                     });
 
-                    // B. Propagar a Email/Notification Nodes
+                    // B. Evaluar Delay Nodes
+                    const activeDelayIds = new Set<string>();
+                    nextNodes.forEach((node, index) => {
+                        if (node.type === 'delay') {
+                            const isConnectedToActiveAction = edgesRef.current.some(e =>
+                                e.target === node.id && activeActionIds.has(e.source)
+                            );
+
+                            const data = node.data as DelayNodeData;
+                            const delay = data.delay || 0;
+                            const now = Date.now();
+
+                            if (isConnectedToActiveAction) {
+                                if (!data.activationTime) {
+                                    // Start timer
+                                    nextNodes[index] = {
+                                        ...node,
+                                        data: { ...data, activationTime: now, isWaiting: true, isActive: false }
+                                    };
+                                    nodesChanged = true;
+                                } else {
+                                    // Check timer
+                                    const elapsed = now - (data.activationTime as number);
+                                    if (elapsed >= delay) {
+                                        if (!data.isActive) {
+                                            nextNodes[index] = {
+                                                ...node,
+                                                data: { ...data, isWaiting: false, isActive: true }
+                                            };
+                                            nodesChanged = true;
+                                        }
+                                        activeDelayIds.add(node.id);
+                                    } else {
+                                        // Still waiting
+                                        if (!data.isWaiting) {
+                                            nextNodes[index] = {
+                                                ...node,
+                                                data: { ...data, isWaiting: true, isActive: false }
+                                            };
+                                            nodesChanged = true;
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Reset if input inactive
+                                if (data.activationTime || data.isActive || data.isWaiting) {
+                                    nextNodes[index] = {
+                                        ...node,
+                                        data: { ...data, activationTime: undefined, isWaiting: false, isActive: false }
+                                    };
+                                    nodesChanged = true;
+                                }
+                            }
+                        }
+                    });
+
+                    // C. Propagar a Email/Notification Nodes
                     nextNodes.forEach((node, index) => {
                         if (node.type === 'email' || node.type === 'notification') {
                             const isConnectedToActiveAction = edgesRef.current.some(e =>
                                 e.target === node.id && activeActionIds.has(e.source)
                             );
+                            const isConnectedToActiveDelay = edgesRef.current.some(e =>
+                                e.target === node.id && activeDelayIds.has(e.source)
+                            );
+
+                            const shouldBeActive = isConnectedToActiveAction || isConnectedToActiveDelay;
 
                             const data = node.data as any;
                             const wasActive = data.isActive;
 
-                            if (data.isActive !== isConnectedToActiveAction) {
-                                nextNodes[index] = { ...node, data: { ...data, isActive: isConnectedToActiveAction } };
+                            if (data.isActive !== shouldBeActive) {
+                                nextNodes[index] = { ...node, data: { ...data, isActive: shouldBeActive } };
                                 nodesChanged = true;
 
                                 // Trigger email sending if becoming active
-                                if (isConnectedToActiveAction && !wasActive && node.type === 'email') {
+                                if (shouldBeActive && !wasActive && node.type === 'email') {
                                     const emailData = data as EmailNodeData;
                                     if (emailData.to && jwt) {
                                         // Send email asynchronously
@@ -345,7 +408,7 @@ function TopologyEditor() {
                                 }
 
                                 // Trigger notification logic if becoming active
-                                if (isConnectedToActiveAction && !wasActive && node.type === 'notification') {
+                                if (shouldBeActive && !wasActive && node.type === 'notification') {
                                     const message = (data as NotificationNodeData).message || "Alerta detectada";
                                     notify(message, "warning");
                                 }
@@ -560,6 +623,19 @@ function TopologyEditor() {
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes]);
 
+    const handleAddDelayNode = useCallback(() => {
+        const id = `delay-${++nodeIdCounter.current}`;
+        const newNode: Node<DelayNodeData> = {
+            id,
+            type: "delay",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                delay: 10000, // 10s default
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes]);
+
     const onDragOver = useCallback((event: React.DragEvent) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
@@ -626,6 +702,17 @@ function TopologyEditor() {
                     position,
                     data: {
                         message: '',
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'delay') {
+                const id = `delay-${++nodeIdCounter.current}`;
+                const newNode: Node<DelayNodeData> = {
+                    id,
+                    type: "delay",
+                    position,
+                    data: {
+                        delay: 10000,
                     },
                 };
                 setNodes((nds) => [...nds, newNode]);
@@ -1033,7 +1120,8 @@ function TopologyEditor() {
                     onAddActionNode={handleAddActionNode}
                     onAddEmailNode={handleAddEmailNode}
                     onAddNotificationNode={handleAddNotificationNode}
-                    selectedNode={selectedNode}
+                    onAddDelayNode={handleAddDelayNode}
+                    selectedNode={nodes.find((n) => n.id === selectedNodeId)}
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}
                     onRename={handleRenameTopology}

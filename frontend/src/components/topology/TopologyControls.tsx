@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 
 interface TopologyControlsProps {
@@ -17,7 +17,8 @@ interface TopologyControlsProps {
     onAddMonitoringNode: () => void;
     onAddActionNode: () => void;
     onAddEmailNode: () => void;
-    onAddNotificationNode: () => void; // Added
+    onAddNotificationNode: () => void;
+    onAddDelayNode: () => void; // Added
     selectedNode: any;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
@@ -68,6 +69,7 @@ export default function TopologyControls({
     onAddActionNode,
     onAddEmailNode,
     onAddNotificationNode,
+    onAddDelayNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,
@@ -191,6 +193,18 @@ export default function TopologyControls({
                             <BellIcon className="w-6 h-6" />
                             <span className="text-xs">Notificación</span>
                         </button>
+                        <button
+                            onClick={onAddDelayNode}
+                            draggable
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'delay');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                        >
+                            <ClockIcon className="w-6 h-6" />
+                            <span className="text-xs">Delay</span>
+                        </button>
                     </div>
                 </div>
 
@@ -202,7 +216,9 @@ export default function TopologyControls({
                             {selectedNode.type === 'action' && "Regla de Disparo"}
                             {selectedNode.type === 'action' && "Regla de Disparo"}
                             {selectedNode.type === 'email' && "Configuración de Email"}
+                            {selectedNode.type === 'email' && "Configuración de Email"}
                             {selectedNode.type === 'notification' && "Configuración de Notificación"}
+                            {selectedNode.type === 'delay' && "Configuración de Delay"}
                         </label>
 
                         <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">
@@ -330,17 +346,7 @@ export default function TopologyControls({
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { subject: e.target.value })}
                                         />
                                     </div>
-                                    <div>
-                                        <label className="text-xs text-muted-foreground">Frecuencia (Cooldown)</label>
-                                        <input
-                                            type="text"
-                                            placeholder="ej. 10m, 1h, 24h"
-                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.cooldown || '1h'}
-                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { cooldown: e.target.value })}
-                                        />
-                                        <p className="text-[10px] text-muted-foreground mt-1">Formatos: 30s, 5m, 1h</p>
-                                    </div>
+
                                     <div>
                                         <label className="text-xs text-muted-foreground">Contenido</label>
                                         <textarea
@@ -389,6 +395,21 @@ export default function TopologyControls({
                                         value={selectedNode.data.message || ''}
                                         onChange={(e) => onUpdateNodeData(selectedNode.id, { message: e.target.value })}
                                     />
+                                </div>
+                            )}
+
+                            {/* Delay Node Config */}
+                            {selectedNode.type === 'delay' && (
+                                <div>
+                                    <label className="text-xs text-muted-foreground">Retraso (ms)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="10000"
+                                        className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                        value={selectedNode.data.delay || 0}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { delay: Number(e.target.value) })}
+                                    />
+                                    <p className="text-[10px] text-muted-foreground mt-1">1000ms = 1 segundo</p>
                                 </div>
                             )}
 
