@@ -145,12 +145,25 @@ func (s *AlertService) SendCustomEmail(toEmail, subject, body string) error {
 
 	auth := smtp.PlainAuth("", s.smtpUser, s.smtpPassword, s.smtpHost)
 
-	msg := fmt.Sprintf("From: %s\r\n"+
-		"To: %s\r\n"+
-		"Subject: %s\r\n"+
-		"\r\n"+
-		"%s\r\n", s.smtpFrom, toEmail, subject, body)
+	// Construct email with proper MIME headers
+	from := s.smtpFrom
+	if from == "" {
+		from = s.smtpUser
+	}
+
+	headers := make(map[string]string)
+	headers["From"] = from
+	headers["To"] = toEmail
+	headers["Subject"] = subject
+	headers["MIME-Version"] = "1.0"
+	headers["Content-Type"] = "text/plain; charset=\"utf-8\""
+
+	message := ""
+	for k, v := range headers {
+		message += fmt.Sprintf("%s: %s\r\n", k, v)
+	}
+	message += "\r\n" + body
 
 	addr := fmt.Sprintf("%s:%s", s.smtpHost, s.smtpPort)
-	return smtp.SendMail(addr, auth, s.smtpFrom, []string{toEmail}, []byte(msg))
+	return smtp.SendMail(addr, auth, from, []string{toEmail}, []byte(message))
 }
