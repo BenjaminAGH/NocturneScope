@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createAPIToken, getAPITokens, deleteAPIToken, APIToken } from "@/lib/api/tokens";
 import { getDevices } from "@/lib/api/api";
 import { InformationCircleIcon, CheckCircleIcon, ClipboardDocumentIcon } from "@heroicons/react/24/outline";
+import { useNotification } from "@/context/NotificationContext";
 
 export default function TokensPage() {
     const router = useRouter();
@@ -13,6 +14,7 @@ export default function TokensPage() {
     const [devices, setDevices] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const { notify } = useNotification();
 
     // Modal state
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -68,8 +70,10 @@ export default function TokensPage() {
             // Reload tokens
             const tokensData = await getAPITokens(jwt);
             setTokens(tokensData || []);
+            notify("Token creado exitosamente", "success");
         } catch (e: any) {
             setError(e?.message || "Error creating token");
+            notify(e?.message || "Error creando token", "error");
         } finally {
             setLoading(false);
         }

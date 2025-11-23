@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon } from "@heroicons/react/24/outline";
+import { useNotification } from "@/context/NotificationContext";
 
 interface TopologyControlsProps {
     devices: string[];
@@ -15,6 +16,7 @@ interface TopologyControlsProps {
     onAddMonitoringNode: () => void;
     onAddActionNode: () => void;
     onAddEmailNode: () => void;
+    onAddNotificationNode: () => void; // Added
     selectedNode: any;
     onUpdateNodeData: (id: string, data: any) => void;
 }

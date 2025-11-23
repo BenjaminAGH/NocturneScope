@@ -5,6 +5,9 @@ import { ThemeProvider } from "next-themes";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 
+import { NotificationProvider } from "@/context/NotificationContext";
+import { Toaster } from "sonner";
+
 import '@/styles/globals.css';
 import '@xyflow/react/dist/style.css';
 
@@ -30,7 +33,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           enableSystem={true}
