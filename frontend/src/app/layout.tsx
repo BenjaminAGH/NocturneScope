@@ -44,7 +44,7 @@ export default function RootLayout({
             <Navbar />
             <div>{children}</div>
             <Footer />
-            <Toaster />
+            <Toaster position="top-left" />
           </NotificationProvider>
         </ThemeProvider>
       </body>

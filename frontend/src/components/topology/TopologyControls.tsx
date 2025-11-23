@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 
@@ -509,9 +510,9 @@ export default function TopologyControls({
                 </div>
 
                 {/* Dialog para guardar */}
-                {showSaveDialog && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                        <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4">
+                {showSaveDialog && typeof document !== 'undefined' && createPortal(
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+                        <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4 shadow-xl">
                             <h3 className="text-lg font-semibold">Guardar Topología</h3>
                             <input
                                 type="text"
@@ -540,13 +541,14 @@ export default function TopologyControls({
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )}
 
                 {/* Dialog para renombrar */}
-                {showRenameDialog && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                        <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4">
+                {showRenameDialog && typeof document !== 'undefined' && createPortal(
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+                        <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4 shadow-xl">
                             <h3 className="text-lg font-semibold">Renombrar Topología</h3>
                             <input
                                 type="text"
@@ -575,13 +577,14 @@ export default function TopologyControls({
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )}
 
                 {/* Dialog para eliminar */}
-                {showDeleteDialog && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                        <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4">
+                {showDeleteDialog && typeof document !== 'undefined' && createPortal(
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+                        <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4 shadow-xl">
                             <h3 className="text-lg font-semibold text-destructive">Eliminar Topología</h3>
                             <p className="text-sm text-muted-foreground">
                                 ¿Estás seguro de que deseas eliminar esta topología? Esta acción no se puede deshacer.
@@ -601,7 +604,8 @@ export default function TopologyControls({
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )}
             </div>
         </div >
