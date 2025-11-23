@@ -84,77 +84,75 @@ export default function AdminUsersPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-gray-600">Loading...</div>
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-muted-foreground">Loading...</div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-                    <p className="mt-2 text-gray-600">Manage all users in the system</p>
+        <div className="container mx-auto px-4 py-6 space-y-6">
+            <header className="space-y-1">
+                <h1 className="text-2xl font-semibold">User Management</h1>
+                <p className="text-sm text-muted-foreground">Manage all users in the system</p>
+            </header>
+
+            {error && (
+                <div className="rounded-lg bg-destructive/10 text-destructive px-4 py-3">
+                    {error}
                 </div>
+            )}
 
-                {error && (
-                    <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                        {error}
-                    </div>
-                )}
+            <div className="mb-6">
+                <button
+                    onClick={openCreateModal}
+                    className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                    <PlusIcon className="h-5 w-5 mr-2" />
+                    Create User
+                </button>
+            </div>
 
-                <div className="mb-6">
-                    <button
-                        onClick={openCreateModal}
-                        className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-                    >
-                        <PlusIcon className="h-5 w-5 mr-2" />
-                        Create User
-                    </button>
-                </div>
-
-                <div className="bg-white rounded-lg shadow">
-                    <UserTable
-                        users={users}
-                        onEdit={openEditModal}
-                        onDelete={(user) => setDeleteConfirm(user)}
-                    />
-                </div>
-
-                <UserModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onSave={modalMode === "create" ? handleCreateUser : handleUpdateUser}
-                    user={selectedUser}
-                    mode={modalMode}
+            <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <UserTable
+                    users={users}
+                    onEdit={openEditModal}
+                    onDelete={(user) => setDeleteConfirm(user)}
                 />
+            </div>
 
-                {deleteConfirm && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Delete</h3>
-                            <p className="text-gray-600 mb-6">
-                                Are you sure you want to delete user <strong>{deleteConfirm.username}</strong>? This action cannot be undone.
-                            </p>
-                            <div className="flex justify-end space-x-3">
-                                <button
-                                    onClick={() => setDeleteConfirm(null)}
-                                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteUser(deleteConfirm)}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                                >
-                                    Delete
-                                </button>
-                            </div>
+            <UserModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={modalMode === "create" ? handleCreateUser : handleUpdateUser}
+                user={selectedUser}
+                mode={modalMode}
+            />
+
+            {deleteConfirm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md space-y-4">
+                        <h3 className="text-lg font-semibold">Confirm Delete</h3>
+                        <p className="text-muted-foreground">
+                            Are you sure you want to delete user <strong className="text-foreground">{deleteConfirm.username}</strong>? This action cannot be undone.
+                        </p>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setDeleteConfirm(null)}
+                                className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => handleDeleteUser(deleteConfirm)}
+                                className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded text-sm"
+                            >
+                                Delete
+                            </button>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -45,78 +45,78 @@ export default function UserTable({ users, onEdit, onDelete }: UserTableProps) {
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
             case "devadmin":
-                return "bg-purple-100 text-purple-800 border-purple-300";
+                return "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20";
             case "admin":
-                return "bg-red-100 text-red-800 border-red-300";
+                return "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
             case "user":
-                return "bg-blue-100 text-blue-800 border-blue-300";
+                return "bg-primary/10 text-primary border-primary/20";
             default:
-                return "bg-gray-100 text-gray-800 border-gray-300";
+                return "bg-muted text-muted-foreground border-border";
         }
     };
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <table className="w-full">
+                <thead className="bg-muted/50 border-b border-border">
                     <tr>
                         <th
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-muted/70 transition-colors"
                             onClick={() => handleSort("id")}
                         >
                             ID {sortField === "id" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
                         <th
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-muted/70 transition-colors"
                             onClick={() => handleSort("username")}
                         >
                             Username {sortField === "username" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
                         <th
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-muted/70 transition-colors"
                             onClick={() => handleSort("email")}
                         >
                             Email {sortField === "email" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
                         <th
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-muted/70 transition-colors"
                             onClick={() => handleSort("role")}
                         >
                             Role {sortField === "role" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
                             Actions
                         </th>
                     </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody>
                     {sortedUsers.map((user) => (
-                        <tr key={user.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <tr key={user.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                            <td className="px-4 py-3 text-sm">
                                 {user.id}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td className="px-4 py-3 text-sm font-medium">
                                 {user.username}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-4 py-3 text-sm text-muted-foreground">
                                 {user.email}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getRoleBadgeColor(user.role)}`}>
+                            <td className="px-4 py-3">
+                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-md border ${getRoleBadgeColor(user.role)}`}>
                                     {user.role}
                                 </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td className="px-4 py-3 text-right text-sm font-medium">
                                 <button
                                     onClick={() => onEdit(user)}
-                                    className="text-indigo-600 hover:text-indigo-900 mr-4 inline-flex items-center"
+                                    className="text-primary hover:text-primary/80 mr-4 inline-flex items-center transition-colors"
                                     title="Edit user"
                                 >
                                     <PencilIcon className="h-5 w-5" />
                                 </button>
                                 <button
                                     onClick={() => onDelete(user)}
-                                    className="text-red-600 hover:text-red-900 inline-flex items-center"
+                                    className="text-destructive hover:text-destructive/80 inline-flex items-center transition-colors"
                                     title="Delete user"
                                 >
                                     <TrashIcon className="h-5 w-5" />
@@ -127,7 +127,7 @@ export default function UserTable({ users, onEdit, onDelete }: UserTableProps) {
                 </tbody>
             </table>
             {users.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                     No users found
                 </div>
             )}

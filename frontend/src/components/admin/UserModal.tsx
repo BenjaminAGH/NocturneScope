@@ -75,15 +75,15 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-                <div className="flex items-center justify-between p-6 border-b">
-                    <h2 className="text-xl font-semibold text-gray-900">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-card border border-border rounded-lg w-full max-w-md">
+                <div className="flex items-center justify-between p-6 border-b border-border">
+                    <h2 className="text-xl font-semibold">
                         {mode === "create" ? "Create New User" : "Edit User"}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-muted-foreground hover:text-foreground transition-colors"
                         disabled={loading}
                     >
                         <XMarkIcon className="h-6 w-6" />
@@ -92,13 +92,13 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg text-sm">
                             {error}
                         </div>
                     )}
 
-                    <div>
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="space-y-2">
+                        <label htmlFor="username" className="block text-sm font-medium">
                             Username
                         </label>
                         <input
@@ -106,14 +106,14 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
                             id="username"
                             value={formData.username}
                             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                             required
                             disabled={loading}
                         />
                     </div>
 
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="space-y-2">
+                        <label htmlFor="email" className="block text-sm font-medium">
                             Email
                         </label>
                         <input
@@ -121,21 +121,21 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
                             id="email"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                             required
                             disabled={loading}
                         />
                     </div>
 
-                    <div>
-                        <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="space-y-2">
+                        <label htmlFor="role" className="block text-sm font-medium">
                             Role
                         </label>
                         <select
                             id="role"
                             value={formData.role}
                             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                             required
                             disabled={loading}
                         >
@@ -145,33 +145,33 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
                         </select>
                     </div>
 
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                            Password {mode === "edit" && <span className="text-gray-500 text-xs">(leave blank to keep current)</span>}
+                    <div className="space-y-2">
+                        <label htmlFor="password" className="block text-sm font-medium">
+                            Password {mode === "edit" && <span className="text-muted-foreground text-xs">(leave blank to keep current)</span>}
                         </label>
                         <input
                             type="password"
                             id="password"
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                             required={mode === "create"}
                             disabled={loading}
                         />
                     </div>
 
-                    <div className="flex justify-end space-x-3 pt-4">
+                    <div className="flex gap-2 pt-4">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                            className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm transition-colors disabled:opacity-50"
                             disabled={loading}
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                            className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm transition-colors disabled:opacity-50"
                             disabled={loading}
                         >
                             {loading ? "Saving..." : mode === "create" ? "Create" : "Save"}
