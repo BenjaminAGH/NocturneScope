@@ -40,9 +40,12 @@ export default function RootLayout({
           defaultTheme="system"
           storageKey="theme"
         >
-          <Navbar />
-          <div>{children}</div>
-          <Footer />
+          <NotificationProvider>
+            <Navbar />
+            <div>{children}</div>
+            <Footer />
+            <Toaster />
+          </NotificationProvider>
         </ThemeProvider>
       </body>
     </html>
