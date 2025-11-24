@@ -37,18 +37,17 @@ export const Navbar = () => {
 
     // Fetch user profile to get role
     if (token) {
-      fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.nocturnesec.cl/").replace(/\/+$/, "")}/api/users/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.role) {
-            setUserRole(data.role);
-          }
-        })
-        .catch(() => {
-          // Ignore errors
-        });
+      import("@/lib/api/api").then(({ getUserProfile }) => {
+        getUserProfile(token)
+          .then(data => {
+            if (data.role) {
+              setUserRole(data.role);
+            }
+          })
+          .catch(() => {
+            // Ignore errors
+          });
+      });
     } else {
       setUserRole(null);
     }

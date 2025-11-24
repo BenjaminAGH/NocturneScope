@@ -37,6 +37,7 @@ import DelayNode, { DelayNodeData } from "@/components/topology/DelayNode";
 import SoundNode, { SoundNodeData } from "@/components/topology/SoundNode";
 import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
+import { useGroup } from "@/context/GroupContext";
 
 const nodeTypes = {
     device: DeviceNode,
@@ -53,6 +54,7 @@ function TopologyEditor() {
     const router = useRouter();
     const { fitView, screenToFlowPosition } = useReactFlow();
     const { notify } = useNotification();
+    const { selectedGroup, initialized } = useGroup();
 
     const [jwt, setJwt] = useState<string | null>(null);
     const [devices, setDevices] = useState<string[]>([]);
@@ -95,18 +97,28 @@ function TopologyEditor() {
             return;
         }
         setJwt(token);
-
-        getDevices(token).then(setDevices).catch(console.error);
-        getTopologies(token).then(setTopologies).catch(console.error);
     }, [router]);
+
+    // Load devices and topologies when group is selected
+    useEffect(() => {
+        if (!jwt || !initialized) return;
+
+        if (!selectedGroup) {
+            router.push("/groups");
+            return;
+        }
+
+        getDevices(jwt, selectedGroup.ID).then(setDevices).catch(console.error);
+        getTopologies(jwt).then(setTopologies).catch(console.error);
+    }, [jwt, selectedGroup, initialized, router]);
 
     // Polling de estados de dispositivos y detección de gateways
     useEffect(() => {
-        if (!jwt) return;
+        if (!jwt || !selectedGroup) return;
 
         const updateDeviceStatus = async () => {
             try {
-                const deviceList = await getDevices(jwt);
+                const deviceList = await getDevices(jwt, selectedGroup.ID);
                 const statsPromises = deviceList.map(async (device) => {
                     try {
                         const data = await getLastStats(jwt, device);
@@ -436,7 +448,7 @@ function TopologyEditor() {
         updateDeviceStatus();
         const interval = setInterval(updateDeviceStatus, 5000);
         return () => clearInterval(interval);
-    }, [jwt, setNodes, setEdges, autoDetectGateways]);
+    }, [jwt, selectedGroup, setNodes, setEdges, autoDetectGateways]);
 
     // Polling de alertas recientes para confirmación visual
     useEffect(() => {
