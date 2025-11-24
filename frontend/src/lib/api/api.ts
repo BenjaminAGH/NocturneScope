@@ -61,7 +61,13 @@ export async function login(email: string, password: string): Promise<{
 }
 
 export function saveTokens(access: string, refresh?: string) {
-  if (access) localStorage.setItem("jwt", access);
+  if (access) {
+    localStorage.setItem("jwt", access);
+    // También guardar en cookies para el middleware
+    if (typeof document !== "undefined") {
+      document.cookie = `jwt=${access}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 días
+    }
+  }
   if (refresh) localStorage.setItem("refresh", refresh);
 }
 export function getAccessToken(): string | null {

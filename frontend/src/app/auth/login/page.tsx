@@ -29,9 +29,6 @@ function LoginForm() {
       const { accessToken, refreshToken } = await apiLogin(email, password);
       saveTokens(accessToken, refreshToken);
 
-      // Guardar JWT en cookies para el middleware
-      document.cookie = `jwt=${accessToken}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 días
-
       // Redirigir a la página solicitada o a grupos por defecto
       const redirect = searchParams.get('redirect') || '/groups';
       router.push(redirect);
