@@ -76,7 +76,7 @@ func (s *MetricService) LastStats(ctx context.Context, device string) (map[strin
 
 	flux := fmt.Sprintf(`
 from(bucket: "%[1]s")
-  |> range(start: -24h)
+  |> range(start: -10m)
   |> filter(fn: (r) => r._measurement == "system_metrics" and r.device == "%[2]s")
   |> filter(fn: (r) => contains(value: r._field, set: %[3]s))
   |> last()
