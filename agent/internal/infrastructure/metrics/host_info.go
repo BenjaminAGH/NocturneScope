@@ -3,8 +3,8 @@ package metrics
 import (
 	"runtime"
 
-	"github.com/shirou/gopsutil/v3/host"
 	"github.com/BenjaminAGH/nocturneagent/internal/domain"
+	"github.com/shirou/gopsutil/v3/host"
 )
 
 type HostInfoCollector struct{}
@@ -14,12 +14,12 @@ func NewHostInfoCollector() *HostInfoCollector {
 }
 
 func (c *HostInfoCollector) Collect() (domain.Metric, error) {
-	uptime, err := host.Uptime()
-	if err != nil {
-		return domain.Metric{}, err
+	m := domain.Metric{
+		OS: runtime.GOOS,
 	}
-	return domain.Metric{
-		UptimeSec: uptime,
-		OS:        runtime.GOOS,
-	}, nil
+	uptime, err := host.Uptime()
+	if err == nil {
+		m.UptimeSec = uptime
+	}
+	return m, nil
 }
