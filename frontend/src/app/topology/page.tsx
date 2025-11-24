@@ -155,6 +155,10 @@ function TopologyEditor() {
                     }
 
                     const isActive = timeDiff < 300; // 5 minutos
+
+                    // Debug logging
+                    console.log(`Device: ${device}, timestamp: ${data.timestamp}, timeDiff: ${timeDiff}s, isActive: ${isActive}`);
+
                     deviceUpdates.set(device, {
                         status: isActive ? "online" : "offline",
                         ip: data.ip,
