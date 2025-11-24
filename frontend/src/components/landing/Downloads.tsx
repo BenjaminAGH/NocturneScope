@@ -17,7 +17,7 @@ export const Downloads = () => {
                     <div className="bg-card border border-border rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg transition-all">
                         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M17.5 13.5c-.5 0-1.5.5-2.5 1s-2.5 1-3 1-2-.5-3-1-2-1-2.5-1c-1 0-2 .5-2.5 1.5s-1 2.5-1 3.5c0 2 1.5 3.5 3.5 3.5s2.5-1 3.5-1 1 .5 2 1 2.5 1 3.5 1c2 0 3.5-1.5 3.5-3.5 0-1-.5-2.5-1-3.5s-1.5-1.5-2.5-1.5zM12 2C9 2 7 3.5 7 6v2h10V6c0-2.5-2-4-5-4z" />
+                                <path d="M13.18 20.27c-1.42-.06-2.58-.56-3.23-1.47-.84-1.18-.84-3.14-.84-3.14L9 12.53c-.14-.56-.36-1.1-.65-1.61-.3-.51-.68-.96-1.12-1.35-.44-.39-.94-.7-1.48-.92C5.2 8.43 4.68 8.31 4.15 8.31c-.53 0-1.05.12-1.54.34-.49.22-.93.53-1.3.92-.37.39-.67.84-.89 1.35-.22.51-.34 1.05-.34 1.61 0 .56.12 1.1.34 1.61.22.51.52.96.89 1.35.37.39.81.7 1.3.92.49.22 1.01.34 1.54.34.53 0 1.05-.12 1.54-.34.49-.22.93-.53 1.3-.92.37-.39.67-.84.89-1.35.22-.51.34-1.05.34-1.61 0-.56-.12-1.1-.34-1.61-.22-.51-.52-.96-.89-1.35-.37-.39-.81-.7-1.3-.92-.49-.22-1.01-.34-1.54-.34-.53 0-1.05.12-1.54.34-.49.22-.93.53-1.3.92-.37.39-.67.84-.89 1.35-.22.51-.34 1.05-.34 1.61 0 .56.12 1.1.34 1.61.22.51.52.96.89 1.35.37.39.81.7 1.3.92.49.22 1.01.34 1.54.34z" />
                             </svg>
                         </div>
                         <h3 className="text-xl font-semibold mb-2">Linux (amd64)</h3>
@@ -25,7 +25,7 @@ export const Downloads = () => {
                             Compatible con la mayoría de distribuciones Linux modernas (Ubuntu, Debian, CentOS, etc).
                         </p>
                         <a
-                            href="/downloads/nocturne-agent-linux"
+                            href="https://github.com/BenjaminAGH/NocturneScope/raw/main/frontend/public/downloads/nocturne-agent-linux"
                             download
                             className="mt-auto flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                         >
@@ -42,7 +42,7 @@ export const Downloads = () => {
                     <div className="bg-card border border-border rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg transition-all">
                         <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4 text-blue-500">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M3 12V6.75L9 5.25V12H3ZM3 17.25V12H9V18.75L3 17.25ZM10 12V4.75L21 3V12H10ZM10 12V19.25L21 21V12H10Z" />
+                                <path d="M0 3.449L9.75 2.1v9.451H0zm10.949-1.43L24 0v11.4H10.949zM0 12.6h9.75v9.451L0 20.699zm10.949 0H24V24l-13.051-1.843z" />
                             </svg>
                         </div>
                         <h3 className="text-xl font-semibold mb-2">Windows (amd64)</h3>
@@ -50,7 +50,7 @@ export const Downloads = () => {
                             Ejecutable portable para Windows 10/11 y Server.
                         </p>
                         <a
-                            href="/downloads/nocturne-agent-windows.exe"
+                            href="https://github.com/BenjaminAGH/NocturneScope/raw/main/frontend/public/downloads/nocturne-agent-windows.exe"
                             download
                             className="mt-auto flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                         >
