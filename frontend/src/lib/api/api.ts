@@ -91,14 +91,14 @@ export async function listApiTokens(jwt: string) {
   return handle(res);
 }
 
-export async function createApiToken(jwt: string, name: string) {
+export async function createApiToken(jwt: string, name: string, deviceName: string, groupId?: number) {
   const res = await fetch(`${BASE}/api-tokens`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ name }),
+    body: JSON.stringify({ name, device_name: deviceName, group_id: groupId }),
   });
   return handle(res);
 }
@@ -112,8 +112,12 @@ export async function deleteApiToken(jwt: string, id: number) {
   return handle(res);
 }
 
-export async function getDevices(jwt: string) {
-  const res = await fetch(`${BASE}/metrics/devices`, {
+export async function getDevices(jwt: string, groupId?: number) {
+  let url = `${BASE}/metrics/devices`;
+  if (groupId) {
+    url += `?group_id=${groupId}`;
+  }
+  const res = await fetch(url, {
     headers: { Authorization: `Bearer ${jwt}` },
     cache: "no-store",
   });

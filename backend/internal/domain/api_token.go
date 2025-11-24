@@ -7,6 +7,7 @@ type APIToken struct {
 	Name       string
 	TokenHash  string
 	UserID     *uint
+	GroupID    *uint
 	DeviceName string
 	CreatedAt  time.Time
 	RevokedAt  *time.Time
@@ -18,4 +19,5 @@ type APITokenRepository interface {
 	FindByUser(userID uint) ([]APIToken, error)
 	Revoke(id uint, userID uint) error
 	GetDeviceNamesByUser(userID uint) ([]string, error)
+	GetDeviceNamesByGroup(groupID uint) ([]string, error)
 }

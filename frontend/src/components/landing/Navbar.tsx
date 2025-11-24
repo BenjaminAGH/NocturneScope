@@ -14,9 +14,11 @@ import {
   BellIcon,
   TrashIcon,
   CheckCircleIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  ServerIcon
 } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
+import { useGroup } from "@/context/GroupContext";
 
 export const Navbar = () => {
   const router = useRouter();
@@ -117,6 +119,9 @@ export const Navbar = () => {
 
         {/* Right Side: Theme & Profile */}
         <div className="flex items-center gap-4">
+          {!isPublicRoute && isLoggedIn && (
+            <GroupSwitcher />
+          )}
           <ThemeChanger />
 
           {!isPublicRoute && isLoggedIn && (
@@ -232,7 +237,7 @@ export const Navbar = () => {
                             } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
                         >
                           <ShieldCheckIcon className="w-4 h-4" />
-                          Admin Panel
+                          Administrar Usuarios
                         </Link>
                       )}
                     </Menu.Item>
@@ -261,3 +266,67 @@ export const Navbar = () => {
     </div>
   );
 };
+
+function GroupSwitcher() {
+  const router = useRouter();
+  const { selectedGroup, groups, setSelectedGroup } = useGroup();
+
+  if (!selectedGroup) return null;
+
+  return (
+    <Menu as="div" className="relative">
+      <Menu.Button className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 border border-border/50">
+        <ServerIcon className="w-4 h-4 text-primary" />
+        <span className="text-sm font-medium max-w-[100px] truncate">{selectedGroup.Name}</span>
+      </Menu.Button>
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-card py-2 shadow-xl ring-1 ring-border focus:outline-none">
+          <div className="px-4 py-2 border-b border-border/50 mb-1">
+            <p className="text-xs font-medium text-muted-foreground">Cambiar Grupo</p>
+          </div>
+
+          {groups.map((group) => (
+            <Menu.Item key={group.ID}>
+              {({ active }) => (
+                <button
+                  onClick={() => {
+                    setSelectedGroup(group);
+                    router.push("/dashboard");
+                  }}
+                  className={`${active ? "bg-muted" : ""
+                    } flex w-full items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors text-left`}
+                >
+                  <ServerIcon className="w-4 h-4 text-muted-foreground" />
+                  {group.Name}
+                </button>
+              )}
+            </Menu.Item>
+          ))}
+
+          <div className="my-1 border-t border-border/50" />
+
+          <Menu.Item>
+            {({ active }) => (
+              <Link
+                href="/groups"
+                className={`${active ? "bg-muted" : ""
+                  } flex items-center gap-2 px-4 py-2 text-sm text-primary mx-1 rounded-lg transition-colors`}
+              >
+                <Squares2X2Icon className="w-4 h-4" />
+                Gestionar Grupos
+              </Link>
+            )}
+          </Menu.Item>
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  );
+}

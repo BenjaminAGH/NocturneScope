@@ -6,6 +6,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 
 import { NotificationProvider } from "@/context/NotificationContext";
+import { GroupProvider } from "@/context/GroupContext";
 import { Toaster } from "sonner";
 
 import '@/styles/globals.css';
@@ -41,20 +42,22 @@ export default function RootLayout({
           storageKey="theme"
         >
           <NotificationProvider>
-            <Navbar />
-            <div>{children}</div>
-            <Footer />
-            <Toaster
-              position="top-left"
-              toastOptions={{
-                style: {
-                  background: 'var(--card)',
-                  color: 'var(--foreground)',
-                  border: '1px solid var(--border)',
-                },
-                className: 'class-group',
-              }}
-            />
+            <GroupProvider>
+              <Navbar />
+              <div>{children}</div>
+              <Footer />
+              <Toaster
+                position="top-left"
+                toastOptions={{
+                  style: {
+                    background: 'var(--card)',
+                    color: 'var(--foreground)',
+                    border: '1px solid var(--border)',
+                  },
+                  className: 'class-group',
+                }}
+              />
+            </GroupProvider>
           </NotificationProvider>
         </ThemeProvider>
       </body>

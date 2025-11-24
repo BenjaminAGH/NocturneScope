@@ -32,8 +32,8 @@ function LoginForm() {
       // Guardar JWT en cookies para el middleware
       document.cookie = `jwt=${accessToken}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 días
 
-      // Redirigir a la página solicitada o al dashboard por defecto
-      const redirect = searchParams.get('redirect') || '/dashboard';
+      // Redirigir a la página solicitada o a grupos por defecto
+      const redirect = searchParams.get('redirect') || '/groups';
       router.push(redirect);
     } catch (e) {
       console.error("login error:", e);

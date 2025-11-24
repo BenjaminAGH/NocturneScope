@@ -35,8 +35,11 @@ const RANGE_OPTIONS = ["30m", "1h", "6h", "24h", "7d"];
 const INTERVAL_OPTIONS = ["1m", "5m", "15m", "1h"];
 const AGG_OPTIONS = ["mean", "min", "max", "last"];
 
+import { useGroup } from "@/context/GroupContext";
+
 export default function DashboardPage() {
   const router = useRouter();
+  const { selectedGroup } = useGroup();
 
   const [jwt, setJwt] = useState<string | null>(null);
   const [devices, setDevices] = useState<string[]>([]);
@@ -63,14 +66,21 @@ export default function DashboardPage() {
     setJwt(t);
   }, [router]);
 
+  // Verificar grupo seleccionado
+  useEffect(() => {
+    if (!selectedGroup) {
+      router.replace("/groups");
+    }
+  }, [selectedGroup, router]);
+
   // Carga lista de dispositivos
   useEffect(() => {
-    if (!jwt) return;
+    if (!jwt || !selectedGroup) return;
     setLoadingDevices(true);
     setErr("");
     (async () => {
       try {
-        const devs = await getDevices(jwt);
+        const devs = await getDevices(jwt, selectedGroup.ID);
         setDevices(devs);
         if (!device && devs.length) setDevice(devs[0]);
       } catch (e: any) {
@@ -80,7 +90,7 @@ export default function DashboardPage() {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jwt]);
+  }, [jwt, selectedGroup]);
 
   useEffect(() => {
     if (!jwt || !device) return;
@@ -111,10 +121,16 @@ export default function DashboardPage() {
     return `${device ? device : "—"} • ${f} • ${range} • ${agg.toUpperCase()}`;
   }, [device, field, range, agg]);
 
+  if (!selectedGroup) return null;
+
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-semibold">Dashboard</h1>
+          <span className="text-muted-foreground">/</span>
+          <span className="text-primary font-medium">{selectedGroup.Name}</span>
+        </div>
         <p className="text-sm text-muted-foreground">
           Tiempos mostrados en <strong>America/Santiago</strong> (almacenado en UTC).
         </p>

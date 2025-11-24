@@ -10,6 +10,7 @@ import (
 
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/bootstrap"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/database"
+	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/persistence"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/repository"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/security"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/session"
@@ -28,9 +29,16 @@ func main() {
 	userRepo := repository.NewUserGormRepository(db)
 	apiTokenRepo := repository.NewAPITokenGormRepository(db)
 	topologyRepo := repository.NewTopologyGormRepository(db)
+	deviceGroupRepo := repository.NewDeviceGroupGormRepository(db)
+
+	// AutoMigrate
+	if err := db.AutoMigrate(&persistence.DeviceGroupModel{}, &persistence.APITokenModel{}); err != nil {
+		log.Printf("Warning: AutoMigrate failed: %v", err)
+	}
 
 	// servicios
 	userService := service.NewUserService(userRepo)
+	deviceGroupService := service.NewDeviceGroupService(deviceGroupRepo)
 
 	// Ensure devadmin user exists (if env vars are set)
 	bootstrap.EnsureDevAdmin(userRepo)
@@ -70,7 +78,7 @@ func main() {
 		fmt.Printf("Error loading alert rules: %v\n", err)
 	}
 
-	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, apiTokenRepo, topologyService, alertService)
+	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, apiTokenRepo, deviceGroupService, topologyService, alertService)
 
 	log.Fatal(app.Listen(":3000"))
 }

@@ -21,6 +21,7 @@ func (r *APITokenGormRepository) Create(t *domain.APIToken) error {
 		Name:       t.Name,
 		TokenHash:  t.TokenHash,
 		UserID:     t.UserID,
+		GroupID:    t.GroupID,
 		DeviceName: t.DeviceName,
 		RevokedAt:  t.RevokedAt,
 	}
@@ -59,6 +60,19 @@ func (r *APITokenGormRepository) GetDeviceNamesByUser(userID uint) ([]string, er
 	var deviceNames []string
 	err := r.db.Model(&persistence.APITokenModel{}).
 		Where("user_id = ? AND revoked_at IS NULL", userID).
+		Distinct("device_name").
+		Pluck("device_name", &deviceNames).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return deviceNames, nil
+}
+
+func (r *APITokenGormRepository) GetDeviceNamesByGroup(groupID uint) ([]string, error) {
+	var deviceNames []string
+	err := r.db.Model(&persistence.APITokenModel{}).
+		Where("group_id = ? AND revoked_at IS NULL", groupID).
 		Distinct("device_name").
 		Pluck("device_name", &deviceNames).
 		Error

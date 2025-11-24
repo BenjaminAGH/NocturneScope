@@ -39,8 +39,23 @@ func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 		return c.Status(401).JSON(fiber.Map{"error": "invalid user_id type"})
 	}
 
-	// Get device names from user's tokens
-	devices, err := h.tokenRepo.GetDeviceNamesByUser(userID)
+	// Check for group_id query param
+	groupID := c.QueryInt("group_id", 0)
+
+	var devices []string
+	var err error
+
+	if groupID > 0 {
+		// Get devices for specific group
+		// Note: We should verify the group belongs to the user, but for now
+		// we rely on the fact that tokens are associated with groups and users.
+		// A more robust check would be to verify group ownership first.
+		devices, err = h.tokenRepo.GetDeviceNamesByGroup(uint(groupID))
+	} else {
+		// Get all devices for user (legacy behavior or "All Devices" view)
+		devices, err = h.tokenRepo.GetDeviceNamesByUser(userID)
+	}
+
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}

@@ -7,18 +7,19 @@ export interface APIToken {
     TokenHash: string;
     UserID: number;
     DeviceName: string;
+    GroupID?: number;
     CreatedAt: string;
     RevokedAt?: string;
 }
 
-export async function createAPIToken(jwt: string, name: string, deviceName: string): Promise<{ token: string }> {
+export async function createAPIToken(jwt: string, name: string, deviceName: string, groupId?: number): Promise<{ token: string }> {
     const res = await fetch(`${API}/api-tokens`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${jwt}`,
         },
-        body: JSON.stringify({ name, device_name: deviceName }),
+        body: JSON.stringify({ name, device_name: deviceName, group_id: groupId }),
     });
 
     if (!res.ok) {

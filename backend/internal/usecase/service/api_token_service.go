@@ -16,7 +16,7 @@ func NewTokenService(repo domain.APITokenRepository) *TokenService {
 	return &TokenService{repo: repo}
 }
 
-func (s *TokenService) GenerateForUser(name string, deviceName string, userID uint) (string, error) {
+func (s *TokenService) GenerateForUser(name string, deviceName string, userID uint, groupID *uint) (string, error) {
 	raw := "ntk_" + time.Now().Format("20060102150405.000000000")
 	hash := hashToken(raw)
 
@@ -24,6 +24,7 @@ func (s *TokenService) GenerateForUser(name string, deviceName string, userID ui
 		Name:       name,
 		TokenHash:  hash,
 		UserID:     &userID,
+		GroupID:    groupID,
 		DeviceName: deviceName,
 		CreatedAt:  time.Now(),
 	}

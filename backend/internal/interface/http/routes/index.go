@@ -18,6 +18,7 @@ func Register(
 	metricService *service.MetricService,
 	apiTokenService *service.TokenService,
 	apiTokenRepo domain.APITokenRepository,
+	deviceGroupService *service.DeviceGroupService,
 	topologyService *service.TopologyService,
 	alertService domain.AlertService,
 ) {
@@ -56,4 +57,7 @@ func Register(
 
 	// admin panel (devadmin only)
 	RegisterAdminRoutes(protected, userService)
+
+	// device groups
+	RegisterDeviceGroupRoutes(protected, deviceGroupService)
 }

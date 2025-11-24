@@ -20,6 +20,7 @@ func (h *APITokenHandler) Create(c *fiber.Ctx) error {
 	var body struct {
 		Name       string `json:"name"`
 		DeviceName string `json:"device_name"`
+		GroupID    *uint  `json:"group_id"`
 	}
 	if err := c.BodyParser(&body); err != nil || body.Name == "" || body.DeviceName == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "name and device_name required"})
@@ -35,7 +36,7 @@ func (h *APITokenHandler) Create(c *fiber.Ctx) error {
 	}
 	uid := uint(uidFloat)
 
-	raw, err := h.svc.GenerateForUser(body.Name, body.DeviceName, uid)
+	raw, err := h.svc.GenerateForUser(body.Name, body.DeviceName, uid, body.GroupID)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}

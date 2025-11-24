@@ -6,9 +6,11 @@ import { createAPIToken, getAPITokens, deleteAPIToken, APIToken } from "@/lib/ap
 import { getDevices } from "@/lib/api/api";
 import { InformationCircleIcon, CheckCircleIcon, ClipboardDocumentIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
+import { useGroup, DeviceGroup } from "@/context/GroupContext";
 
 export default function TokensPage() {
     const router = useRouter();
+    const { groups, refreshGroups } = useGroup();
     const [jwt, setJwt] = useState<string | null>(null);
     const [tokens, setTokens] = useState<APIToken[]>([]);
     const [devices, setDevices] = useState<string[]>([]);
@@ -20,6 +22,7 @@ export default function TokensPage() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [newTokenName, setNewTokenName] = useState("");
     const [selectedDevice, setSelectedDevice] = useState("");
+    const [selectedGroupId, setSelectedGroupId] = useState<number | "">("");
     const [createdToken, setCreatedToken] = useState<string | null>(null);
 
     // Authentication check
@@ -30,7 +33,8 @@ export default function TokensPage() {
             return;
         }
         setJwt(t);
-    }, [router]);
+        refreshGroups();
+    }, [router, refreshGroups]);
 
     // Load tokens and devices
     useEffect(() => {
@@ -57,15 +61,16 @@ export default function TokensPage() {
     }, [jwt]);
 
     const handleCreateToken = async () => {
-        if (!jwt || !newTokenName.trim() || !selectedDevice) return;
+        if (!jwt || !newTokenName.trim() || !selectedDevice || !selectedGroupId) return;
 
         setLoading(true);
         setError("");
         try {
-            const result = await createAPIToken(jwt, newTokenName.trim(), selectedDevice);
+            const result = await createAPIToken(jwt, newTokenName.trim(), selectedDevice, Number(selectedGroupId));
             setCreatedToken(result.token);
             setNewTokenName("");
             setSelectedDevice("");
+            setSelectedGroupId("");
 
             // Reload tokens
             const tokensData = await getAPITokens(jwt);
@@ -107,6 +112,7 @@ export default function TokensPage() {
         setCreatedToken(null);
         setNewTokenName("");
         setSelectedDevice("");
+        setSelectedGroupId("");
     };
 
     return (
@@ -140,6 +146,7 @@ export default function TokensPage() {
                             <tr>
                                 <th className="text-left px-4 py-3 text-sm font-medium">Nombre</th>
                                 <th className="text-left px-4 py-3 text-sm font-medium">Dispositivo</th>
+                                <th className="text-left px-4 py-3 text-sm font-medium">Grupo</th>
                                 <th className="text-left px-4 py-3 text-sm font-medium">Creado</th>
                                 <th className="text-right px-4 py-3 text-sm font-medium">Acciones</th>
                             </tr>
@@ -147,13 +154,13 @@ export default function TokensPage() {
                         <tbody>
                             {loading && tokens.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="text-center py-8 text-muted-foreground">
+                                    <td colSpan={5} className="text-center py-8 text-muted-foreground">
                                         Cargando...
                                     </td>
                                 </tr>
                             ) : tokens.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="text-center py-8 text-muted-foreground">
+                                    <td colSpan={5} className="text-center py-8 text-muted-foreground">
                                         No hay tokens creados. Crea uno para comenzar.
                                     </td>
                                 </tr>
@@ -170,6 +177,10 @@ export default function TokensPage() {
                                             <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
                                                 {token.DeviceName}
                                             </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-muted-foreground">
+                                            {/* We would need to fetch group info or include it in token response to show name here */}
+                                            {token.GroupID ? `Grupo #${token.GroupID}` : "Sin grupo"}
                                         </td>
                                         <td className="px-4 py-3 text-sm text-muted-foreground">
                                             {new Date(token.CreatedAt).toLocaleDateString('es-CL', {
@@ -204,7 +215,7 @@ export default function TokensPage() {
                     Información
                 </h3>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Cada token está asociado a un dispositivo específico</li>
+                    <li>• Cada token está asociado a un dispositivo y un grupo específico</li>
                     <li>• Los tokens permiten que tus dispositivos envíen métricas al sistema</li>
                     <li>• Guarda el token en un lugar seguro, solo se muestra una vez al crearlo</li>
                     <li>• Puedes eliminar tokens que ya no uses</li>
@@ -229,6 +240,21 @@ export default function TokensPage() {
                                             className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm"
                                             autoFocus
                                         />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Grupo</label>
+                                        <select
+                                            value={selectedGroupId}
+                                            onChange={(e) => setSelectedGroupId(Number(e.target.value))}
+                                            className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm"
+                                        >
+                                            <option value="">Selecciona un grupo</option>
+                                            {groups.map((group) => (
+                                                <option key={group.ID} value={group.ID}>
+                                                    {group.Name}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium">Nombre del Dispositivo</label>
@@ -261,7 +287,7 @@ export default function TokensPage() {
                                     </button>
                                     <button
                                         onClick={handleCreateToken}
-                                        disabled={loading || !newTokenName.trim() || !selectedDevice}
+                                        disabled={loading || !newTokenName.trim() || !selectedDevice || !selectedGroupId}
                                         className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm disabled:opacity-50"
                                     >
                                         {loading ? "Creando..." : "Crear"}

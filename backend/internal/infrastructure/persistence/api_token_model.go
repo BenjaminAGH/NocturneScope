@@ -11,6 +11,7 @@ type APITokenModel struct {
 	Name       string     `gorm:"not null"`
 	TokenHash  string     `gorm:"not null;uniqueIndex"`
 	UserID     *uint      `gorm:"index"`
+	GroupID    *uint      `gorm:"index"`
 	DeviceName string     `gorm:"not null;index"`
 	CreatedAt  time.Time  `gorm:"autoCreateTime"`
 	RevokedAt  *time.Time `gorm:"default:null"`
@@ -22,6 +23,7 @@ func (m *APITokenModel) ToDomain() domain.APIToken {
 		Name:       m.Name,
 		TokenHash:  m.TokenHash,
 		UserID:     m.UserID,
+		GroupID:    m.GroupID,
 		DeviceName: m.DeviceName,
 		CreatedAt:  m.CreatedAt,
 		RevokedAt:  m.RevokedAt,
