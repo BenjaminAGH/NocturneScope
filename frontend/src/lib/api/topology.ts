@@ -27,7 +27,8 @@ export interface TopologyData {
 export async function saveTopology(
     jwt: string,
     name: string,
-    data: TopologyData
+    data: TopologyData,
+    groupId?: number
 ): Promise<Topology> {
     const res = await fetch(`${BASE}/topologies`, {
         method: "POST",
@@ -35,13 +36,14 @@ export async function saveTopology(
             "Content-Type": "application/json",
             Authorization: `Bearer ${jwt}`,
         },
-        body: JSON.stringify({ name, data }),
+        body: JSON.stringify({ name, data, group_id: groupId }),
     });
     return handle(res);
 }
 
-export async function getTopologies(jwt: string): Promise<Topology[]> {
-    const res = await fetch(`${BASE}/topologies`, {
+export async function getTopologies(jwt: string, groupId?: number): Promise<Topology[]> {
+    const url = groupId ? `${BASE}/topologies?group_id=${groupId}` : `${BASE}/topologies`;
+    const res = await fetch(url, {
         headers: { Authorization: `Bearer ${jwt}` },
         cache: "no-store",
     });

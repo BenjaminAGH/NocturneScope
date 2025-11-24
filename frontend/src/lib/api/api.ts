@@ -219,8 +219,9 @@ export async function updateTopology(jwt: string, id: number, name: string, data
   return handle(res);
 }
 
-export async function getTopologies(jwt: string) {
-  const res = await fetch(`${BASE}/topologies`, {
+export async function getTopologies(jwt: string, groupId?: number) {
+  const url = groupId ? `${BASE}/topologies?group_id=${groupId}` : `${BASE}/topologies`;
+  const res = await fetch(url, {
     headers: { Authorization: `Bearer ${jwt}` },
   });
   return handle(res);
@@ -233,14 +234,14 @@ export async function getTopology(jwt: string, id: number) {
   return handle(res);
 }
 
-export async function createTopology(jwt: string, name: string, data: any) {
+export async function createTopology(jwt: string, name: string, data: any, groupId?: number) {
   const res = await fetch(`${BASE}/topologies`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ name, data }),
+    body: JSON.stringify({ name, data, group_id: groupId }),
   });
   return handle(res);
 }
