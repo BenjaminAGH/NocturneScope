@@ -21,26 +21,25 @@ func NewBasicSystemCollector(deviceName, ipAddress string) *BasicSystemCollector
 }
 
 func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
-	m := domain.Metric{
+	cpuPercent, err := cpu.Percent(0, false)
+	if err != nil {
+		return domain.Metric{}, err
+	}
+	memInfo, err := mem.VirtualMemory()
+	if err != nil {
+		return domain.Metric{}, err
+	}
+	diskInfo, err := disk.Usage("/")
+	if err != nil {
+		return domain.Metric{}, err
+	}
+
+	return domain.Metric{
 		DeviceName: c.deviceName,
 		IpAddress:  c.ipAddress,
 		Timestamp:  time.Now(),
-	}
-
-	cpuPercent, err := cpu.Percent(0, false)
-	if err == nil && len(cpuPercent) > 0 {
-		m.CPUUsage = cpuPercent[0]
-	}
-
-	memInfo, err := mem.VirtualMemory()
-	if err == nil {
-		m.RAMUsage = memInfo.UsedPercent
-	}
-
-	diskInfo, err := disk.Usage("/")
-	if err == nil {
-		m.DiskUsage = diskInfo.UsedPercent
-	}
-
-	return m, nil
+		CPUUsage:   cpuPercent[0],
+		RAMUsage:   memInfo.UsedPercent,
+		DiskUsage:  diskInfo.UsedPercent,
+	}, nil
 }

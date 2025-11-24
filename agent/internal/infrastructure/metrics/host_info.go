@@ -14,12 +14,12 @@ func NewHostInfoCollector() *HostInfoCollector {
 }
 
 func (c *HostInfoCollector) Collect() (domain.Metric, error) {
-	m := domain.Metric{
-		OS: runtime.GOOS,
-	}
 	uptime, err := host.Uptime()
-	if err == nil {
-		m.UptimeSec = uptime
+	if err != nil {
+		return domain.Metric{}, err
 	}
-	return m, nil
+	return domain.Metric{
+		UptimeSec: uptime,
+		OS:        runtime.GOOS,
+	}, nil
 }
