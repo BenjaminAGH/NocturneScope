@@ -17,6 +17,7 @@ interface GroupContextType {
     groups: DeviceGroup[];
     refreshGroups: () => Promise<void>;
     loading: boolean;
+    initialized: boolean;
 }
 
 const GroupContext = createContext<GroupContextType | undefined>(undefined);
@@ -25,6 +26,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     const [selectedGroup, setSelectedGroupState] = useState<DeviceGroup | null>(null);
     const [groups, setGroups] = useState<DeviceGroup[]>([]);
     const [loading, setLoading] = useState(false);
+    const [initialized, setInitialized] = useState(false);
 
     // Load selected group from localStorage on mount
     useEffect(() => {
@@ -36,6 +38,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
                 console.error("Failed to parse saved group", e);
             }
         }
+        setInitialized(true);
     }, []);
 
     const setSelectedGroup = (group: DeviceGroup | null) => {
@@ -68,7 +71,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <GroupContext.Provider value={{ selectedGroup, setSelectedGroup, groups, refreshGroups, loading }}>
+        <GroupContext.Provider value={{ selectedGroup, setSelectedGroup, groups, refreshGroups, loading, initialized }}>
             {children}
         </GroupContext.Provider>
     );

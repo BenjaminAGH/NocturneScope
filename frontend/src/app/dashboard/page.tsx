@@ -39,7 +39,7 @@ import { useGroup } from "@/context/GroupContext";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { selectedGroup } = useGroup();
+  const { selectedGroup, initialized } = useGroup();
 
   const [jwt, setJwt] = useState<string | null>(null);
   const [devices, setDevices] = useState<string[]>([]);
@@ -66,12 +66,12 @@ export default function DashboardPage() {
     setJwt(t);
   }, [router]);
 
-  // Verificar grupo seleccionado
+  // Verificar grupo seleccionado (solo después de inicializar)
   useEffect(() => {
-    if (!selectedGroup) {
+    if (initialized && !selectedGroup) {
       router.replace("/groups");
     }
-  }, [selectedGroup, router]);
+  }, [initialized, selectedGroup, router]);
 
   // Carga lista de dispositivos
   useEffect(() => {

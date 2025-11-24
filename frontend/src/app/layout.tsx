@@ -17,8 +17,8 @@ import React from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MirageNet",
-  description: "A Honeypot Network",
+  title: "NocturneScope",
+  description: "A Network Security Monitoring Platform",
 };
 
 export default function RootLayout({

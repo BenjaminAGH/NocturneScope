@@ -44,7 +44,7 @@ export function Footer() {
             </div>
 
             <div className="max-w-md mt-4 text-gray-500 dark:text-gray-400">
-              MirageNet es la tesis para el título de Ingeniero de Ejecución en Computación
+              NocturneScope es la tesis para el título de Ingeniero de Ejecución en Computación
               e Informática que busca formalizar una plataforma para la gestión de redes.
             </div>
           </div>
