@@ -25,14 +25,15 @@ export const Downloads = () => {
                             Compatible con la mayoría de distribuciones Linux modernas (Ubuntu, Debian, CentOS, etc).
                         </p>
                         <a
-                            href="https://github.com/BenjaminAGH/NocturneScope/raw/main/frontend/public/downloads/nocturne-agent-linux"
+                            href="https://github.com/BenjaminAGH/NocturneScope/releases/latest/download/nocturne-agent-linux"
                             download
                             className="mt-auto flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                         >
                             <ArrowDownTrayIcon className="w-5 h-5" />
                             Descargar para Linux
                         </a>
-                        <div className="mt-4 text-xs text-muted-foreground bg-muted p-2 rounded w-full font-mono text-left">
+                        <div className="mt-4 text-xs text-muted-foreground bg-muted p-2 rounded w-full font-mono text-left overflow-x-auto">
+                            wget https://github.com/BenjaminAGH/NocturneScope/releases/latest/download/nocturne-agent-linux<br />
                             chmod +x nocturne-agent-linux<br />
                             sudo ./nocturne-agent-linux
                         </div>
@@ -50,7 +51,7 @@ export const Downloads = () => {
                             Ejecutable portable para Windows 10/11 y Server.
                         </p>
                         <a
-                            href="https://github.com/BenjaminAGH/NocturneScope/raw/main/frontend/public/downloads/nocturne-agent-windows.exe"
+                            href="https://github.com/BenjaminAGH/NocturneScope/releases/latest/download/nocturne-agent-windows.exe"
                             download
                             className="mt-auto flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                         >
