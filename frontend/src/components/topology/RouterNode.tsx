@@ -40,7 +40,7 @@ function RouterNode({ data }: NodeProps) {
                 )}
             </div>
 
-            <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+            <Handle type="source" position={Position.Bottom} id="s-bottom" className="w-3 h-3" />
         </div>
     );
 }

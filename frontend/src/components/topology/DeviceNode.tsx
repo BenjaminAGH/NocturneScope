@@ -50,6 +50,7 @@ function DeviceNode({ data }: NodeProps) {
             <Handle
                 type="source"
                 position={Position.Bottom}
+                id="s-bottom"
                 className="w-3 h-3"
             />
             <Handle
