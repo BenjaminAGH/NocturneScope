@@ -37,7 +37,6 @@ import DelayNode, { DelayNodeData } from "@/components/topology/DelayNode";
 import SoundNode, { SoundNodeData } from "@/components/topology/SoundNode";
 import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
-import { useGroup } from "@/context/GroupContext";
 
 const nodeTypes = {
     device: DeviceNode,
@@ -89,8 +88,6 @@ function TopologyEditor() {
 
     const nodeIdCounter = useRef(0);
 
-    const { selectedGroup } = useGroup();
-
     useEffect(() => {
         const token = localStorage.getItem("jwt");
         if (!token) {
@@ -99,20 +96,17 @@ function TopologyEditor() {
         }
         setJwt(token);
 
-        if (selectedGroup) {
-            getDevices(token, selectedGroup.ID).then(setDevices).catch(console.error);
-            getTopologies(token, selectedGroup.ID).then(setTopologies).catch(console.error);
-        }
-    }, [router, selectedGroup]);
+        getDevices(token).then(setDevices).catch(console.error);
+        getTopologies(token).then(setTopologies).catch(console.error);
+    }, [router]);
 
     // Polling de estados de dispositivos y detección de gateways
     useEffect(() => {
         if (!jwt) return;
 
         const updateDeviceStatus = async () => {
-            if (!selectedGroup) return;
             try {
-                const deviceList = await getDevices(jwt, selectedGroup.ID);
+                const deviceList = await getDevices(jwt);
                 const statsPromises = deviceList.map(async (device) => {
                     try {
                         const data = await getLastStats(jwt, device);
@@ -442,7 +436,7 @@ function TopologyEditor() {
         updateDeviceStatus();
         const interval = setInterval(updateDeviceStatus, 5000);
         return () => clearInterval(interval);
-    }, [jwt, setNodes, setEdges, autoDetectGateways, selectedGroup]);
+    }, [jwt, setNodes, setEdges, autoDetectGateways]);
 
     // Polling de alertas recientes para confirmación visual
     useEffect(() => {
@@ -835,11 +829,8 @@ function TopologyEditor() {
             try {
                 // 1. Cargar lista de topologías
                 const { getTopologies } = await import("@/lib/api/api");
-                let topos: any[] = [];
-                if (selectedGroup) {
-                    topos = await getTopologies(jwt, selectedGroup.ID);
-                    setTopologies(topos);
-                }
+                const topos = await getTopologies(jwt);
+                setTopologies(topos);
 
                 // 2. Check for local draft first
                 const draftJson = localStorage.getItem("topology_draft");
@@ -877,7 +868,7 @@ function TopologyEditor() {
         };
 
         init();
-    }, [router, loadTopology, setTopologies, notify, selectedGroup]);
+    }, [router, loadTopology, setTopologies, notify]);
 
     const handleSave = useCallback(
         async (name: string, silent: boolean = false) => {
@@ -919,16 +910,14 @@ function TopologyEditor() {
                     if (!silent) notify("Topología actualizada", "success");
                 } else {
                     // Crear nueva
-                    const newTopo = await createTopology(jwt, name, data, selectedGroup?.ID);
+                    const newTopo = await createTopology(jwt, name, data);
                     setSelectedTopology(newTopo.ID);
                     if (!silent) notify("Topología guardada", "success");
                 }
                 setCurrentTopologyName(name);
                 // Recargar lista de topologías
-                if (selectedGroup) {
-                    const topos = await getTopologies(jwt, selectedGroup.ID);
-                    setTopologies(topos);
-                }
+                const topos = await getTopologies(jwt);
+                setTopologies(topos);
 
                 if (!silent) {
                     // This notification is now handled inside the if/else block
@@ -941,7 +930,7 @@ function TopologyEditor() {
                 if (!silent) notify("Error guardando topología: " + e.message, "error");
             }
         },
-        [jwt, nodes, edges, selectedTopology, notify, selectedGroup]
+        [jwt, nodes, edges, selectedTopology, notify]
     );
 
     const handleLoad = useCallback(
@@ -1040,10 +1029,8 @@ function TopologyEditor() {
             await updateTopology(jwt, id, newName, topologyData);
             notify("Topología renombrada", "success");
 
-            if (selectedGroup) {
-                const topos = await getTopologies(jwt, selectedGroup.ID);
-                setTopologies(topos);
-            }
+            const topos = await getTopologies(jwt);
+            setTopologies(topos);
             if (selectedTopology === id) {
                 setCurrentTopologyName(newName);
             }
@@ -1070,10 +1057,8 @@ function TopologyEditor() {
                 localStorage.removeItem("topology_draft");
             }
 
-            if (selectedGroup) {
-                const topos = await getTopologies(jwt, selectedGroup.ID);
-                setTopologies(topos);
-            }
+            const topos = await getTopologies(jwt);
+            setTopologies(topos);
         } catch (error) {
             console.error("Error deleting topology:", error);
             notify("Error al eliminar", "error");
