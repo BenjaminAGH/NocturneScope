@@ -166,3 +166,53 @@ func (c *HTTPClient) sendOnce(m domain.Metric) error {
 	}
 	return nil
 }
+
+func (c *HTTPClient) SendNetworkTraffic(traffic []domain.NetworkTraffic) error {
+	if c.baseURL == "" || c.baseURL == "/" {
+		return fmt.Errorf("backend no configurado")
+	}
+	// Direct send for now, no queue
+	return c.sendTrafficOnce(traffic)
+}
+
+func (c *HTTPClient) sendTrafficOnce(traffic []domain.NetworkTraffic) error {
+	payload := map[string]interface{}{
+		"traffic_data": traffic,
+	}
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	url := c.baseURL + "/api/network-traffic"
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if c.token != "" {
+		req.Header.Set("X-API-Key", c.token)
+	}
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		if !c.silent {
+			fmt.Println("error enviando tráfico:", err)
+		}
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		respBody, _ := io.ReadAll(resp.Body)
+		if !c.silent {
+			fmt.Printf("backend tráfico respondió %d: %s\n", resp.StatusCode, string(respBody))
+		}
+		return fmt.Errorf("backend status %d", resp.StatusCode)
+	}
+
+	if !c.silent {
+		fmt.Printf("✅ Tráfico enviado exitosamente (%d registros)\n", len(traffic))
+	}
+	return nil
+}

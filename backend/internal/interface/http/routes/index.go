@@ -21,6 +21,7 @@ func Register(
 	deviceGroupService *service.DeviceGroupService,
 	topologyService *service.TopologyService,
 	alertService domain.AlertService,
+	networkTrafficService *service.NetworkTrafficService,
 ) {
 	api := app.Group("/api")
 
@@ -28,6 +29,8 @@ func Register(
 	RegisterAuthRoutes(api, authService, userService)
 
 	RegisterMetricRoutes(api, metricService, apiTokenService)
+
+	RegisterNetworkTrafficRoutes(api, networkTrafficService, apiTokenService)
 
 	// rutas JWT
 	protected := api.Group("")

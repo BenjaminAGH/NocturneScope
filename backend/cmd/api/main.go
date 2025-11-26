@@ -32,13 +32,15 @@ func main() {
 	deviceGroupRepo := repository.NewDeviceGroupGormRepository(db)
 
 	// AutoMigrate
-	if err := db.AutoMigrate(&persistence.DeviceGroupModel{}, &persistence.APITokenModel{}); err != nil {
+	if err := db.AutoMigrate(&persistence.DeviceGroupModel{}, &persistence.APITokenModel{}, &persistence.NetworkTrafficModel{}); err != nil {
 		log.Printf("Warning: AutoMigrate failed: %v", err)
 	}
 
 	// servicios
 	userService := service.NewUserService(userRepo)
 	deviceGroupService := service.NewDeviceGroupService(deviceGroupRepo)
+	networkTrafficRepo := repository.NewNetworkTrafficGormRepository(db)
+	networkTrafficService := service.NewNetworkTrafficService(networkTrafficRepo)
 
 	// Ensure devadmin user exists (if env vars are set)
 	bootstrap.EnsureDevAdmin(userRepo)
@@ -78,7 +80,7 @@ func main() {
 		fmt.Printf("Error loading alert rules: %v\n", err)
 	}
 
-	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, apiTokenRepo, deviceGroupService, topologyService, alertService)
+	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, apiTokenRepo, deviceGroupService, topologyService, alertService, networkTrafficService)
 
 	log.Fatal(app.Listen(":3000"))
 }

@@ -18,6 +18,7 @@ import {
 } from "@/lib/api/api";
 import { formatCL, formatTickCL } from "@/lib/time";
 import LogViewer from "@/components/LogViewer";
+import NetworkTrafficLog from "@/components/dashboard/NetworkTrafficLog";
 
 type Point = { t: string; v: number };
 
@@ -316,7 +317,12 @@ export default function DashboardPage() {
       </section>
 
       {/* Logs */}
-      {jwt && device && <LogViewer jwt={jwt} device={device} range={range} />}
+      {jwt && device && (
+        <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
+          <LogViewer jwt={jwt} device={device} range={range} />
+          <NetworkTrafficLog device={device} />
+        </div>
+      )}
     </div>
   );
 }

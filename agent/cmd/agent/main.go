@@ -89,7 +89,9 @@ func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric
 		backend.WithSilent(silent),
 	)
 
-	svc := agentuc.NewService(collectors, client, interval, metricsChan)
+	trafficCollector := metrics.NewNetworkTrafficCollector()
+
+	svc := agentuc.NewService(collectors, trafficCollector, client, interval, metricsChan)
 	svc.Start()
 }
 

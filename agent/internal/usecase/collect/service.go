@@ -12,23 +12,26 @@ type Collector interface {
 
 type BackendSink interface {
 	SendMetric(domain.Metric) error
+	SendNetworkTraffic([]domain.NetworkTraffic) error
 }
 
 type Service struct {
-	collectors []Collector
-	backend    BackendSink
+	collectors       []Collector
+	trafficCollector domain.NetworkTrafficCollector
+	backend          BackendSink
 }
 
-func NewService(collectors []Collector, backend BackendSink) *Service {
+func NewService(collectors []Collector, trafficCollector domain.NetworkTrafficCollector, backend BackendSink) *Service {
 	return &Service{
-		collectors: collectors,
-		backend:    backend,
+		collectors:       collectors,
+		trafficCollector: trafficCollector,
+		backend:          backend,
 	}
 }
 
 func (s *Service) RunOnce() {
+	// 1. Collect Metrics
 	base := domain.Metric{}
-
 	for _, c := range s.collectors {
 		m, err := c.Collect()
 		if err != nil {
@@ -40,6 +43,18 @@ func (s *Service) RunOnce() {
 
 	if err := s.backend.SendMetric(base); err != nil {
 		log.Println("send error:", err)
+	}
+
+	// 2. Collect Network Traffic
+	if s.trafficCollector != nil {
+		traffic, err := s.trafficCollector.Collect()
+		if err != nil {
+			log.Println("traffic collector error:", err)
+		} else if len(traffic) > 0 {
+			if err := s.backend.SendNetworkTraffic(traffic); err != nil {
+				log.Println("send traffic error:", err)
+			}
+		}
 	}
 }
 

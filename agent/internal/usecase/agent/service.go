@@ -12,23 +12,26 @@ type Collector interface {
 
 type Sink interface {
 	SendMetric(domain.Metric) error
+	SendNetworkTraffic([]domain.NetworkTraffic) error
 }
 
 type Service struct {
-	collectors []Collector
-	sink       Sink
-	interval   time.Duration
-	outChan    chan domain.Metric
-	stopChan   chan struct{}
+	collectors       []Collector
+	trafficCollector domain.NetworkTrafficCollector
+	sink             Sink
+	interval         time.Duration
+	outChan          chan domain.Metric
+	stopChan         chan struct{}
 }
 
-func NewService(cols []Collector, sink Sink, interval time.Duration, out chan domain.Metric) *Service {
+func NewService(cols []Collector, trafficCollector domain.NetworkTrafficCollector, sink Sink, interval time.Duration, out chan domain.Metric) *Service {
 	return &Service{
-		collectors: cols,
-		sink:       sink,
-		interval:   interval,
-		outChan:    out,
-		stopChan:   make(chan struct{}),
+		collectors:       cols,
+		trafficCollector: trafficCollector,
+		sink:             sink,
+		interval:         interval,
+		outChan:          out,
+		stopChan:         make(chan struct{}),
 	}
 }
 
@@ -54,6 +57,7 @@ func (s *Service) Stop() {
 }
 
 func (s *Service) runOnce() {
+	// 1. Collect Metrics
 	base := domain.Metric{}
 	for _, c := range s.collectors {
 		m, err := c.Collect()
@@ -70,6 +74,14 @@ func (s *Service) runOnce() {
 	case s.outChan <- base:
 	default:
 		// si nadie escucha no bloqueamos
+	}
+
+	// 2. Collect Network Traffic
+	if s.trafficCollector != nil {
+		traffic, err := s.trafficCollector.Collect()
+		if err == nil && len(traffic) > 0 {
+			_ = s.sink.SendNetworkTraffic(traffic)
+		}
 	}
 }
 
