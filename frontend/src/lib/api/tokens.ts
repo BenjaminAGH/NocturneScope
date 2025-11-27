@@ -10,6 +10,7 @@ export interface APIToken {
     GroupID?: number;
     CreatedAt: string;
     RevokedAt?: string;
+    Status?: string;
 }
 
 export async function createAPIToken(jwt: string, name: string, deviceName: string, groupId?: number): Promise<{ token: string }> {

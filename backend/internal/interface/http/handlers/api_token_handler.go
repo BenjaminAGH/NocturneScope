@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -9,11 +10,12 @@ import (
 )
 
 type APITokenHandler struct {
-	svc *service.TokenService
+	svc       *service.TokenService
+	metricSvc *service.MetricService
 }
 
-func NewAPITokenHandler(svc *service.TokenService) *APITokenHandler {
-	return &APITokenHandler{svc: svc}
+func NewAPITokenHandler(svc *service.TokenService, metricSvc *service.MetricService) *APITokenHandler {
+	return &APITokenHandler{svc: svc, metricSvc: metricSvc}
 }
 
 func (h *APITokenHandler) Create(c *fiber.Ctx) error {
@@ -58,7 +60,42 @@ func (h *APITokenHandler) List(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return c.JSON(tokens)
+	type TokenResponse struct {
+		ID         uint   `json:"ID"`
+		Name       string `json:"Name"`
+		TokenHash  string `json:"TokenHash"`
+		DeviceName string `json:"DeviceName"`
+		GroupID    *uint  `json:"GroupID"`
+		CreatedAt  string `json:"CreatedAt"`
+		Status     string `json:"Status"` // "online" | "offline"
+	}
+
+	var response []TokenResponse
+	for _, t := range tokens {
+		status := "offline"
+		if t.DeviceName != "" {
+			stats, err := h.metricSvc.LastStats(c.Context(), t.DeviceName)
+			if err == nil && stats != nil {
+				if ts, ok := stats["timestamp"].(time.Time); ok {
+					if time.Since(ts) < 5*time.Minute {
+						status = "online"
+					}
+				}
+			}
+		}
+
+		response = append(response, TokenResponse{
+			ID:         t.ID,
+			Name:       t.Name,
+			TokenHash:  t.TokenHash,
+			DeviceName: t.DeviceName,
+			GroupID:    t.GroupID,
+			CreatedAt:  t.CreatedAt.Format(time.RFC3339),
+			Status:     status,
+		})
+	}
+
+	return c.JSON(response)
 }
 
 func (h *APITokenHandler) Delete(c *fiber.Ctx) error {

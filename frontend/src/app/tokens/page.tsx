@@ -145,6 +145,7 @@ export default function TokensPage() {
                         <thead className="bg-muted/50 border-b border-border">
                             <tr>
                                 <th className="text-left px-4 py-3 text-sm font-medium">Nombre</th>
+                                <th className="text-left px-4 py-3 text-sm font-medium">Estado</th>
                                 <th className="text-left px-4 py-3 text-sm font-medium">Dispositivo</th>
                                 <th className="text-left px-4 py-3 text-sm font-medium">Grupo</th>
                                 <th className="text-left px-4 py-3 text-sm font-medium">Creado</th>
@@ -171,6 +172,12 @@ export default function TokensPage() {
                                             <div className="font-medium">{token.Name}</div>
                                             <div className="text-xs text-muted-foreground font-mono">
                                                 {token.TokenHash.substring(0, 16)}...
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-2 h-2 rounded-full ${token.Status === 'online' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                                                <span className="text-xs text-muted-foreground capitalize">{token.Status === 'online' ? 'Activo' : 'Inactivo'}</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-sm">

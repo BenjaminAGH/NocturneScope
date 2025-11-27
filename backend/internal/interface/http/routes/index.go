@@ -42,7 +42,7 @@ func Register(
 	RegisterMetricQueryRoutes(protected, metricService, apiTokenRepo)
 
 	// api tokens del usuario
-	apiTokenHandler := handlers.NewAPITokenHandler(apiTokenService)
+	apiTokenHandler := handlers.NewAPITokenHandler(apiTokenService, metricService)
 	protected.Post("/api-tokens", apiTokenHandler.Create)
 	protected.Get("/api-tokens", apiTokenHandler.List)
 	protected.Delete("/api-tokens/:id", apiTokenHandler.Delete)
