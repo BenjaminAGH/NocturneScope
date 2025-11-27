@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"log"
+
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/domain"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/usecase/service"
 	"github.com/gofiber/fiber/v2"
@@ -61,6 +63,7 @@ func (h *NetworkTrafficHandler) GetTraffic(c *fiber.Ctx) error {
 	if deviceName != "" {
 		traffic, err := h.service.GetByDeviceName(userID, deviceName, 100)
 		if err != nil {
+			log.Printf("Error fetching traffic by device name: %v", err)
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to fetch traffic data"})
 		}
 		return c.JSON(traffic)
