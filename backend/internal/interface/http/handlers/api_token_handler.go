@@ -24,8 +24,8 @@ func (h *APITokenHandler) Create(c *fiber.Ctx) error {
 		DeviceName string `json:"device_name"`
 		GroupID    *uint  `json:"group_id"`
 	}
-	if err := c.BodyParser(&body); err != nil || body.Name == "" || body.DeviceName == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "name and device_name required"})
+	if err := c.BodyParser(&body); err != nil || body.Name == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "name required"})
 	}
 
 	uidAny := c.Locals("user_id")
