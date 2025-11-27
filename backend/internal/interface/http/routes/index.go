@@ -40,6 +40,7 @@ func Register(
 	protected.Post("/auth/logout", authHandler.Logout)
 
 	RegisterMetricQueryRoutes(protected, metricService, apiTokenRepo)
+	RegisterNetworkTrafficUserRoutes(protected, networkTrafficService)
 
 	// api tokens del usuario
 	apiTokenHandler := handlers.NewAPITokenHandler(apiTokenService, metricService)

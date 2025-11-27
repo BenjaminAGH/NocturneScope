@@ -21,16 +21,18 @@ type Service struct {
 	sink             Sink
 	interval         time.Duration
 	outChan          chan domain.Metric
+	trafficOutChan   chan []domain.NetworkTraffic
 	stopChan         chan struct{}
 }
 
-func NewService(cols []Collector, trafficCollector domain.NetworkTrafficCollector, sink Sink, interval time.Duration, out chan domain.Metric) *Service {
+func NewService(cols []Collector, trafficCollector domain.NetworkTrafficCollector, sink Sink, interval time.Duration, out chan domain.Metric, trafficOut chan []domain.NetworkTraffic) *Service {
 	return &Service{
 		collectors:       cols,
 		trafficCollector: trafficCollector,
 		sink:             sink,
 		interval:         interval,
 		outChan:          out,
+		trafficOutChan:   trafficOut,
 		stopChan:         make(chan struct{}),
 	}
 }
@@ -79,8 +81,17 @@ func (s *Service) runOnce() {
 	// 2. Collect Network Traffic
 	if s.trafficCollector != nil {
 		traffic, err := s.trafficCollector.Collect()
-		if err == nil && len(traffic) > 0 {
-			_ = s.sink.SendNetworkTraffic(traffic)
+		if err == nil {
+			if len(traffic) > 0 {
+				_ = s.sink.SendNetworkTraffic(traffic)
+			}
+			// enviar a la TUI si hay canal (incluso si está vacío, para actualizar UI)
+			if s.trafficOutChan != nil {
+				select {
+				case s.trafficOutChan <- traffic:
+				default:
+				}
+			}
 		}
 	}
 }

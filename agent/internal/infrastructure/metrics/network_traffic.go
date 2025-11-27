@@ -21,10 +21,6 @@ func (c *NetworkTrafficCollector) Collect() ([]domain.NetworkTraffic, error) {
 
 	var traffic []domain.NetworkTraffic
 	for _, conn := range connections {
-		// Filter loopback if needed, but for now let's keep everything or filter 127.0.0.1
-		if conn.Laddr.IP == "127.0.0.1" || conn.Laddr.IP == "::1" {
-			continue
-		}
 
 		// Simple threat level logic (placeholder)
 		threatLevel := "LOW"

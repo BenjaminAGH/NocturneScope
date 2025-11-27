@@ -12,8 +12,12 @@ func RegisterNetworkTrafficRoutes(r fiber.Router, trafficSvc *service.NetworkTra
 
 	// Route for agents to post traffic data (protected by API Token)
 	r.Post("/network-traffic", middleware.APITokenRequired(tokenSvc), h.ReceiveTraffic)
+}
 
-	// Route for frontend to get traffic logs (protected by User Auth - handled by parent group usually)
+func RegisterNetworkTrafficUserRoutes(r fiber.Router, trafficSvc *service.NetworkTrafficService) {
+	h := handlers.NewNetworkTrafficHandler(trafficSvc)
+
+	// Route for frontend to get traffic logs (protected by User Auth)
 	r.Get("/network-traffic", h.GetTraffic)
 	r.Get("/network-traffic/:deviceId", h.GetTraffic)
 }

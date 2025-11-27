@@ -21,6 +21,7 @@ const (
 	stateSetup state = iota
 	stateMenu
 	stateRealtime
+	stateNetworkTraffic
 	stateEdit
 	stateInstall
 	stateDone
@@ -33,7 +34,7 @@ var (
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("63")).
 			Padding(1, 2).
-			Width(60)
+			Width(80) // Increased width for traffic table
 
 	titleStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#FAFAFA")).
@@ -79,7 +80,7 @@ var (
 )
 
 // firstRun = true si no había config
-func NewModel(cfg config.AgentConfig, mc <-chan domain.Metric, firstRun bool) Model {
+func NewModel(cfg config.AgentConfig, mc <-chan domain.Metric, tc <-chan []domain.NetworkTraffic, firstRun bool) Model {
 	ti := textinput.New()
 	ti.Focus()
 	ti.Width = 40
@@ -96,8 +97,10 @@ func NewModel(cfg config.AgentConfig, mc <-chan domain.Metric, firstRun bool) Mo
 		input:     ti,
 		cfg:       cfg,
 		metricsC:  mc,
+		trafficC:  tc,
 		options: []string{
 			"Ver última métrica",
+			"Ver tráfico de red",
 			"Reconfigurar todo",
 			"Instalar como servicio del sistema",
 			"Resetear configuración",
@@ -119,6 +122,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.lastM = domain.Metric(msg)
 		if m.state == stateRealtime {
 			return m, listenMetric(m.metricsC)
+		}
+		return m, nil
+
+	case trafficMsg:
+		m.lastTraffic = []domain.NetworkTraffic(msg)
+		m.trafficReceived = true
+		if m.state == stateNetworkTraffic {
+			return m, listenTraffic(m.trafficC)
 		}
 		return m, nil
 
@@ -151,7 +162,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "b":
-			if m.state == stateRealtime || m.state == stateInstall {
+			if m.state == stateRealtime || m.state == stateInstall || m.state == stateNetworkTraffic {
 				m.state = stateMenu
 				return m, nil
 			}
@@ -162,21 +173,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case 0: // Ver última métrica
 					m.state = stateRealtime
 					return m, listenMetric(m.metricsC)
-				case 1: // Reconfigurar
+				case 1: // Ver tráfico de red
+					m.state = stateNetworkTraffic
+					return m, listenTraffic(m.trafficC)
+				case 2: // Reconfigurar
 					m.state = stateSetup
 					m.setupStep = stepBackend
 					m.input.SetValue(m.cfg.BackendURL)
 					m.input.Placeholder = "http://localhost:3000"
 					return m, nil
-				case 2: // Instalar servicio
+				case 3: // Instalar servicio
 					m.state = stateInstall
 					m.installStatus = "⏳ Instalando servicio..."
 					return m, installServiceCmd
-				case 3: // Resetear
+				case 4: // Resetear
 					_ = config.Delete()
 					m.exitAndKeepAgent = false
 					return m, tea.Quit
-				case 4: // Salir
+				case 5: // Salir
 					m.exitAndKeepAgent = false
 					return m, tea.Quit
 				}
@@ -337,6 +351,7 @@ func (m Model) handleSetupEnter() (Model, tea.Cmd) {
 
 // mensaje interno para nuevas métricas
 type metricMsg domain.Metric
+type trafficMsg []domain.NetworkTraffic
 
 type installMsg struct{ err error }
 
@@ -355,7 +370,10 @@ type Model struct {
 	input            textinput.Model
 	cfg              config.AgentConfig
 	metricsC         <-chan domain.Metric // lo manda el agente
+	trafficC         <-chan []domain.NetworkTraffic
 	lastM            domain.Metric
+	lastTraffic      []domain.NetworkTraffic
+	trafficReceived  bool
 	err              error
 	installStatus    string
 	exitAndKeepAgent bool // el main lo consulta
@@ -368,6 +386,13 @@ func listenMetric(c <-chan domain.Metric) tea.Cmd {
 	return func() tea.Msg {
 		m := <-c
 		return metricMsg(m)
+	}
+}
+
+func listenTraffic(c <-chan []domain.NetworkTraffic) tea.Cmd {
+	return func() tea.Msg {
+		t := <-c
+		return trafficMsg(t)
 	}
 }
 

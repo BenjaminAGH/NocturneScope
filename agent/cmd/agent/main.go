@@ -30,13 +30,14 @@ func main() {
 func runTUI() {
 	cfg, _ := config.Load()
 	metricsChan := make(chan domain.Metric, 10)
+	trafficChan := make(chan []domain.NetworkTraffic, 10)
 
 	// arrancar agente embebido SOLO si hay config completa
 	if cfg.BackendURL != "" && cfg.APIToken != "" {
-		startAgentFromConfig(cfg, metricsChan, true)
+		startAgentFromConfig(cfg, metricsChan, trafficChan, true)
 	}
 
-	m := cliui.NewModel(cfg, metricsChan, cfg.BackendURL == "")
+	m := cliui.NewModel(cfg, metricsChan, trafficChan, cfg.BackendURL == "")
 
 	finalModel, err := tea.NewProgram(m).StartReturningModel()
 	if err != nil {
@@ -57,12 +58,13 @@ func runAgentOnly() {
 		log.Fatalf("no se pudo cargar config: %v", err)
 	}
 	metricsChan := make(chan domain.Metric, 10)
-	startAgentFromConfig(cfg, metricsChan, false)
+	trafficChan := make(chan []domain.NetworkTraffic, 10)
+	startAgentFromConfig(cfg, metricsChan, trafficChan, false)
 	// agente en foreground
 	select {}
 }
 
-func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric, silent bool) {
+func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric, trafficChan chan []domain.NetworkTraffic, silent bool) {
 	interval, _ := time.ParseDuration(cfg.Interval)
 	if interval == 0 {
 		interval = 10 * time.Second
@@ -91,7 +93,7 @@ func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric
 
 	trafficCollector := metrics.NewNetworkTrafficCollector()
 
-	svc := agentuc.NewService(collectors, trafficCollector, client, interval, metricsChan)
+	svc := agentuc.NewService(collectors, trafficCollector, client, interval, metricsChan, trafficChan)
 	svc.Start()
 }
 
