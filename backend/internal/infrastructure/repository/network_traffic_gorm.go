@@ -41,10 +41,10 @@ func (r *NetworkTrafficGormRepository) FindByDeviceID(deviceID uint, limit int) 
 
 func (r *NetworkTrafficGormRepository) FindByDeviceName(userID uint, deviceName string, limit int) ([]domain.NetworkTraffic, error) {
 	var models []persistence.NetworkTrafficModel
-	// Join with api_tokens to filter by device_name and user_id
+	// Join with api_token_models to filter by device_name and user_id
 	err := r.db.Table("network_traffic").
-		Joins("JOIN api_tokens ON network_traffic.device_id = api_tokens.id").
-		Where("api_tokens.user_id = ? AND api_tokens.device_name = ?", userID, deviceName).
+		Joins("JOIN api_token_models ON network_traffic.device_id = api_token_models.id").
+		Where("api_token_models.user_id = ? AND api_token_models.device_name = ?", userID, deviceName).
 		Order("network_traffic.timestamp desc").
 		Limit(limit).
 		Find(&models).Error
