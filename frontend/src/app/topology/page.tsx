@@ -81,7 +81,7 @@ function TopologyEditor() {
                 currentTopologyName,
                 timestamp: Date.now()
             };
-            localStorage.setItem("topology_draft", JSON.stringify(draft));
+            sessionStorage.setItem("topology_draft", JSON.stringify(draft));
         }
     }, [nodes, edges, selectedTopology, currentTopologyName]);
 
@@ -849,7 +849,7 @@ function TopologyEditor() {
                 setTopologies(topos);
 
                 // 2. Check for local draft first
-                const draftJson = localStorage.getItem("topology_draft");
+                const draftJson = sessionStorage.getItem("topology_draft");
                 if (draftJson) {
                     try {
                         const draft = JSON.parse(draftJson);
@@ -997,7 +997,7 @@ function TopologyEditor() {
                     currentTopologyName: topo.Name,
                     timestamp: Date.now()
                 };
-                localStorage.setItem("topology_draft", JSON.stringify(draft));
+                sessionStorage.setItem("topology_draft", JSON.stringify(draft));
 
                 // Ajustar vista después de cargar
                 setTimeout(() => fitView(), 100);
@@ -1070,7 +1070,7 @@ function TopologyEditor() {
                 setCurrentTopologyName("");
                 setNodes([]);
                 setEdges([]);
-                localStorage.removeItem("topology_draft");
+                sessionStorage.removeItem("topology_draft");
             }
 
             const topos = await getTopologies(jwt);
@@ -1086,7 +1086,7 @@ function TopologyEditor() {
         setEdges([]);
         setSelectedTopology(null);
         setCurrentTopologyName("");
-        localStorage.removeItem("topology_draft");
+        sessionStorage.removeItem("topology_draft");
     }, [setNodes, setEdges]);
 
     const handleExport = useCallback(() => {
