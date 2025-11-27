@@ -92,7 +92,7 @@ export const Navbar = () => {
           </span>
         </Link>
 
-        {!isPublicRoute && isLoggedIn && selectedGroup && (
+        {!isPublicRoute && isLoggedIn && selectedGroup && pathname !== '/groups' && (
           <div className="hidden md:flex items-center bg-muted/50 rounded-full p-1 border border-border/50 absolute left-1/2 transform -translate-x-1/2">
             <Link
               href="/dashboard"
