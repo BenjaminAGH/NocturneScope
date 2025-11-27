@@ -15,11 +15,16 @@ func NewNetworkTrafficHandler(service *service.NetworkTrafficService) *NetworkTr
 }
 
 func (h *NetworkTrafficHandler) ReceiveTraffic(c *fiber.Ctx) error {
-	// Get device ID from context (set by APIToken middleware)
-	deviceID, ok := c.Locals("device_id").(uint)
-	if !ok {
+	// Get token from context (set by APIToken middleware)
+	tokenAny := c.Locals("token")
+	if tokenAny == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
 	}
+	token, ok := tokenAny.(*domain.APIToken)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "invalid token type"})
+	}
+	deviceID := token.ID
 
 	var req struct {
 		TrafficData []domain.NetworkTraffic `json:"traffic_data"`
