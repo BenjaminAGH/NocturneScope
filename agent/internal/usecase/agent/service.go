@@ -128,5 +128,8 @@ func merge(dst, src domain.Metric) domain.Metric {
 	if src.DeviceType != "" {
 		dst.DeviceType = src.DeviceType
 	}
+	if src.Hostname != "" {
+		dst.Hostname = src.Hostname
+	}
 	return dst
 }
