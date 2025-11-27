@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"sort"
 	"time"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -126,8 +127,27 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case trafficMsg:
+		// Sort traffic: Critical/High/Medium > Low, then ESTABLISHED > others
+		sort.Slice(msg, func(i, j int) bool {
+			return getThreatScore(msg[i].ThreatLevel) > getThreatScore(msg[j].ThreatLevel) ||
+				(getThreatScore(msg[i].ThreatLevel) == getThreatScore(msg[j].ThreatLevel) &&
+					getStateScore(msg[i].ConnectionState) > getStateScore(msg[j].ConnectionState))
+		})
+
 		m.lastTraffic = []domain.NetworkTraffic(msg)
 		m.trafficReceived = true
+
+		// Validate current page against new data size
+		pageSize := 10
+		if len(m.lastTraffic) > 0 {
+			maxPage := (len(m.lastTraffic) - 1) / pageSize
+			if m.trafficPage > maxPage {
+				m.trafficPage = maxPage
+			}
+		} else {
+			m.trafficPage = 0
+		}
+
 		if m.state == stateNetworkTraffic {
 			return m, listenTraffic(m.trafficC)
 		}
@@ -167,6 +187,21 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 
+		case "left", "h":
+			if m.state == stateNetworkTraffic {
+				if m.trafficPage > 0 {
+					m.trafficPage--
+				}
+			}
+
+		case "right", "l":
+			if m.state == stateNetworkTraffic {
+				pageSize := 10
+				if (m.trafficPage+1)*pageSize < len(m.lastTraffic) {
+					m.trafficPage++
+				}
+			}
+
 		case "enter":
 			if m.state == stateMenu {
 				switch m.cursor {
@@ -175,6 +210,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, listenMetric(m.metricsC)
 				case 1: // Ver tráfico de red
 					m.state = stateNetworkTraffic
+					m.trafficPage = 0 // Reset page on entry
 					return m, listenTraffic(m.trafficC)
 				case 2: // Reconfigurar
 					m.state = stateSetup
@@ -280,6 +316,64 @@ func (m Model) View() string {
 			helpStyle.Render("b: Volver al menú"),
 		)
 
+	case stateNetworkTraffic:
+		header := titleStyle.Render("Tráfico de Red (Tiempo Real)")
+
+		var rows string
+		pageSize := 10
+		totalPages := (len(m.lastTraffic) + pageSize - 1) / pageSize
+		if totalPages == 0 {
+			totalPages = 1
+		}
+
+		if !m.trafficReceived {
+			rows = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Render("Esperando datos...")
+		} else if len(m.lastTraffic) == 0 {
+			rows = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Render("No hay conexiones activas.")
+		} else {
+			// Header
+			rows += fmt.Sprintf("%-6s %-15s %-6s %-10s %s\n", "PROTO", "SRC IP", "PORT", "STATE", "THREAT")
+
+			start := m.trafficPage * pageSize
+			end := start + pageSize
+			if start >= len(m.lastTraffic) {
+				start = 0
+				m.trafficPage = 0
+			}
+			if end > len(m.lastTraffic) {
+				end = len(m.lastTraffic)
+			}
+
+			pageItems := m.lastTraffic[start:end]
+
+			for _, t := range pageItems {
+				threatStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("10")) // Green
+				if t.ThreatLevel == "MEDIUM" {
+					threatStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("214")) // Orange
+				} else if t.ThreatLevel == "HIGH" {
+					threatStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("196")) // Red
+				} else if t.ThreatLevel == "CRITICAL" {
+					threatStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Bold(true)
+				}
+
+				rows += fmt.Sprintf("%-6s %-15s %-6d %-10s %s\n",
+					t.Protocol,
+					t.SourceIP,
+					t.DestinationPort,
+					t.ConnectionState,
+					threatStyle.Render(t.ThreatLevel),
+				)
+			}
+		}
+
+		footer := helpStyle.Render(fmt.Sprintf("←/→: Pág %d/%d • b: Volver", m.trafficPage+1, totalPages))
+
+		content = lipgloss.JoinVertical(lipgloss.Left,
+			header,
+			rows,
+			footer,
+		)
+
 	case stateInstall:
 		header := titleStyle.Render("Instalación de Servicio")
 		status := m.installStatus
@@ -374,6 +468,7 @@ type Model struct {
 	lastM            domain.Metric
 	lastTraffic      []domain.NetworkTraffic
 	trafficReceived  bool
+	trafficPage      int
 	err              error
 	installStatus    string
 	exitAndKeepAgent bool // el main lo consulta
@@ -418,4 +513,24 @@ func installServiceCmd() tea.Msg {
 // el main lo usa para saber si debe quedarse con select {}
 func (m Model) ShouldKeepRunning() bool {
 	return m.exitAndKeepAgent
+}
+
+func getThreatScore(level string) int {
+	switch level {
+	case "CRITICAL":
+		return 3
+	case "HIGH":
+		return 2
+	case "MEDIUM":
+		return 1
+	default:
+		return 0
+	}
+}
+
+func getStateScore(state string) int {
+	if state == "ESTABLISHED" {
+		return 1
+	}
+	return 0
 }
