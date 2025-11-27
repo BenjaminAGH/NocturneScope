@@ -10,11 +10,12 @@ import (
 )
 
 type MetricHandler struct {
-	svc *metricuc.MetricService
+	svc          *metricuc.MetricService
+	tokenService *metricuc.TokenService
 }
 
-func NewMetricHandler(svc *metricuc.MetricService) *MetricHandler {
-	return &MetricHandler{svc: svc}
+func NewMetricHandler(svc *metricuc.MetricService, tokenService *metricuc.TokenService) *MetricHandler {
+	return &MetricHandler{svc: svc, tokenService: tokenService}
 }
 
 func (h *MetricHandler) Create(c *fiber.Ctx) error {
@@ -29,6 +30,21 @@ func (h *MetricHandler) Create(c *fiber.Ctx) error {
 
 	if err := h.svc.Store(body); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	// Auto-update device name if hostname is provided and differs
+	if body.Hostname != "" {
+		if tokenAny := c.Locals("token"); tokenAny != nil {
+			if token, ok := tokenAny.(*domain.APIToken); ok {
+				if token.DeviceName != body.Hostname {
+					// Update token device name
+					if err := h.tokenService.UpdateDeviceName(token.ID, body.Hostname); err != nil {
+						// Log error but don't fail request
+						// fmt.Printf("Failed to update device name: %v\n", err)
+					}
+				}
+			}
+		}
 	}
 
 	return c.Status(201).JSON(fiber.Map{"message": "metric stored"})

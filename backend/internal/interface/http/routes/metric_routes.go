@@ -10,7 +10,7 @@ import (
 
 func RegisterMetricRoutes(r fiber.Router, metricSvc *service.MetricService, tokenSvc *service.TokenService) {
 	g := r.Group("/metrics")
-	h := handlers.NewMetricHandler(metricSvc)
+	h := handlers.NewMetricHandler(metricSvc, tokenSvc)
 
 	g.Post("/", middleware.APITokenRequired(tokenSvc), h.Create)
 }

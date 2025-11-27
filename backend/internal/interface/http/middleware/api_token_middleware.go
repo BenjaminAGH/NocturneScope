@@ -13,10 +13,11 @@ func APITokenRequired(tokenService *service.TokenService) fiber.Handler {
 			return c.Status(401).JSON(fiber.Map{"error": "missing api token"})
 		}
 
-		_, err := tokenService.Validate(token)
+		tokenObj, err := tokenService.Validate(token)
 		if err != nil {
 			return c.Status(401).JSON(fiber.Map{"error": "invalid api token"})
 		}
+		c.Locals("token", tokenObj)
 
 		return c.Next()
 	}

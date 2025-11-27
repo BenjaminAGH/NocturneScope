@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"os"
 	"runtime"
 
 	"github.com/BenjaminAGH/nocturneagent/internal/domain"
@@ -18,8 +19,11 @@ func (c *HostInfoCollector) Collect() (domain.Metric, error) {
 	if err != nil {
 		return domain.Metric{}, err
 	}
+	hostname, _ := os.Hostname()
+
 	return domain.Metric{
 		UptimeSec: uptime,
 		OS:        runtime.GOOS,
+		Hostname:  hostname,
 	}, nil
 }

@@ -4,6 +4,7 @@ import "time"
 
 type Metric struct {
 	DeviceName string    `json:"device_name"`
+	Hostname   string    `json:"hostname,omitempty"`
 	IpAddress  string    `json:"ip_address"`
 	Gateway    string    `json:"gateway,omitempty"`
 	Timestamp  time.Time `json:"timestamp"`

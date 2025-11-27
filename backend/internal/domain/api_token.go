@@ -20,4 +20,5 @@ type APITokenRepository interface {
 	Revoke(id uint, userID uint) error
 	GetDeviceNamesByUser(userID uint) ([]string, error)
 	GetDeviceNamesByGroup(groupID uint) ([]string, error)
+	UpdateDeviceName(id uint, name string) error
 }

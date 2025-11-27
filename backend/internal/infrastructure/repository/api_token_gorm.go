@@ -70,14 +70,14 @@ func (r *APITokenGormRepository) GetDeviceNamesByUser(userID uint) ([]string, er
 }
 
 func (r *APITokenGormRepository) GetDeviceNamesByGroup(groupID uint) ([]string, error) {
-	var deviceNames []string
+	var names []string
 	err := r.db.Model(&persistence.APITokenModel{}).
-		Where("group_id = ? AND revoked_at IS NULL", groupID).
+		Where("group_id = ? AND device_name != ''", groupID).
 		Distinct("device_name").
-		Pluck("device_name", &deviceNames).
-		Error
-	if err != nil {
-		return nil, err
-	}
-	return deviceNames, nil
+		Pluck("device_name", &names).Error
+	return names, err
+}
+
+func (r *APITokenGormRepository) UpdateDeviceName(id uint, name string) error {
+	return r.db.Model(&persistence.APITokenModel{}).Where("id = ?", id).Update("device_name", name).Error
 }

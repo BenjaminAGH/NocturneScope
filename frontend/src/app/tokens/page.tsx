@@ -61,7 +61,7 @@ export default function TokensPage() {
     }, [jwt]);
 
     const handleCreateToken = async () => {
-        if (!jwt || !newTokenName.trim() || !selectedDevice || !selectedGroupId) return;
+        if (!jwt || !newTokenName.trim() || !selectedGroupId) return;
 
         setLoading(true);
         setError("");
@@ -274,7 +274,7 @@ export default function TokensPage() {
                                             </datalist>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
-                                            Escribe el nombre del nuevo dispositivo o selecciona uno existente.
+                                            Escribe el nombre del nuevo dispositivo o selecciona uno existente. Si se deja vacío, se actualizará automáticamente al conectar el agente.
                                         </p>
                                     </div>
                                 </div>
@@ -287,7 +287,7 @@ export default function TokensPage() {
                                     </button>
                                     <button
                                         onClick={handleCreateToken}
-                                        disabled={loading || !newTokenName.trim() || !selectedDevice || !selectedGroupId}
+                                        disabled={loading || !newTokenName.trim() || !selectedGroupId}
                                         className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm disabled:opacity-50"
                                     >
                                         {loading ? "Creando..." : "Crear"}
@@ -310,7 +310,7 @@ export default function TokensPage() {
                                 </div>
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => copyToClipboard(createdToken)}
+                                        onClick={() => createdToken && copyToClipboard(createdToken)}
                                         className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm flex items-center justify-center gap-2"
                                     >
                                         <ClipboardDocumentIcon className="w-4 h-4" />

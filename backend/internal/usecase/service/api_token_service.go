@@ -48,6 +48,10 @@ func (s *TokenService) Revoke(id uint, userID uint) error {
 	return s.repo.Revoke(id, userID)
 }
 
+func (s *TokenService) UpdateDeviceName(id uint, name string) error {
+	return s.repo.UpdateDeviceName(id, name)
+}
+
 func hashToken(raw string) string {
 	sum := sha256.Sum256([]byte(raw))
 	return hex.EncodeToString(sum[:])
