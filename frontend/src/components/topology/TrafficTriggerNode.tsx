@@ -83,10 +83,7 @@ function TrafficTriggerNode({ id, data, selected }: NodeProps) {
                         <span className="text-muted-foreground">Rule:</span>
                         <span className="font-mono font-semibold uppercase">{ruleType.replace('_', ' ')}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Op:</span>
-                        <span className="font-mono">{operator}</span>
-                    </div>
+
                     <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">Val:</span>
                         <span className="font-mono font-semibold text-primary">{value}</span>

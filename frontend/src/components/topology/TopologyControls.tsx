@@ -269,19 +269,6 @@ export default function TopologyControls({
                             </select>
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-muted-foreground">Operador</label>
-                            <select
-                                className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
-                                value={selectedNode.data.operator || 'is'}
-                                onChange={(e) => onUpdateNodeData(selectedNode.id, { operator: e.target.value })}
-                            >
-                                <option value="is">Es igual a</option>
-                                <option value="contains">Contiene</option>
-                                <option value=">">Mayor que</option>
-                                <option value="<">Menor que</option>
-                            </select>
-                        </div>
-                        <div>
                             <label className="text-xs font-medium text-muted-foreground">Valor</label>
                             {selectedNode.data.ruleType === 'threat_level' ? (
                                 <select
