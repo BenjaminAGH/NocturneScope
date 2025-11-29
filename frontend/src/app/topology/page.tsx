@@ -750,7 +750,7 @@ function TopologyEditor() {
 
         // Check downstream nodes
         nodes.forEach(n => {
-            if (n.type === 'email' || n.type === 'sound' || n.type === 'notification') {
+            if (n.type === 'email' || n.type === 'sound' || n.type === 'notification' || n.type === 'delay') {
                 // Find if connected to any active trigger
                 const incomingEdges = edges.filter(e => e.target === n.id);
                 const isConnectedToActiveTrigger = incomingEdges.some(e => activeTriggers.includes(e.source));
