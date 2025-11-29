@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 
@@ -21,7 +21,8 @@ interface TopologyControlsProps {
     onAddNotificationNode: () => void;
     onAddDelayNode: () => void;
     onAddSoundNode: () => void;
-    onAddTrafficNode: () => void; // Added
+    onAddTrafficNode: () => void;
+    onAddTrafficTriggerNode: () => void; // Added
     selectedNode: any;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
@@ -75,6 +76,7 @@ export default function TopologyControls({
     onAddDelayNode,
     onAddSoundNode,
     onAddTrafficNode,
+    onAddTrafficTriggerNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,
@@ -234,8 +236,63 @@ export default function TopologyControls({
                             <GlobeAltIcon className="w-6 h-6" />
                             <span className="text-xs">Tráfico</span>
                         </button>
+                        <button
+                            onClick={onAddTrafficTriggerNode}
+                            draggable
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'traffic-trigger');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                        >
+                            <FunnelIcon className="w-6 h-6" />
+                            <span className="text-xs">Trigger</span>
+                        </button>
                     </div>
                 </div>
+
+                {/* Configuración específica para Traffic Trigger Node */}
+                {selectedNode?.type === 'traffic-trigger' && (
+                    <div className="space-y-4 bg-muted/30 p-3 rounded-lg border border-border animate-in fade-in slide-in-from-right-4">
+                        <label className="text-sm font-medium text-primary">Configuración de Traffic Trigger</label>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground">Tipo de Regla</label>
+                            <select
+                                className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
+                                value={selectedNode.data.ruleType || 'threat_level'}
+                                onChange={(e) => onUpdateNodeData(selectedNode.id, { ruleType: e.target.value })}
+                            >
+                                <option value="threat_level">Nivel de Amenaza</option>
+                                <option value="port">Puerto</option>
+                                <option value="protocol">Protocolo</option>
+                                <option value="ip">Dirección IP</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground">Operador</label>
+                            <select
+                                className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
+                                value={selectedNode.data.operator || 'is'}
+                                onChange={(e) => onUpdateNodeData(selectedNode.id, { operator: e.target.value })}
+                            >
+                                <option value="is">Es igual a</option>
+                                <option value="contains">Contiene</option>
+                                <option value=">">Mayor que</option>
+                                <option value="<">Menor que</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground">Valor</label>
+                            <input
+                                type="text"
+                                className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
+                                value={selectedNode.data.value || ''}
+                                onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
+                                placeholder="Ej: HIGH, 80, TCP"
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* Configuración de Nodo Seleccionado */}
                 {selectedNode && (
@@ -243,13 +300,12 @@ export default function TopologyControls({
                         <label className="text-sm font-medium text-primary">
                             {selectedNode.type === 'monitoring' && "Configuración de Gráfico"}
                             {selectedNode.type === 'action' && "Regla de Disparo"}
-                            {selectedNode.type === 'action' && "Regla de Disparo"}
                             {selectedNode.type === 'email' && "Configuración de Email"}
-                            {selectedNode.type === 'email' && "Configuración de Email"}
-                            {selectedNode.type === 'notification' && "Configuración de Notificación"}
                             {selectedNode.type === 'notification' && "Configuración de Notificación"}
                             {selectedNode.type === 'delay' && "Configuración de Delay"}
                             {selectedNode.type === 'sound' && "Configuración de Sonido"}
+                            {selectedNode.type === 'traffic' && "Configuración de Tráfico"}
+                            {selectedNode.type === 'traffic-trigger' && "Configuración de Traffic Trigger"}
                         </label>
 
                         <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">

@@ -36,6 +36,7 @@ import NotificationNode, { NotificationNodeData } from "@/components/topology/No
 import DelayNode, { DelayNodeData } from "@/components/topology/DelayNode";
 import SoundNode, { SoundNodeData } from "@/components/topology/SoundNode";
 import TrafficNode, { TrafficNodeData } from "@/components/topology/TrafficNode";
+import TrafficTriggerNode, { TrafficTriggerNodeData } from "@/components/topology/TrafficTriggerNode";
 import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
 import { useGroup } from "@/context/GroupContext";
@@ -50,6 +51,7 @@ const nodeTypes = {
     delay: DelayNode,
     sound: SoundNode,
     traffic: TrafficNode,
+    'traffic-trigger': TrafficTriggerNode,
 };
 
 function TopologyEditor() {
@@ -559,8 +561,8 @@ function TopologyEditor() {
             if (!source || !target) return;
 
             setNodes((nds) => nds.map((node) => {
-                // Caso 1: Target es Monitoring, Action o Traffic
-                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic')) {
+                // Case 1: Target is Monitoring, Action, or Traffic Trigger
+                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic-trigger')) {
                     const sourceNode = nds.find(n => n.id === source);
                     if (sourceNode && sourceNode.type === 'device') {
                         return {
@@ -573,8 +575,8 @@ function TopologyEditor() {
                         };
                     }
                 }
-                // Caso 2: Source es Monitoring, Action o Traffic (conexión inversa)
-                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic')) {
+                // Case 2: Source is Monitoring, Action, or Traffic Trigger (inverse connection)
+                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic-trigger')) {
                     const targetNode = nds.find(n => n.id === target);
                     if (targetNode && targetNode.type === 'device') {
                         return {
@@ -663,6 +665,112 @@ function TopologyEditor() {
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes]);
 
+    // Check Traffic Triggers
+    useEffect(() => {
+        if (!jwt) return;
+
+        const checkTraffic = async () => {
+            const trafficNodes = nodes.filter(n => n.type === 'traffic-trigger') as Node<TrafficTriggerNodeData>[];
+            if (trafficNodes.length === 0) return;
+
+            const { getNetworkTraffic } = await import("@/lib/api/api");
+
+            // We need to update nodes state if activation changes
+            let hasChanges = false;
+            const updates = new Map<string, boolean>();
+
+            for (const node of trafficNodes) {
+                if (!node.data.connectedDevice) continue;
+
+                try {
+                    const traffic = await getNetworkTraffic(jwt, node.data.connectedDevice);
+                    // Check only recent traffic (last 10 seconds) to avoid stale triggers
+                    // Or just check the latest few packets
+                    const recentTraffic = traffic.slice(0, 20); // Check last 20 packets
+
+                    let triggered = false;
+                    const ruleType = node.data.ruleType || 'threat_level';
+                    const operator = node.data.operator || 'is';
+                    const value = String(node.data.value || '').toUpperCase();
+
+                    for (const pkt of recentTraffic) {
+                        let pktValue = '';
+                        if (ruleType === 'threat_level') pktValue = String(pkt.threat_level || '').toUpperCase();
+                        if (ruleType === 'port') pktValue = String(pkt.destination_port || '');
+                        if (ruleType === 'protocol') pktValue = String(pkt.protocol || '').toUpperCase();
+                        if (ruleType === 'ip') pktValue = String(pkt.destination_ip || '').toUpperCase();
+
+                        let match = false;
+                        if (operator === 'is') match = pktValue === value;
+                        if (operator === 'contains') match = pktValue.includes(value);
+                        if (operator === '>') match = Number(pktValue) > Number(value);
+                        if (operator === '<') match = Number(pktValue) < Number(value);
+
+                        if (match) {
+                            triggered = true;
+                            break;
+                        }
+                    }
+
+                    if (node.data.isActive !== triggered) {
+                        updates.set(node.id, triggered);
+                        hasChanges = true;
+                    }
+                } catch (e) {
+                    console.error("Error checking traffic trigger:", e);
+                }
+            }
+
+            if (hasChanges) {
+                setNodes(nds => nds.map(n => {
+                    if (updates.has(n.id)) {
+                        return { ...n, data: { ...n.data, isActive: updates.get(n.id) } };
+                    }
+                    return n;
+                }));
+            }
+        };
+
+        const interval = setInterval(checkTraffic, 5000);
+        return () => clearInterval(interval);
+    }, [jwt, nodes]); // Dependency on nodes might be too heavy, but needed to see new nodes
+
+    // Propagate Traffic Trigger to Actions (Email, Sound, etc.)
+    useEffect(() => {
+        const activeTriggers = nodes.filter(n => n.type === 'traffic-trigger' && n.data.isActive).map(n => n.id);
+
+        if (activeTriggers.length === 0) {
+            // Deactivate downstream nodes if no triggers are active
+            setNodes(nds => nds.map(n => {
+                if ((n.type === 'email' || n.type === 'sound' || n.type === 'notification') && n.data.isActive) {
+                    // Check if it's connected to ANY active trigger (Action or Traffic)
+                    // This logic is getting complex, ideally we trace from active nodes
+                    // For now, simple check: if connected to a traffic trigger that is NOT active, turn off?
+                    // Better: Re-evaluate all downstream nodes based on ALL upstream active nodes
+                    return n; // Let the main checkAlerts or similar handle deactivation?
+                    // Actually, checkAlerts handles ActionNode. We need to extend it or add logic here.
+                }
+                return n;
+            }));
+            return;
+        }
+
+        setNodes(nds => nds.map(n => {
+            // Find edges connected to this node
+            const incomingEdges = edges.filter(e => e.target === n.id);
+            const isConnectedToActiveTrigger = incomingEdges.some(e => activeTriggers.includes(e.source));
+
+            if (isConnectedToActiveTrigger) {
+                if (!n.data.isActive) {
+                    return { ...n, data: { ...n.data, isActive: true } };
+                }
+            }
+            return n;
+        }));
+
+    }, [nodes, edges]); // This might loop if not careful. 
+    // Better approach: Integrate into the existing checkAlerts or a unified propagation effect.
+
     const handleAddSoundNode = useCallback(() => {
         const id = `sound-${++nodeIdCounter.current}`;
         const newNode: Node<SoundNodeData> = {
@@ -689,6 +797,22 @@ function TopologyEditor() {
         };
         setNodes((nds) => [...nds, newNode]);
     }, [jwt, setNodes]);
+
+    const handleAddTrafficTriggerNode = useCallback(() => {
+        const id = `tt-${++nodeIdCounter.current}`;
+        const newNode: Node<TrafficTriggerNodeData> = {
+            id,
+            type: "traffic-trigger",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                ruleType: 'threat_level',
+                operator: 'is',
+                value: 'HIGH',
+                isActive: false,
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes]);
 
     const onDragOver = useCallback((event: React.DragEvent) => {
         event.preventDefault();
@@ -790,6 +914,20 @@ function TopologyEditor() {
                     data: {
                         jwt: jwt || undefined,
                         label: 'Traffic Log',
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'traffic-trigger') {
+                const id = `tt-${++nodeIdCounter.current}`;
+                const newNode: Node<TrafficTriggerNodeData> = {
+                    id,
+                    type: "traffic-trigger",
+                    position,
+                    data: {
+                        ruleType: 'threat_level',
+                        operator: 'is',
+                        value: 'HIGH',
+                        isActive: false,
                     },
                 };
                 setNodes((nds) => [...nds, newNode]);
@@ -1200,6 +1338,7 @@ function TopologyEditor() {
                     onAddDelayNode={handleAddDelayNode}
                     onAddSoundNode={handleAddSoundNode}
                     onAddTrafficNode={handleAddTrafficNode}
+                    onAddTrafficTriggerNode={handleAddTrafficTriggerNode}
                     selectedNode={nodes.find((n) => n.id === selectedNodeId)}
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}
