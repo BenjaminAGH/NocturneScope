@@ -39,9 +39,11 @@ function TrafficNode({ id, data, selected }: NodeProps) {
             try {
                 const data = await getNetworkTraffic(jwt, connectedDevice);
                 if (Array.isArray(data)) {
-                    setLogs(data);
+                    const sorted = sortLogs(data);
+                    setLogs(sorted);
                 } else if ((data as any).data && Array.isArray((data as any).data)) {
-                    setLogs((data as any).data);
+                    const sorted = sortLogs((data as any).data);
+                    setLogs(sorted);
                 }
             } catch (e) {
                 console.error("Error fetching traffic data:", e);
@@ -55,6 +57,35 @@ function TrafficNode({ id, data, selected }: NodeProps) {
         const intervalId = setInterval(fetchData, 5000);
         return () => clearInterval(intervalId);
     }, [jwt, connectedDevice, id]);
+
+    const sortLogs = (logs: TrafficLog[]) => {
+        return [...logs].sort((a, b) => {
+            // 1. Timestamp (Newest first)
+            const timeA = new Date(a.timestamp).getTime();
+            const timeB = new Date(b.timestamp).getTime();
+            if (timeA !== timeB) return timeB - timeA;
+
+            // 2. Threat Score
+            const scoreA = getSortScore(a);
+            const scoreB = getSortScore(b);
+            return scoreB - scoreA;
+        });
+    };
+
+    const getSortScore = (log: TrafficLog) => {
+        let score = 0;
+        // Threat
+        switch (log.threat_level?.toUpperCase()) {
+            case "CRITICAL": score += 100; break;
+            case "HIGH": score += 90; break;
+            case "MEDIUM": score += 10; break;
+        }
+        // State
+        if (log.connection_state === "ESTABLISHED") score += 50;
+        else if (log.connection_state?.includes("SYN")) score += 40;
+
+        return score;
+    };
 
     const getRowColor = (level: string, index: number) => {
         const base = index % 2 === 0 ? "bg-background" : "bg-muted/20";

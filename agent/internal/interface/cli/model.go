@@ -127,11 +127,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case trafficMsg:
-		// Sort traffic: Critical/High/Medium > Low, then ESTABLISHED > others
+		// Sort traffic:
+		// 1. Critical/High Threat (+100)
+		// 2. Established/Active State (+50)
+		// 3. Medium Threat (+10)
 		sort.Slice(msg, func(i, j int) bool {
-			return getThreatScore(msg[i].ThreatLevel) > getThreatScore(msg[j].ThreatLevel) ||
-				(getThreatScore(msg[i].ThreatLevel) == getThreatScore(msg[j].ThreatLevel) &&
-					getStateScore(msg[i].ConnectionState) > getStateScore(msg[j].ConnectionState))
+			scoreI := getSortScore(msg[i])
+			scoreJ := getSortScore(msg[j])
+			return scoreI > scoreJ
 		})
 
 		m.lastTraffic = []domain.NetworkTraffic(msg)
@@ -516,22 +519,25 @@ func (m Model) ShouldKeepRunning() bool {
 	return m.exitAndKeepAgent
 }
 
-func getThreatScore(level string) int {
-	switch level {
-	case "CRITICAL":
-		return 3
-	case "HIGH":
-		return 2
-	case "MEDIUM":
-		return 1
-	default:
-		return 0
-	}
-}
+func getSortScore(t domain.NetworkTraffic) int {
+	score := 0
 
-func getStateScore(state string) int {
-	if state == "ESTABLISHED" {
-		return 1
+	// Threat Level
+	switch t.ThreatLevel {
+	case "CRITICAL":
+		score += 100
+	case "HIGH":
+		score += 90
+	case "MEDIUM":
+		score += 10
 	}
-	return 0
+
+	// Connection State
+	if t.ConnectionState == "ESTABLISHED" {
+		score += 50
+	} else if t.ConnectionState == "SYN_SENT" || t.ConnectionState == "SYN_RECV" {
+		score += 40
+	}
+
+	return score
 }
