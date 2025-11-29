@@ -11,6 +11,7 @@ type NetworkTrafficModel struct {
 	DeviceID        uint      `gorm:"not null;index"`
 	Protocol        string    `gorm:"size:10;not null"`
 	SourceIP        string    `gorm:"size:45;not null"`
+	DestinationIP   string    `gorm:"size:45"`
 	DestinationPort int       `gorm:"not null"`
 	ConnectionState string    `gorm:"size:20"`
 	ThreatLevel     string    `gorm:"size:20;default:'LOW';index"`
@@ -28,6 +29,7 @@ func (m *NetworkTrafficModel) ToDomain() domain.NetworkTraffic {
 		DeviceID:        m.DeviceID,
 		Protocol:        m.Protocol,
 		SourceIP:        m.SourceIP,
+		DestinationIP:   m.DestinationIP,
 		DestinationPort: m.DestinationPort,
 		ConnectionState: m.ConnectionState,
 		ThreatLevel:     m.ThreatLevel,
@@ -42,6 +44,7 @@ func FromDomainNetworkTraffic(d domain.NetworkTraffic) NetworkTrafficModel {
 		DeviceID:        d.DeviceID,
 		Protocol:        d.Protocol,
 		SourceIP:        d.SourceIP,
+		DestinationIP:   d.DestinationIP,
 		DestinationPort: d.DestinationPort,
 		ConnectionState: d.ConnectionState,
 		ThreatLevel:     d.ThreatLevel,

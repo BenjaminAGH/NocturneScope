@@ -260,7 +260,7 @@ export default function TopologyControls({
                             <select
                                 className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
                                 value={selectedNode.data.ruleType || 'threat_level'}
-                                onChange={(e) => onUpdateNodeData(selectedNode.id, { ruleType: e.target.value })}
+                                onChange={(e) => onUpdateNodeData(selectedNode.id, { ruleType: e.target.value, value: '' })}
                             >
                                 <option value="threat_level">Nivel de Amenaza</option>
                                 <option value="port">Puerto</option>
@@ -283,13 +283,48 @@ export default function TopologyControls({
                         </div>
                         <div>
                             <label className="text-xs font-medium text-muted-foreground">Valor</label>
-                            <input
-                                type="text"
-                                className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
-                                value={selectedNode.data.value || ''}
-                                onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
-                                placeholder="Ej: HIGH, 80, TCP"
-                            />
+                            {selectedNode.data.ruleType === 'threat_level' ? (
+                                <select
+                                    className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
+                                    value={selectedNode.data.value || 'HIGH'}
+                                    onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
+                                >
+                                    <option value="LOW">LOW</option>
+                                    <option value="MEDIUM">MEDIUM</option>
+                                    <option value="HIGH">HIGH</option>
+                                    <option value="CRITICAL">CRITICAL</option>
+                                </select>
+                            ) : selectedNode.data.ruleType === 'protocol' ? (
+                                <select
+                                    className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
+                                    value={selectedNode.data.value || 'TCP'}
+                                    onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
+                                >
+                                    <option value="TCP">TCP</option>
+                                    <option value="UDP">UDP</option>
+                                    <option value="HTTP">HTTP</option>
+                                    <option value="HTTPS">HTTPS</option>
+                                    <option value="SSH">SSH</option>
+                                    <option value="DNS">DNS</option>
+                                    <option value="ICMP">ICMP</option>
+                                </select>
+                            ) : selectedNode.data.ruleType === 'port' ? (
+                                <input
+                                    type="number"
+                                    className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
+                                    value={selectedNode.data.value || ''}
+                                    onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
+                                    placeholder="Ej: 80"
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
+                                    value={selectedNode.data.value || ''}
+                                    onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
+                                    placeholder="Ej: 192.168.1.10"
+                                />
+                            )}
                         </div>
                     </div>
                 )}
