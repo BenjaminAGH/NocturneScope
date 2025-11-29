@@ -87,6 +87,7 @@ func (c *NetworkTrafficCollector) Collect() ([]domain.NetworkTraffic, error) {
 		t := domain.NetworkTraffic{
 			Protocol:        protocol,
 			SourceIP:        conn.Laddr.IP,
+			DestinationIP:   conn.Raddr.IP,
 			DestinationPort: displayPort,
 			ConnectionState: conn.Status,
 			ThreatLevel:     threatLevel,

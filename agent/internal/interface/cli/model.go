@@ -381,10 +381,11 @@ func (m Model) View() string {
 			status = "Iniciando..."
 		}
 
+		statusStyle := lipgloss.NewStyle().Width(70).Align(lipgloss.Center)
 		content = lipgloss.JoinVertical(lipgloss.Left,
 			header,
 			"",
-			status,
+			statusStyle.Render(status),
 			helpStyle.Render("b: Volver al menú"),
 		)
 

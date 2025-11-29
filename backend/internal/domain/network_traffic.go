@@ -9,6 +9,7 @@ type NetworkTraffic struct {
 	DeviceID        uint      `json:"device_id"`
 	Protocol        string    `json:"protocol"`
 	SourceIP        string    `json:"source_ip"`
+	DestinationIP   string    `json:"destination_ip"`
 	DestinationPort int       `json:"destination_port"`
 	ConnectionState string    `json:"connection_state"`
 	ThreatLevel     string    `json:"threat_level"`

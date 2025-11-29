@@ -34,7 +34,7 @@ func runTUI() {
 
 	// arrancar agente embebido SOLO si hay config completa
 	if cfg.BackendURL != "" && cfg.APIToken != "" {
-		startAgentFromConfig(cfg, metricsChan, trafficChan)
+		startAgentFromConfig(cfg, metricsChan, trafficChan, backend.WithSilent(true))
 	}
 
 	m := cliui.NewModel(cfg, metricsChan, trafficChan, cfg.BackendURL == "")
@@ -64,7 +64,7 @@ func runAgentOnly() {
 	select {}
 }
 
-func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric, trafficChan chan []domain.NetworkTraffic) {
+func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric, trafficChan chan []domain.NetworkTraffic, opts ...backend.Option) {
 	interval, _ := time.ParseDuration(cfg.Interval)
 	if interval == 0 {
 		interval = 10 * time.Second
@@ -83,11 +83,16 @@ func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric
 		metrics.NewGatewayCollector(),
 	}
 
+	clientOpts := []backend.Option{
+		backend.WithQueue(200),
+		backend.WithRetry(4, time.Second),
+	}
+	clientOpts = append(clientOpts, opts...)
+
 	client := backend.NewHTTPClient(
 		cfg.BackendURL,
 		cfg.APIToken,
-		backend.WithQueue(200),
-		backend.WithRetry(4, time.Second),
+		clientOpts...,
 	)
 
 	trafficCollector := metrics.NewNetworkTrafficCollector()

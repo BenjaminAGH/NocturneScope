@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -54,6 +55,19 @@ func InstallSystemd() error {
 		return fmt.Errorf("failed to chmod binary: %v", err)
 	}
 
+	// 3.5 Fix permissions for config file/dir
+	// Since we ran with sudo, the config file might be owned by root.
+	// We need to ensure the service user can read it.
+	configDir := filepath.Join(homeDir, ".nocturneagent")
+	configFile := filepath.Join(configDir, "config.json")
+
+	// Get uid/gid of the user
+	uid, gid, err := getUserIds(sudoUser)
+	if err == nil {
+		_ = os.Chown(configDir, uid, gid)
+		_ = os.Chown(configFile, uid, gid)
+	}
+
 	// 3. Create service file
 	unit := fmt.Sprintf(`[Unit]
 Description=NocturneScope Agent Service
@@ -62,6 +76,7 @@ After=network.target
 [Service]
 Type=simple
 User=%s
+WorkingDirectory=%s
 ExecStart=%s agent
 Restart=always
 RestartSec=5
@@ -69,7 +84,7 @@ Environment=HOME=%s
 
 [Install]
 WantedBy=multi-user.target
-`, sudoUser, installPath, homeDir)
+`, sudoUser, homeDir, installPath, homeDir)
 
 	if err := os.WriteFile(servicePath, []byte(unit), 0644); err != nil {
 		return fmt.Errorf("failed to write service file: %v", err)
@@ -84,6 +99,26 @@ WantedBy=multi-user.target
 	}
 
 	return nil
+}
+
+func getUserIds(username string) (int, int, error) {
+	cmd := exec.Command("id", "-u", username)
+	out, err := cmd.Output()
+	if err != nil {
+		return 0, 0, err
+	}
+	uid := 0
+	fmt.Sscanf(string(out), "%d", &uid)
+
+	cmd = exec.Command("id", "-g", username)
+	out, err = cmd.Output()
+	if err != nil {
+		return 0, 0, err
+	}
+	gid := 0
+	fmt.Sscanf(string(out), "%d", &gid)
+
+	return uid, gid, nil
 }
 
 func copyFile(src, dst string) error {
