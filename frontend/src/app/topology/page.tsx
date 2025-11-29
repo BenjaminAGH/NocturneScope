@@ -666,16 +666,22 @@ function TopologyEditor() {
     }, [setNodes]);
 
     // Check Traffic Triggers
+    // Use a ref to access current nodes inside interval without resetting it
+    const nodesRef = useRef(nodes);
+    useEffect(() => {
+        nodesRef.current = nodes;
+    }, [nodes]);
+
     useEffect(() => {
         if (!jwt) return;
 
         const checkTraffic = async () => {
-            const trafficNodes = nodes.filter(n => n.type === 'traffic-trigger') as Node<TrafficTriggerNodeData>[];
+            const currentNodes = nodesRef.current;
+            const trafficNodes = currentNodes.filter(n => n.type === 'traffic-trigger') as Node<TrafficTriggerNodeData>[];
             if (trafficNodes.length === 0) return;
 
             const { getNetworkTraffic } = await import("@/lib/api/api");
 
-            // We need to update nodes state if activation changes
             let hasChanges = false;
             const updates = new Map<string, boolean>();
 
@@ -733,40 +739,67 @@ function TopologyEditor() {
 
         const interval = setInterval(checkTraffic, 5000);
         return () => clearInterval(interval);
-    }, [jwt, nodes]); // Dependency on nodes might be too heavy, but needed to see new nodes
+    }, [jwt]); // Removed nodes dependency, using ref
 
     // Propagate Traffic Trigger to Actions (Email, Sound, etc.)
     useEffect(() => {
         const activeTriggers = nodes.filter(n => n.type === 'traffic-trigger' && n.data.isActive).map(n => n.id);
 
-        if (activeTriggers.length === 0) {
-            // Deactivate downstream nodes if no triggers are active
+        let hasChanges = false;
+        const nodesToUpdate = new Map<string, boolean>();
+
+        // Check downstream nodes
+        nodes.forEach(n => {
+            if (n.type === 'email' || n.type === 'sound' || n.type === 'notification') {
+                // Find if connected to any active trigger
+                const incomingEdges = edges.filter(e => e.target === n.id);
+                const isConnectedToActiveTrigger = incomingEdges.some(e => activeTriggers.includes(e.source));
+
+                // Also need to consider ActionNodes (existing logic)
+                // Assuming ActionNodes handle their own isActive state via checkAlerts
+                // But we need to know if we should turn ON or OFF based on traffic triggers too.
+
+                // Simplified logic: If connected to traffic trigger, follow its state.
+                // If connected to multiple, OR logic.
+
+                // Check if connected to ANY traffic trigger
+                const connectedToTrafficTrigger = incomingEdges.some(e => {
+                    const sourceNode = nodes.find(sn => sn.id === e.source);
+                    return sourceNode?.type === 'traffic-trigger';
+                });
+
+                if (connectedToTrafficTrigger) {
+                    if (isConnectedToActiveTrigger && !n.data.isActive) {
+                        nodesToUpdate.set(n.id, true);
+                        hasChanges = true;
+                    } else if (!isConnectedToActiveTrigger && n.data.isActive) {
+                        // Only turn off if NOT connected to another active source (like ActionNode)
+                        // This is tricky without full graph traversal or unified state.
+                        // For now, if it's connected to a traffic trigger and NO active traffic triggers are feeding it, turn off.
+                        // BUT, what if an ActionNode is feeding it?
+
+                        const connectedToActiveAction = incomingEdges.some(e => {
+                            const sourceNode = nodes.find(sn => sn.id === e.source);
+                            return sourceNode?.type === 'action' && sourceNode.data.isActive;
+                        });
+
+                        if (!connectedToActiveAction) {
+                            nodesToUpdate.set(n.id, false);
+                            hasChanges = true;
+                        }
+                    }
+                }
+            }
+        });
+
+        if (hasChanges) {
             setNodes(nds => nds.map(n => {
-                if ((n.type === 'email' || n.type === 'sound' || n.type === 'notification') && n.data.isActive) {
-                    // Check if it's connected to ANY active trigger (Action or Traffic)
-                    // This logic is getting complex, ideally we trace from active nodes
-                    // For now, simple check: if connected to a traffic trigger that is NOT active, turn off?
-                    // Better: Re-evaluate all downstream nodes based on ALL upstream active nodes
-                    return n; // Let the main checkAlerts or similar handle deactivation?
-                    // Actually, checkAlerts handles ActionNode. We need to extend it or add logic here.
+                if (nodesToUpdate.has(n.id)) {
+                    return { ...n, data: { ...n.data, isActive: nodesToUpdate.get(n.id) } };
                 }
                 return n;
             }));
-            return;
         }
-
-        setNodes(nds => nds.map(n => {
-            // Find edges connected to this node
-            const incomingEdges = edges.filter(e => e.target === n.id);
-            const isConnectedToActiveTrigger = incomingEdges.some(e => activeTriggers.includes(e.source));
-
-            if (isConnectedToActiveTrigger) {
-                if (!n.data.isActive) {
-                    return { ...n, data: { ...n.data, isActive: true } };
-                }
-            }
-            return n;
-        }));
 
     }, [nodes, edges]); // This might loop if not careful. 
     // Better approach: Integrate into the existing checkAlerts or a unified propagation effect.
