@@ -561,8 +561,8 @@ function TopologyEditor() {
             if (!source || !target) return;
 
             setNodes((nds) => nds.map((node) => {
-                // Case 1: Target is Monitoring, Action, or Traffic Trigger
-                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic-trigger')) {
+                // Case 1: Target is Monitoring, Action, Traffic, or Traffic Trigger
+                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger')) {
                     const sourceNode = nds.find(n => n.id === source);
                     if (sourceNode && sourceNode.type === 'device') {
                         return {
@@ -575,8 +575,8 @@ function TopologyEditor() {
                         };
                     }
                 }
-                // Case 2: Source is Monitoring, Action, or Traffic Trigger (inverse connection)
-                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic-trigger')) {
+                // Case 2: Source is Monitoring, Action, Traffic, or Traffic Trigger (inverse connection)
+                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger')) {
                     const targetNode = nds.find(n => n.id === target);
                     if (targetNode && targetNode.type === 'device') {
                         return {
