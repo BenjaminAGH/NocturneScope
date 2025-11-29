@@ -269,8 +269,8 @@ export async function getUser(jwt: string) {
   return handle(res);
 }
 
-export async function getNetworkTraffic(jwt: string, deviceId: string) {
-  const res = await fetch(`${BASE}/network-traffic/${deviceId}`, {
+export async function getNetworkTraffic(jwt: string, deviceName: string) {
+  const res = await fetch(`${BASE}/network-traffic?device=${encodeURIComponent(deviceName)}`, {
     headers: { Authorization: `Bearer ${jwt}` },
     cache: "no-store",
   });
