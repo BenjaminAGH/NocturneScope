@@ -268,3 +268,11 @@ export async function getUser(jwt: string) {
   });
   return handle(res);
 }
+
+export async function getNetworkTraffic(jwt: string, deviceId: string) {
+  const res = await fetch(`${BASE}/network-traffic/${deviceId}`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+    cache: "no-store",
+  });
+  return handle(res) as Promise<any[]>;
+}

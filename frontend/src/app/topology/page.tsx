@@ -35,6 +35,7 @@ import EmailNode, { EmailNodeData } from "@/components/topology/EmailNode";
 import NotificationNode, { NotificationNodeData } from "@/components/topology/NotificationNode";
 import DelayNode, { DelayNodeData } from "@/components/topology/DelayNode";
 import SoundNode, { SoundNodeData } from "@/components/topology/SoundNode";
+import TrafficNode, { TrafficNodeData } from "@/components/topology/TrafficNode";
 import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
 import { useGroup } from "@/context/GroupContext";
@@ -48,6 +49,7 @@ const nodeTypes = {
     notification: NotificationNode,
     delay: DelayNode,
     sound: SoundNode,
+    traffic: TrafficNode,
 };
 
 function TopologyEditor() {
@@ -557,8 +559,8 @@ function TopologyEditor() {
             if (!source || !target) return;
 
             setNodes((nds) => nds.map((node) => {
-                // Caso 1: Target es Monitoring o Action
-                if (node.id === target && (node.type === 'monitoring' || node.type === 'action')) {
+                // Caso 1: Target es Monitoring, Action o Traffic
+                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic')) {
                     const sourceNode = nds.find(n => n.id === source);
                     if (sourceNode && sourceNode.type === 'device') {
                         return {
@@ -571,8 +573,8 @@ function TopologyEditor() {
                         };
                     }
                 }
-                // Caso 2: Source es Monitoring o Action (conexión inversa)
-                if (node.id === source && (node.type === 'monitoring' || node.type === 'action')) {
+                // Caso 2: Source es Monitoring, Action o Traffic (conexión inversa)
+                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic')) {
                     const targetNode = nds.find(n => n.id === target);
                     if (targetNode && targetNode.type === 'device') {
                         return {
@@ -674,6 +676,20 @@ function TopologyEditor() {
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes]);
 
+    const handleAddTrafficNode = useCallback(() => {
+        const id = `traffic-${++nodeIdCounter.current}`;
+        const newNode: Node<TrafficNodeData> = {
+            id,
+            type: "traffic",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                jwt: jwt || undefined,
+                label: 'Traffic Log',
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [jwt, setNodes]);
+
     const onDragOver = useCallback((event: React.DragEvent) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
@@ -762,6 +778,18 @@ function TopologyEditor() {
                     position,
                     data: {
                         sound: 'beep',
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'traffic') {
+                const id = `traffic-${++nodeIdCounter.current}`;
+                const newNode: Node<TrafficNodeData> = {
+                    id,
+                    type: "traffic",
+                    position,
+                    data: {
+                        jwt: jwt || undefined,
+                        label: 'Traffic Log',
                     },
                 };
                 setNodes((nds) => [...nds, newNode]);
@@ -1171,6 +1199,7 @@ function TopologyEditor() {
                     onAddNotificationNode={handleAddNotificationNode}
                     onAddDelayNode={handleAddDelayNode}
                     onAddSoundNode={handleAddSoundNode}
+                    onAddTrafficNode={handleAddTrafficNode}
                     selectedNode={nodes.find((n) => n.id === selectedNodeId)}
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}

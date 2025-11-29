@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 
@@ -20,7 +20,8 @@ interface TopologyControlsProps {
     onAddEmailNode: () => void;
     onAddNotificationNode: () => void;
     onAddDelayNode: () => void;
-    onAddSoundNode: () => void; // Added
+    onAddSoundNode: () => void;
+    onAddTrafficNode: () => void; // Added
     selectedNode: any;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
@@ -73,6 +74,7 @@ export default function TopologyControls({
     onAddNotificationNode,
     onAddDelayNode,
     onAddSoundNode,
+    onAddTrafficNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,
@@ -219,6 +221,18 @@ export default function TopologyControls({
                         >
                             <SpeakerWaveIcon className="w-6 h-6" />
                             <span className="text-xs">Sonido</span>
+                        </button>
+                        <button
+                            onClick={onAddTrafficNode}
+                            draggable
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'traffic');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                        >
+                            <GlobeAltIcon className="w-6 h-6" />
+                            <span className="text-xs">Tráfico</span>
                         </button>
                     </div>
                 </div>
