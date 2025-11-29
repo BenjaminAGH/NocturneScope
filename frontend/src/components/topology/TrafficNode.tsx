@@ -152,7 +152,6 @@ function TrafficNode({ id, data, selected }: NodeProps) {
                             <tr>
                                 <th className="px-2 py-1 border-r border-border/50 w-16">Time</th>
                                 <th className="px-2 py-1 border-r border-border/50 w-28">Source</th>
-                                <th className="px-2 py-1 border-r border-border/50 w-28">Destination</th>
                                 <th className="px-2 py-1 border-r border-border/50 w-16">Proto</th>
                                 <th className="px-2 py-1 border-r border-border/50 w-16">Port</th>
                                 <th className="px-2 py-1">Info</th>
@@ -163,7 +162,6 @@ function TrafficNode({ id, data, selected }: NodeProps) {
                                 <tr key={log.id || i} className={`hover:bg-accent/50 cursor-pointer ${getRowColor(log.threat_level, i)}`}>
                                     <td className="px-2 py-0.5 border-r border-border/30 whitespace-nowrap text-muted-foreground">{formatTime(log.timestamp)}</td>
                                     <td className="px-2 py-0.5 border-r border-border/30 truncate max-w-[100px]">{log.source_ip}</td>
-                                    <td className="px-2 py-0.5 border-r border-border/30 truncate max-w-[100px]">{log.destination_ip || "Unknown"}</td>
                                     <td className="px-2 py-0.5 border-r border-border/30 text-blue-400">{log.protocol}</td>
                                     <td className="px-2 py-0.5 border-r border-border/30">{log.destination_port}</td>
                                     <td className="px-2 py-0.5 truncate max-w-[150px]">
