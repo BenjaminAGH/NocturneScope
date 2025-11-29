@@ -746,48 +746,82 @@ function TopologyEditor() {
         const activeTriggers = nodes.filter(n => n.type === 'traffic-trigger' && n.data.isActive).map(n => n.id);
 
         let hasChanges = false;
-        const nodesToUpdate = new Map<string, boolean>();
+        const nodesToUpdate = new Map<string, { isActive: boolean, isWaiting?: boolean }>();
 
         // Check downstream nodes
         nodes.forEach(n => {
-            if (n.type === 'email' || n.type === 'sound' || n.type === 'notification' || n.type === 'delay') {
-                // Find if connected to any active trigger
+            // Logic for Delay Nodes
+            if (n.type === 'delay') {
                 const incomingEdges = edges.filter(e => e.target === n.id);
                 const isConnectedToActiveTrigger = incomingEdges.some(e => activeTriggers.includes(e.source));
 
-                // Also need to consider ActionNodes (existing logic)
-                // Assuming ActionNodes handle their own isActive state via checkAlerts
-                // But we need to know if we should turn ON or OFF based on traffic triggers too.
-
-                // Simplified logic: If connected to traffic trigger, follow its state.
-                // If connected to multiple, OR logic.
-
-                // Check if connected to ANY traffic trigger
-                const connectedToTrafficTrigger = incomingEdges.some(e => {
+                // Also check if connected to an active ActionNode
+                const connectedToActiveAction = incomingEdges.some(e => {
                     const sourceNode = nodes.find(sn => sn.id === e.source);
-                    return sourceNode?.type === 'traffic-trigger';
+                    return sourceNode?.type === 'action' && sourceNode.data.isActive;
                 });
 
-                if (connectedToTrafficTrigger) {
-                    if (isConnectedToActiveTrigger && !n.data.isActive) {
-                        nodesToUpdate.set(n.id, true);
+                const shouldBeActive = isConnectedToActiveTrigger || connectedToActiveAction;
+
+                if (shouldBeActive) {
+                    if (!n.data.isWaiting && !n.data.isActive) {
+                        // Start Waiting
+                        nodesToUpdate.set(n.id, { isActive: false, isWaiting: true });
                         hasChanges = true;
-                    } else if (!isConnectedToActiveTrigger && n.data.isActive) {
-                        // Only turn off if NOT connected to another active source (like ActionNode)
-                        // This is tricky without full graph traversal or unified state.
-                        // For now, if it's connected to a traffic trigger and NO active traffic triggers are feeding it, turn off.
-                        // BUT, what if an ActionNode is feeding it?
 
-                        const connectedToActiveAction = incomingEdges.some(e => {
-                            const sourceNode = nodes.find(sn => sn.id === e.source);
-                            return sourceNode?.type === 'action' && sourceNode.data.isActive;
-                        });
-
-                        if (!connectedToActiveAction) {
-                            nodesToUpdate.set(n.id, false);
-                            hasChanges = true;
-                        }
+                        // Set timeout to activate after delay
+                        const delay = (n.data.delay as number) || 10000;
+                        setTimeout(() => {
+                            setNodes(currentNodes => currentNodes.map(node => {
+                                if (node.id === n.id) {
+                                    return { ...node, data: { ...node.data, isWaiting: false, isActive: true } };
+                                }
+                                return node;
+                            }));
+                        }, delay);
                     }
+                } else {
+                    // Reset if trigger is gone
+                    if (n.data.isActive || n.data.isWaiting) {
+                        nodesToUpdate.set(n.id, { isActive: false, isWaiting: false });
+                        hasChanges = true;
+                    }
+                }
+            }
+            // Logic for Sound, Email, Notification
+            else if (n.type === 'email' || n.type === 'sound' || n.type === 'notification') {
+                const incomingEdges = edges.filter(e => e.target === n.id);
+
+                // Check connection to Traffic Trigger
+                const isConnectedToActiveTrigger = incomingEdges.some(e => activeTriggers.includes(e.source));
+
+                // Check connection to Action Node
+                const connectedToActiveAction = incomingEdges.some(e => {
+                    const sourceNode = nodes.find(sn => sn.id === e.source);
+                    return sourceNode?.type === 'action' && sourceNode.data.isActive;
+                });
+
+                // Check connection to Delay Node (only active if Delay is active AND not waiting)
+                const connectedToActiveDelay = incomingEdges.some(e => {
+                    const sourceNode = nodes.find(sn => sn.id === e.source);
+                    return sourceNode?.type === 'delay' && sourceNode.data.isActive;
+                });
+
+                const shouldBeActive = isConnectedToActiveTrigger || connectedToActiveAction || connectedToActiveDelay;
+
+                if (shouldBeActive && !n.data.isActive) {
+                    nodesToUpdate.set(n.id, { isActive: true });
+                    hasChanges = true;
+
+                    // Play sound if it's a sound node
+                    if (n.type === 'sound') {
+                        const soundType = (n.data.sound as SoundType) || 'beep';
+                        playSound(soundType);
+                    }
+
+                } else if (!shouldBeActive && n.data.isActive) {
+                    nodesToUpdate.set(n.id, { isActive: false });
+                    hasChanges = true;
                 }
             }
         });
@@ -795,7 +829,7 @@ function TopologyEditor() {
         if (hasChanges) {
             setNodes(nds => nds.map(n => {
                 if (nodesToUpdate.has(n.id)) {
-                    return { ...n, data: { ...n.data, isActive: nodesToUpdate.get(n.id) } };
+                    return { ...n, data: { ...n.data, ...nodesToUpdate.get(n.id) } };
                 }
                 return n;
             }));
