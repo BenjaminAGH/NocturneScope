@@ -6,6 +6,7 @@ import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, Envel
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 import DeviceDetails from "./DeviceDetails";
+import { Node } from "@xyflow/react";
 
 interface TopologyControlsProps {
     jwt: string | null;
@@ -28,7 +29,7 @@ interface TopologyControlsProps {
     onAddTimeWindowNode: () => void;
     onAddThresholdNode: () => void;
     onAddDetailsNode: () => void;
-    selectedNode: Node | undefined;
+    selectedNode: Node<any> | undefined;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
     onRename: (id: number, newName: string) => void;
@@ -367,7 +368,7 @@ export default function TopologyControls({
                             <label className="text-xs font-medium text-muted-foreground">Tipo de Regla</label>
                             <select
                                 className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
-                                value={selectedNode.data.ruleType || 'threat_level'}
+                                value={(selectedNode.data as any).ruleType || 'threat_level'}
                                 onChange={(e) => onUpdateNodeData(selectedNode.id, { ruleType: e.target.value, value: '' })}
                             >
                                 <option value="threat_level">Nivel de Amenaza</option>
@@ -381,7 +382,7 @@ export default function TopologyControls({
                             {selectedNode.data.ruleType === 'threat_level' ? (
                                 <select
                                     className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
-                                    value={selectedNode.data.value || 'HIGH'}
+                                    value={(selectedNode.data as any).value || 'HIGH'}
                                     onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
                                 >
                                     <option value="LOW">LOW</option>
@@ -392,7 +393,7 @@ export default function TopologyControls({
                             ) : selectedNode.data.ruleType === 'protocol' ? (
                                 <select
                                     className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
-                                    value={selectedNode.data.value || 'TCP'}
+                                    value={(selectedNode.data as any).value || 'TCP'}
                                     onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
                                 >
                                     <option value="TCP">TCP</option>
@@ -407,7 +408,7 @@ export default function TopologyControls({
                                 <input
                                     type="number"
                                     className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
-                                    value={selectedNode.data.value || ''}
+                                    value={(selectedNode.data as any).value || ''}
                                     onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
                                     placeholder="Ej: 80"
                                 />
@@ -415,7 +416,7 @@ export default function TopologyControls({
                                 <input
                                     type="text"
                                     className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
-                                    value={selectedNode.data.value || ''}
+                                    value={(selectedNode.data as any).value || ''}
                                     onChange={(e) => onUpdateNodeData(selectedNode.id, { value: e.target.value })}
                                     placeholder="Ej: 192.168.1.10"
                                 />
@@ -467,7 +468,7 @@ export default function TopologyControls({
                                         <label className="text-xs text-muted-foreground">Rango de Tiempo</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.range || '1h'}
+                                            value={(selectedNode.data as any).range || '1h'}
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { range: e.target.value })}
                                         >
                                             {RANGE_OPTIONS.map(opt => (
@@ -480,7 +481,7 @@ export default function TopologyControls({
                                         <label className="text-xs text-muted-foreground">Intervalo</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.interval || '1m'}
+                                            value={(selectedNode.data as any).interval || '1m'}
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { interval: e.target.value })}
                                         >
                                             {INTERVAL_OPTIONS.map(opt => (
@@ -493,7 +494,7 @@ export default function TopologyControls({
                                         <label className="text-xs text-muted-foreground">Agregación</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.agg || 'mean'}
+                                            value={(selectedNode.data as any).agg || 'mean'}
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { agg: e.target.value })}
                                         >
                                             {AGG_OPTIONS.map(opt => (
@@ -557,7 +558,7 @@ export default function TopologyControls({
                                             type="email"
                                             placeholder="admin@example.com"
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.to || ''}
+                                            value={(selectedNode.data.to as string) || ''}
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { to: e.target.value })}
                                         />
                                     </div>
@@ -617,7 +618,7 @@ export default function TopologyControls({
                                         type="text"
                                         placeholder="Mensaje de alerta..."
                                         className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                        value={selectedNode.data.message || ''}
+                                        value={(selectedNode.data as any).message || ''}
                                         onChange={(e) => onUpdateNodeData(selectedNode.id, { message: e.target.value })}
                                     />
                                 </div>
@@ -631,8 +632,8 @@ export default function TopologyControls({
                                         type="number"
                                         placeholder="10000"
                                         className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                        value={selectedNode.data.delay || 0}
-                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { delay: Number(e.target.value) })}
+                                        value={(selectedNode.data as any).delay || 5}
+                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { delay: parseInt(e.target.value) })}
                                     />
                                     <p className="text-[10px] text-muted-foreground mt-1">1000ms = 1 segundo</p>
                                 </div>
@@ -644,7 +645,7 @@ export default function TopologyControls({
                                     <label className="text-xs text-muted-foreground">Tipo de Sonido</label>
                                     <select
                                         className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                        value={selectedNode.data.sound || 'beep'}
+                                        value={(selectedNode.data as any).sound || 'alarm'}
                                         onChange={(e) => onUpdateNodeData(selectedNode.id, { sound: e.target.value })}
                                     >
                                         {SOUND_OPTIONS.map(opt => (
@@ -662,7 +663,7 @@ export default function TopologyControls({
                                         <input
                                             type="time"
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.startTime || '09:00'}
+                                            value={(selectedNode.data as any).startTime || '09:00'}
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { startTime: e.target.value })}
                                         />
                                     </div>
@@ -671,7 +672,7 @@ export default function TopologyControls({
                                         <input
                                             type="time"
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.endTime || '17:00'}
+                                            value={(selectedNode.data as any).endTime || "17:00"}
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { endTime: e.target.value })}
                                         />
                                     </div>
@@ -687,8 +688,8 @@ export default function TopologyControls({
                                             type="number"
                                             min="1"
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.threshold || 3}
-                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { threshold: Number(e.target.value) })}
+                                            value={(selectedNode.data as any).threshold || 3}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { threshold: parseInt(e.target.value) })}
                                         />
                                     </div>
                                     <div>
@@ -697,8 +698,8 @@ export default function TopologyControls({
                                             type="number"
                                             min="1"
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={selectedNode.data.timeWindow || 60}
-                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { timeWindow: Number(e.target.value) })}
+                                            value={(selectedNode.data as any).timeWindow || 60}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { timeWindow: parseInt(e.target.value) })}
                                         />
                                     </div>
                                     <div className="text-xs text-muted-foreground pt-2 border-t border-border/50">
