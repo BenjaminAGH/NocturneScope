@@ -75,7 +75,6 @@ func startAgentFromConfig(cfg config.AgentConfig, metricsChan chan domain.Metric
 
 	collectors := []agentuc.Collector{
 		metrics.NewBasicSystemCollector(deviceName, ip),
-		metrics.NewCPUPerCoreCollector(),
 		metrics.NewHostInfoCollector(),
 		metrics.NewNetCollector(),
 		metrics.NewDeviceTypeCollector(cfg.DeviceType),

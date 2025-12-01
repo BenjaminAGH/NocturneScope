@@ -188,22 +188,29 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                     </div>
                 </div>
 
-                {/* CPU Cores (Collapsible or just list) */}
+                {/* CPU Cores (Grid of squares) */}
                 {cpuCores.length > 0 && (
                     <div className="space-y-1 pt-1">
                         <div className="text-[10px] text-muted-foreground uppercase">Núcleos ({cpuCores.length})</div>
-                        <div className="grid grid-cols-4 gap-1">
-                            {cpuCores.map((core) => (
-                                <div key={core.id} className="bg-muted/20 rounded p-1 text-center" title={`Core ${core.id.replace('cpu_core_', '')}`}>
-                                    <div className="h-8 w-full bg-secondary rounded-sm relative overflow-hidden flex items-end justify-center">
-                                        <div
-                                            className="absolute bottom-0 left-0 right-0 bg-blue-400/50 transition-all duration-500"
-                                            style={{ height: `${Math.min(core.val || 0, 100)}%` }}
-                                        />
-                                        <span className="relative z-10 text-[9px] font-mono">{core.val?.toFixed(0)}%</span>
+                        <div className="grid grid-cols-6 gap-1.5">
+                            {cpuCores.map((core) => {
+                                const val = core.val || 0;
+                                let bgColor = "bg-muted"; // Gray (Idle)
+                                if (val >= 90) bgColor = "bg-red-500"; // Red (High)
+                                else if (val > 5) bgColor = "bg-green-500"; // Green (Active)
+
+                                return (
+                                    <div
+                                        key={core.id}
+                                        className={`aspect-square rounded-sm ${bgColor} transition-colors duration-500 flex items-center justify-center relative group cursor-help`}
+                                        title={`Core ${core.id.replace('cpu_core_', '')}: ${val.toFixed(1)}%`}
+                                    >
+                                        <span className="text-[8px] font-mono opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold absolute">
+                                            {val.toFixed(0)}
+                                        </span>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}

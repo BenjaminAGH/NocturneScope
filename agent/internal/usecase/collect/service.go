@@ -112,6 +112,15 @@ func mergeMetric(dst, src domain.Metric) domain.Metric {
 	if src.NetTxBytes != 0 {
 		dst.NetTxBytes = src.NetTxBytes
 	}
+	if src.RAMTotal != 0 {
+		dst.RAMTotal = src.RAMTotal
+	}
+	if src.RAMUsed != 0 {
+		dst.RAMUsed = src.RAMUsed
+	}
+	if src.RAMFree != 0 {
+		dst.RAMFree = src.RAMFree
+	}
 
 	return dst
 }
