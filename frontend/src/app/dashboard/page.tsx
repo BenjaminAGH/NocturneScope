@@ -19,7 +19,16 @@ import {
 import { formatCL, formatTickCL } from "@/lib/time";
 import LogViewer from "@/components/LogViewer";
 import NetworkTrafficLog from "@/components/dashboard/NetworkTrafficLog";
-import DeviceDetails from "@/components/topology/DeviceDetails";
+import {
+  ComputerDesktopIcon,
+  CpuChipIcon,
+  ServerIcon,
+  SignalIcon,
+  ClockIcon,
+  GlobeAltIcon,
+  CircleStackIcon,
+  FireIcon
+} from "@heroicons/react/24/outline";
 
 type Point = { t: string; v: number };
 
@@ -236,34 +245,144 @@ function DashboardContent() {
       ) : null}
 
       {/* Últimos valores */}
-      <section className="grid gap-3 grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
-        {[
-          ["cpu", "CPU (%)"],
-          ["ram", "RAM (%)"],
-          ["disk", "DISK (%)"],
-          ["net_rx", "Net RX (B/s)"],
-          ["net_tx", "Net TX (B/s)"],
-          ["temp", "Temp (°C)"],
-          ["uptime", "Uptime (s)"],
-        ].map(([k, label]) => (
-          <div
-            key={k}
-            className="rounded-lg bg-card text-card-foreground p-4 ring-1 ring-border/50"
-          >
-            <div className="text-sm text-muted-foreground">{label}</div>
-            <div className="text-2xl font-semibold">
-              {last && typeof last[k] === "number" ? last[k].toFixed(2) : "—"}
+      <section className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        {/* Status Card */}
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ComputerDesktopIcon className="w-5 h-5 text-primary" />
+              <span className="text-sm font-medium text-muted-foreground">Estado</span>
+            </div>
+            {last && (
+              <div className="flex items-center gap-1.5">
+                <div className={`w-2 h-2 rounded-full ${((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
+                <span className={`text-xs font-medium ${((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "text-green-600" : "text-red-600"}`}>
+                  {((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "Online" : "Offline"}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="mt-4 space-y-1">
+            <div className="text-2xl font-bold truncate" title={device}>{device || "—"}</div>
+            <div className="text-xs text-muted-foreground truncate">
+              {last?.os_name || last?.platform || "Sistema Desconocido"} {last?.os_version || ""}
             </div>
           </div>
-        ))}
+        </div>
 
-        {/* Info Dispositivo */}
-        <div className="rounded-lg bg-card text-card-foreground p-4 ring-1 ring-border/50">
-          {jwt && device ? (
-            <DeviceDetails deviceId={device} jwt={jwt} />
-          ) : (
-            <div className="text-sm text-muted-foreground">Seleccione un dispositivo</div>
-          )}
+        {/* Network Card */}
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+          <div className="flex items-center gap-2 mb-2">
+            <GlobeAltIcon className="w-5 h-5 text-blue-500" />
+            <span className="text-sm font-medium text-muted-foreground">Red</span>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <div className="text-[10px] uppercase text-muted-foreground">IP Address</div>
+              <div className="font-mono text-sm">{last?.ip || "—"}</div>
+            </div>
+            <div>
+              <div className="text-[10px] uppercase text-muted-foreground">Gateway</div>
+              <div className="font-mono text-sm">{last?.gateway || "—"}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* CPU Card */}
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <CpuChipIcon className="w-5 h-5 text-purple-500" />
+              <span className="text-sm font-medium text-muted-foreground">CPU</span>
+            </div>
+            <span className="text-xl font-bold">{last?.cpu?.toFixed(1) || "0"}%</span>
+          </div>
+          <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-purple-500 h-full transition-all duration-500"
+              style={{ width: `${Math.min(last?.cpu || 0, 100)}%` }}
+            />
+          </div>
+          <div className="mt-2 text-xs text-muted-foreground flex justify-between">
+            <span>Uso actual</span>
+            <span>{last?.cpu_count || 1} Cores</span>
+          </div>
+        </div>
+
+        {/* RAM Card */}
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <ServerIcon className="w-5 h-5 text-orange-500" />
+              <span className="text-sm font-medium text-muted-foreground">RAM</span>
+            </div>
+            <span className="text-xl font-bold">{last?.ram?.toFixed(1) || "0"}%</span>
+          </div>
+          <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-orange-500 h-full transition-all duration-500"
+              style={{ width: `${Math.min(last?.ram || 0, 100)}%` }}
+            />
+          </div>
+          <div className="mt-2 text-xs text-muted-foreground flex justify-between">
+            <span>Uso actual</span>
+            <span>{((last?.ram_total || 0) / 1024 / 1024 / 1024).toFixed(1)} GB Total</span>
+          </div>
+        </div>
+
+        {/* Disk & Temp Row */}
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+          <div className="flex items-center gap-2 mb-2">
+            <CircleStackIcon className="w-5 h-5 text-emerald-500" />
+            <span className="text-sm font-medium text-muted-foreground">Almacenamiento</span>
+          </div>
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="text-2xl font-bold">{last?.disk?.toFixed(1) || "0"}%</div>
+              <div className="text-xs text-muted-foreground">Usado</div>
+            </div>
+            <div className="h-10 w-1 bg-secondary rounded-full overflow-hidden">
+              <div
+                className="bg-emerald-500 w-full transition-all duration-500"
+                style={{ height: `${Math.min(last?.disk || 0, 100)}%`, marginTop: `${100 - Math.min(last?.disk || 0, 100)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+          <div className="flex items-center gap-2 mb-2">
+            <FireIcon className="w-5 h-5 text-red-500" />
+            <span className="text-sm font-medium text-muted-foreground">Temperatura</span>
+          </div>
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="text-2xl font-bold">{last?.temp?.toFixed(1) || "—"}°C</div>
+              <div className="text-xs text-muted-foreground">Core Temp</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Network Traffic */}
+        <div className="col-span-1 md:col-span-2 rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50">
+          <div className="flex items-center gap-2 mb-4">
+            <SignalIcon className="w-5 h-5 text-indigo-500" />
+            <span className="text-sm font-medium text-muted-foreground">Tráfico de Red</span>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-3 bg-secondary/50 rounded-lg">
+              <div className="text-xs text-muted-foreground mb-1">Descarga (RX)</div>
+              <div className="text-lg font-mono font-semibold">
+                {last?.net_rx ? (last.net_rx / 1024).toFixed(2) : "0"} KB/s
+              </div>
+            </div>
+            <div className="p-3 bg-secondary/50 rounded-lg">
+              <div className="text-xs text-muted-foreground mb-1">Subida (TX)</div>
+              <div className="text-lg font-mono font-semibold">
+                {last?.net_tx ? (last.net_tx / 1024).toFixed(2) : "0"} KB/s
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
