@@ -224,7 +224,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de gráfico para visualizar métricas"
+                                        title="Visualiza métricas en tiempo real (CPU, RAM, etc.) de un dispositivo conectado."
                                     >
                                         <ChartBarIcon className="w-6 h-6" />
                                         <span className="text-xs">Gráfico</span>
@@ -237,7 +237,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de detalles del dispositivo"
+                                        title="Muestra información detallada (OS, IP, Estado) del dispositivo conectado en el canvas."
                                     >
                                         <ChartBarIcon className="w-6 h-6" />
                                         <span className="text-xs">Detalles</span>
@@ -250,7 +250,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de tráfico de red"
+                                        title="Monitorea el tráfico de red entrante y saliente del dispositivo."
                                     >
                                         <GlobeAltIcon className="w-6 h-6" />
                                         <span className="text-xs">Tráfico</span>
@@ -269,7 +269,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de acción condicional"
+                                        title="Evalúa una condición sobre una métrica (ej: CPU > 80%) para disparar alertas."
                                     >
                                         <BoltIcon className="w-6 h-6" />
                                         <span className="text-xs">Acción</span>
@@ -282,7 +282,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo disparador de tráfico"
+                                        title="Dispara alertas basadas en patrones de tráfico específicos (ej: puerto, protocolo)."
                                     >
                                         <FunnelIcon className="w-6 h-6" />
                                         <span className="text-xs">Trigger</span>
@@ -301,7 +301,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de retraso"
+                                        title="Introduce una pausa configurable antes de pasar la señal al siguiente nodo."
                                     >
                                         <ClockIcon className="w-6 h-6" />
                                         <span className="text-xs">Delay</span>
@@ -314,7 +314,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de ventana de tiempo"
+                                        title="Permite el paso de señales solo dentro de un horario específico configurado."
                                     >
                                         <ClockIcon className="w-6 h-6" />
                                         <span className="text-xs">Ventana</span>
@@ -327,7 +327,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de umbral de intentos"
+                                        title="Requiere que una señal se repita X veces en un tiempo dado antes de activarse."
                                     >
                                         <div className="w-6 h-6 flex items-center justify-center font-bold text-xs border border-current rounded">#</div>
                                         <span className="text-xs">Umbral</span>
@@ -346,7 +346,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de envío de correo"
+                                        title="Envía un correo electrónico de alerta cuando recibe una señal de activación."
                                     >
                                         <EnvelopeIcon className="w-6 h-6" />
                                         <span className="text-xs">Email</span>
@@ -359,7 +359,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de notificación en pantalla"
+                                        title="Muestra una notificación emergente (toast) en la pantalla del usuario."
                                     >
                                         <BellIcon className="w-6 h-6" />
                                         <span className="text-xs">Notificación</span>
@@ -372,7 +372,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Añadir nodo de alerta sonora"
+                                        title="Reproduce un sonido de alarma cuando se activa."
                                     >
                                         <SpeakerWaveIcon className="w-6 h-6" />
                                         <span className="text-xs">Sonido</span>

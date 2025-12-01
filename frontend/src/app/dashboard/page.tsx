@@ -10,6 +10,7 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  Label,
 } from "recharts";
 import {
   getDevices,
@@ -403,8 +404,18 @@ function DashboardContent() {
                 dataKey="t"
                 minTickGap={24}
                 tickFormatter={(v) => formatTickCL(v)}
-              />
-              <YAxis />
+              >
+                <Label value="Tiempo" offset={-5} position="insideBottomRight" className="fill-muted-foreground text-xs" />
+              </XAxis>
+              <YAxis>
+                <Label
+                  value={FIELD_OPTIONS.find(x => x.v === field)?.l ?? field}
+                  angle={-90}
+                  position="insideLeft"
+                  style={{ textAnchor: 'middle' }}
+                  className="fill-muted-foreground text-xs"
+                />
+              </YAxis>
               <Tooltip
                 labelFormatter={(v) => formatCL(v)}
                 formatter={(value: any) => [
