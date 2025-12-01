@@ -1240,12 +1240,40 @@ function TopologyEditor() {
     );
 
     const handleUpdateNodeData = useCallback((id: string, data: any) => {
-        setNodes(nds => nds.map(n => {
-            if (n.id === id) {
-                return { ...n, data: { ...n.data, ...data } };
+        setNodes(nds => {
+            const updatedNodes = nds.map(n => {
+                if (n.id === id) {
+                    return { ...n, data: { ...n.data, ...data } };
+                }
+                return n;
+            });
+
+            // Propagar cambio de nombre de dispositivo a nodos conectados
+            const updatedNode = updatedNodes.find(n => n.id === id);
+            if (updatedNode && updatedNode.type === 'device' && data.deviceName) {
+                const connectedEdges = edgesRef.current.filter(e => e.source === id || e.target === id);
+
+                return updatedNodes.map(n => {
+                    const isConnected = connectedEdges.some(e =>
+                        (e.source === id && e.target === n.id) ||
+                        (e.target === id && e.source === n.id)
+                    );
+
+                    if (isConnected && (n.type === 'monitoring' || n.type === 'action' || n.type === 'traffic' || n.type === 'traffic-trigger' || n.type === 'details')) {
+                        return {
+                            ...n,
+                            data: {
+                                ...n.data,
+                                connectedDevice: data.deviceName
+                            }
+                        };
+                    }
+                    return n;
+                });
             }
-            return n;
-        }));
+
+            return updatedNodes;
+        });
     }, [setNodes]);
 
 

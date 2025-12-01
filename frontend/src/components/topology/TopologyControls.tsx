@@ -467,8 +467,24 @@ export default function TopologyControls({
 
                         <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">
                             {/* Device Details */}
-                            {selectedNode.type === 'device' && jwt && (
-                                <DeviceDetails deviceId={selectedNode.id} jwt={jwt} />
+                            {selectedNode.type === 'device' && (
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="text-xs text-muted-foreground">Cambiar Dispositivo</label>
+                                        <select
+                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                            value={(selectedNode.data as any).deviceName || selectedNode.id}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { deviceName: e.target.value, label: e.target.value })}
+                                        >
+                                            {devices.map(dev => (
+                                                <option key={dev} value={dev}>{dev}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {jwt && (
+                                        <DeviceDetails deviceId={(selectedNode.data as any).deviceName || selectedNode.id} jwt={jwt} />
+                                    )}
+                                </div>
                             )}
 
                             {/* Monitoring Node Config */}
