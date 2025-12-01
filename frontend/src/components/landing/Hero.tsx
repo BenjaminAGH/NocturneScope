@@ -1,14 +1,17 @@
 import Image from "next/image";
 import { Container } from "@/components/landing/Container";
+import { ScrollAnimation } from "@/components/landing/ScrollAnimation";
+import { NetworkBackground } from "@/components/landing/NetworkBackground";
 
 const heroImg = "/img/heroLight.png";
 
 export const Hero = () => {
   return (
-    <>
+    <div className="relative overflow-hidden min-h-[90vh] flex flex-col justify-center py-20">
+      <NetworkBackground />
       <Container className="flex flex-wrap ">
         <div className="flex items-center w-full lg:w-1/2">
-          <div className="max-w-4xl mb-8">
+          <ScrollAnimation animation="fade-left" className="max-w-4xl mb-8">
             <h1 className="text-4xl font-bold leading-snug tracking-tight text-accent lg:text-4xl lg:leading-tight xl:text-6xl xl:leading-tight">
               Bienvenido a NocturneScope
             </h1>
@@ -38,18 +41,18 @@ export const Hero = () => {
                 <span> Repositorio Github</span>
               </a>
             </div>
-          </div>
+          </ScrollAnimation>
         </div>
 
         <div className="flex items-center justify-center w-full lg:w-1/2">
-          <div className="">
+          <ScrollAnimation animation="fade-right" className="">
             <>
               <Image
                 src="/img/worldLight.svg"
                 width={550}
                 height={550}
                 quality={100}
-                className="object-cover block dark:hidden"
+                className="object-cover block dark:hidden border-4 border-indigo-900/80 rounded-full shadow-2xl shadow-indigo-900/40"
                 alt="Illustration Light"
                 loading="eager"
               />
@@ -58,15 +61,16 @@ export const Hero = () => {
                 width={550}
                 height={550}
                 quality={100}
-                className="object-cover hidden dark:block"
+                className="object-cover hidden dark:block border-4 border-indigo-900/80 rounded-full shadow-2xl shadow-indigo-900/40"
                 alt="Illustration Dark"
                 loading="eager"
               />
             </>
 
-          </div>
+          </ScrollAnimation>
         </div>
       </Container>
-    </>
+    </div>
   );
 }
+

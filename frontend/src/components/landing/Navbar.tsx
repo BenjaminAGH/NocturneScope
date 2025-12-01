@@ -71,6 +71,7 @@ export const Navbar = () => {
     >
       <nav className="container sticky top-0 mx-auto flex items-center justify-between h-full px-4 xl:px-1">
         {/* Logo */}
+        {/* Logo */}
         <Link href="/">
           <span className="flex items-center space-x-2">
             <Image
@@ -91,6 +92,9 @@ export const Navbar = () => {
             />
           </span>
         </Link>
+
+        {/* Desktop Menu */}
+
 
         {!isPublicRoute && isLoggedIn && selectedGroup && pathname !== '/groups' && (
           <div className="hidden md:flex items-center bg-muted/50 rounded-full p-1 border border-border/50 absolute left-1/2 transform -translate-x-1/2">
@@ -119,6 +123,19 @@ export const Navbar = () => {
 
         {/* Right Side: Theme & Profile */}
         <div className="flex items-center gap-4">
+          {pathname === "/" && (
+            <div className="hidden lg:flex items-center space-x-6 mr-4">
+              <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                Características
+              </Link>
+              <Link href="#video" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                Demo
+              </Link>
+              <Link href="#downloads" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                Descarga
+              </Link>
+            </div>
+          )}
           {!isPublicRoute && isLoggedIn && (
             <GroupSwitcher />
           )}

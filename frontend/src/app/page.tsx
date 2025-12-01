@@ -1,12 +1,15 @@
-import { Container } from "@/components/landing/Container";
 import { Hero } from "@/components/landing/Hero";
 import { Downloads } from "@/components/landing/Downloads";
+import { Features } from "@/components/landing/Features";
+import { VideoSection } from "@/components/landing/VideoSection";
 
 export default function Home() {
   return (
-    <Container>
+    <>
       <Hero />
+      <Features />
+      <VideoSection />
       <Downloads />
-    </Container>
+    </>
   );
 }
