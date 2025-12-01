@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ResponsiveContainer,
@@ -39,7 +39,7 @@ const AGG_OPTIONS = ["mean", "min", "max", "last"];
 
 import { useGroup } from "@/context/GroupContext";
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { selectedGroup, initialized } = useGroup();
@@ -322,5 +322,13 @@ export default function DashboardPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center">Cargando Dashboard...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
