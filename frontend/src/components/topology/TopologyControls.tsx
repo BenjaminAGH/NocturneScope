@@ -22,7 +22,9 @@ interface TopologyControlsProps {
     onAddDelayNode: () => void;
     onAddSoundNode: () => void;
     onAddTrafficNode: () => void;
-    onAddTrafficTriggerNode: () => void; // Added
+    onAddTrafficTriggerNode: () => void;
+    onAddTimeWindowNode: () => void;
+    onAddThresholdNode: () => void;
     selectedNode: any;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
@@ -77,6 +79,8 @@ export default function TopologyControls({
     onAddSoundNode,
     onAddTrafficNode,
     onAddTrafficTriggerNode,
+    onAddTimeWindowNode,
+    onAddThresholdNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,
@@ -247,6 +251,30 @@ export default function TopologyControls({
                         >
                             <FunnelIcon className="w-6 h-6" />
                             <span className="text-xs">Trigger</span>
+                        </button>
+                        <button
+                            onClick={onAddTimeWindowNode}
+                            draggable
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'time-window');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                        >
+                            <ClockIcon className="w-6 h-6" />
+                            <span className="text-xs">Ventana</span>
+                        </button>
+                        <button
+                            onClick={onAddThresholdNode}
+                            draggable
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData('application/reactflow', 'threshold');
+                                event.dataTransfer.effectAllowed = 'move';
+                            }}
+                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                        >
+                            <div className="w-6 h-6 flex items-center justify-center font-bold text-xs border border-current rounded">#</div>
+                            <span className="text-xs">Umbral</span>
                         </button>
                     </div>
                 </div>

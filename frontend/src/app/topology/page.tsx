@@ -37,6 +37,8 @@ import DelayNode, { DelayNodeData } from "@/components/topology/DelayNode";
 import SoundNode, { SoundNodeData } from "@/components/topology/SoundNode";
 import TrafficNode, { TrafficNodeData } from "@/components/topology/TrafficNode";
 import TrafficTriggerNode, { TrafficTriggerNodeData } from "@/components/topology/TrafficTriggerNode";
+import TimeWindowNode, { TimeWindowNodeData } from "@/components/topology/TimeWindowNode";
+import ThresholdNode, { ThresholdNodeData } from "@/components/topology/ThresholdNode";
 import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
 import { useGroup } from "@/context/GroupContext";
@@ -52,6 +54,8 @@ const nodeTypes = {
     sound: SoundNode,
     traffic: TrafficNode,
     'traffic-trigger': TrafficTriggerNode,
+    'time-window': TimeWindowNode,
+    'threshold': ThresholdNode,
 };
 
 function TopologyEditor() {
@@ -376,7 +380,111 @@ function TopologyEditor() {
                         }
                     });
 
-                    // C. Propagar a Email/Notification/Sound Nodes
+                    // C. Evaluar Time Window Nodes
+                    const activeTimeWindowIds = new Set<string>();
+                    nextNodes.forEach((node, index) => {
+                        if (node.type === 'time-window') {
+                            const data = node.data as TimeWindowNodeData;
+                            const now = new Date();
+                            const currentTime = now.getHours() * 60 + now.getMinutes();
+
+                            const [startH, startM] = (data.startTime || "00:00").split(':').map(Number);
+                            const [endH, endM] = (data.endTime || "23:59").split(':').map(Number);
+
+                            const startTime = startH * 60 + startM;
+                            const endTime = endH * 60 + endM;
+
+                            let isActive = false;
+                            if (startTime <= endTime) {
+                                isActive = currentTime >= startTime && currentTime <= endTime;
+                            } else {
+                                // Crosses midnight
+                                isActive = currentTime >= startTime || currentTime <= endTime;
+                            }
+
+                            // Check input connection (if any)
+                            const incomingEdges = edgesRef.current.filter(e => e.target === node.id);
+                            if (incomingEdges.length > 0) {
+                                const isInputActive = incomingEdges.some(e =>
+                                    activeActionIds.has(e.source) || activeDelayIds.has(e.source)
+                                );
+                                isActive = isActive && isInputActive;
+                            }
+
+                            if (isActive) activeTimeWindowIds.add(node.id);
+
+                            if (data.isActive !== isActive) {
+                                nextNodes[index] = { ...node, data: { ...data, isActive } };
+                                nodesChanged = true;
+                            }
+                        }
+                    });
+
+                    // D. Evaluar Threshold Nodes
+                    const activeThresholdIds = new Set<string>();
+                    nextNodes.forEach((node, index) => {
+                        if (node.type === 'threshold') {
+                            const data = node.data as ThresholdNodeData;
+                            const incomingEdges = edgesRef.current.filter(e => e.target === node.id);
+
+                            // Check if any input just became active
+                            const isInputActive = incomingEdges.some(e =>
+                                activeActionIds.has(e.source) ||
+                                activeDelayIds.has(e.source) ||
+                                activeTimeWindowIds.has(e.source)
+                            );
+
+                            // We need to track edge activation state to detect rising edge
+                            // For simplicity in this loop, we'll increment if input is active and wasn't processed yet
+                            // A better approach requires state tracking of previous input state.
+                            // Here we will use a simple "cooldown" or "lastTriggered" timestamp in data if needed,
+                            // but since this runs every 5s, we might miss quick toggles.
+                            // However, for "Action" nodes which stay active, we should only count the transition.
+
+                            // IMPROVED LOGIC:
+                            // We will use a `lastInputState` in data to detect 0->1 transition.
+                            const wasInputActive = (data as any).lastInputState || false;
+
+                            let newCount = data.currentCount || 0;
+                            let lastReset = (data as any).lastReset || Date.now();
+                            const timeWindow = (data.timeWindow || 60) * 1000;
+
+                            // Reset counter if window passed
+                            if (Date.now() - lastReset > timeWindow) {
+                                newCount = 0;
+                                lastReset = Date.now();
+                            }
+
+                            if (isInputActive && !wasInputActive) {
+                                newCount++;
+                            }
+
+                            const threshold = data.threshold || 3;
+                            const isActive = newCount >= threshold;
+
+                            if (isActive) activeThresholdIds.add(node.id);
+
+                            if (
+                                data.isActive !== isActive ||
+                                data.currentCount !== newCount ||
+                                (data as any).lastInputState !== isInputActive
+                            ) {
+                                nextNodes[index] = {
+                                    ...node,
+                                    data: {
+                                        ...data,
+                                        isActive,
+                                        currentCount: newCount,
+                                        lastInputState: isInputActive,
+                                        lastReset
+                                    }
+                                };
+                                nodesChanged = true;
+                            }
+                        }
+                    });
+
+                    // E. Propagar a Email/Notification/Sound Nodes
                     nextNodes.forEach((node, index) => {
                         if (node.type === 'email' || node.type === 'notification' || node.type === 'sound') {
                             const isConnectedToActiveAction = edgesRef.current.some(e =>
@@ -385,8 +493,14 @@ function TopologyEditor() {
                             const isConnectedToActiveDelay = edgesRef.current.some(e =>
                                 e.target === node.id && activeDelayIds.has(e.source)
                             );
+                            const isConnectedToActiveTimeWindow = edgesRef.current.some(e =>
+                                e.target === node.id && activeTimeWindowIds.has(e.source)
+                            );
+                            const isConnectedToActiveThreshold = edgesRef.current.some(e =>
+                                e.target === node.id && activeThresholdIds.has(e.source)
+                            );
 
-                            const shouldBeActive = isConnectedToActiveAction || isConnectedToActiveDelay;
+                            const shouldBeActive = isConnectedToActiveAction || isConnectedToActiveDelay || isConnectedToActiveTimeWindow || isConnectedToActiveThreshold;
 
                             const data = node.data as any;
                             const wasActive = data.isActive;
@@ -660,6 +774,35 @@ function TopologyEditor() {
             position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
             data: {
                 delay: 10000, // 10s default
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes]);
+
+    const handleAddTimeWindowNode = useCallback(() => {
+        const id = `tw-${++nodeIdCounter.current}`;
+        const newNode: Node<TimeWindowNodeData> = {
+            id,
+            type: "time-window",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                startTime: "09:00",
+                endTime: "17:00",
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes]);
+
+    const handleAddThresholdNode = useCallback(() => {
+        const id = `th-${++nodeIdCounter.current}`;
+        const newNode: Node<ThresholdNodeData> = {
+            id,
+            type: "threshold",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                threshold: 3,
+                timeWindow: 60,
+                currentCount: 0,
             },
         };
         setNodes((nds) => [...nds, newNode]);
@@ -1405,8 +1548,10 @@ function TopologyEditor() {
                     onAddDelayNode={handleAddDelayNode}
                     onAddSoundNode={handleAddSoundNode}
                     onAddTrafficNode={handleAddTrafficNode}
-                    onAddTrafficTriggerNode={handleAddTrafficTriggerNode}
-                    selectedNode={nodes.find((n) => n.id === selectedNodeId)}
+                    onAddTrafficTriggerNode={() => { }} // Placeholder, handled in controls
+                    onAddTimeWindowNode={handleAddTimeWindowNode}
+                    onAddThresholdNode={handleAddThresholdNode}
+                    selectedNode={selectedNode}
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}
                     onRename={handleRenameTopology}
