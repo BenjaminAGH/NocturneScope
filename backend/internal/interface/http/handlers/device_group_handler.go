@@ -40,8 +40,11 @@ func (h *DeviceGroupHandler) Create(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	if req.Name == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "name is required"})
+	if len(req.Name) < 3 || len(req.Name) > 50 {
+		return c.Status(400).JSON(fiber.Map{"error": "name must be between 3 and 50 characters"})
+	}
+	if len(req.Description) > 200 {
+		return c.Status(400).JSON(fiber.Map{"error": "description must be at most 200 characters"})
 	}
 
 	group, err := h.svc.Create(userID, req.Name, req.Description)

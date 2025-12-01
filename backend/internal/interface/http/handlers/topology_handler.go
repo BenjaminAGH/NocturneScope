@@ -28,8 +28,12 @@ func (h *TopologyHandler) Create(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	if body.Name == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "name is required"})
+	if len(body.Name) < 3 || len(body.Name) > 50 {
+		return c.Status(400).JSON(fiber.Map{"error": "name must be between 3 and 50 characters"})
+	}
+
+	if body.Data == nil {
+		return c.Status(400).JSON(fiber.Map{"error": "data is required"})
 	}
 
 	// Obtener user_id del contexto (middleware JWT)
