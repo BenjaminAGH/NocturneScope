@@ -140,6 +140,29 @@ function DashboardContent() {
     return `${device ? device : "—"} • ${f} • ${range} • ${agg.toUpperCase()}`;
   }, [device, field, range, agg]);
 
+  // Helper for CPU Cores
+  const getCpuCores = () => {
+    if (!last) return [];
+    const cores = Object.keys(last)
+      .filter(k => k.startsWith('cpu_core_'))
+      .sort((a, b) => {
+        const numA = parseInt(a.replace('cpu_core_', ''));
+        const numB = parseInt(b.replace('cpu_core_', ''));
+        return numA - numB;
+      })
+      .map(k => ({ id: k, val: last[k] }));
+    return cores;
+  };
+  const cpuCores = getCpuCores();
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   if (!selectedGroup) return null;
 
   return (
@@ -304,10 +327,38 @@ function DashboardContent() {
               style={{ width: `${Math.min(last?.cpu || 0, 100)}%` }}
             />
           </div>
-          <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-            <span>Uso actual</span>
-            <span>{last?.cpu_count || 1} Cores</span>
-          </div>
+
+          {/* CPU Cores Grid */}
+          {cpuCores.length > 0 ? (
+            <div className="mt-3 space-y-1">
+              <div className="text-[10px] text-muted-foreground uppercase">Núcleos ({cpuCores.length})</div>
+              <div className="grid grid-cols-6 gap-1.5">
+                {cpuCores.map((core) => {
+                  const val = core.val || 0;
+                  let bgColor = "bg-muted"; // Gray
+                  if (val >= 90) bgColor = "bg-red-500";
+                  else if (val > 5) bgColor = "bg-green-500";
+
+                  return (
+                    <div
+                      key={core.id}
+                      className={`aspect-square rounded-sm ${bgColor} transition-colors duration-500 flex items-center justify-center relative group cursor-help`}
+                      title={`Core ${core.id.replace('cpu_core_', '')}: ${val.toFixed(1)}%`}
+                    >
+                      <span className="text-[8px] font-mono opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold absolute">
+                        {val.toFixed(0)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-2 text-xs text-muted-foreground flex justify-between">
+              <span>Uso actual</span>
+              <span>{last?.cpu_count || 1} Cores</span>
+            </div>
+          )}
         </div>
 
         {/* RAM Card */}
@@ -326,8 +377,8 @@ function DashboardContent() {
             />
           </div>
           <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-            <span>Uso actual</span>
-            <span>{((last?.ram_total || 0) / 1024 / 1024 / 1024).toFixed(1)} GB Total</span>
+            <span>Usado: {last?.ram_used ? formatBytes(last.ram_used) : "0 B"}</span>
+            <span>Total: {last?.ram_total ? formatBytes(last.ram_total) : "0 B"}</span>
           </div>
         </div>
 
