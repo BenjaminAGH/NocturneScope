@@ -27,7 +27,8 @@ interface TopologyControlsProps {
     onAddTrafficTriggerNode: () => void;
     onAddTimeWindowNode: () => void;
     onAddThresholdNode: () => void;
-    selectedNode: any;
+    onAddDetailsNode: () => void;
+    selectedNode: Node | undefined;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
     onRename: (id: number, newName: string) => void;
@@ -83,6 +84,7 @@ export default function TopologyControls({
     onAddTrafficTriggerNode,
     onAddTimeWindowNode,
     onAddThresholdNode,
+    onAddDetailsNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,

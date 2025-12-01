@@ -40,6 +40,7 @@ import TrafficNode, { TrafficNodeData } from "@/components/topology/TrafficNode"
 import TrafficTriggerNode, { TrafficTriggerNodeData } from "@/components/topology/TrafficTriggerNode";
 import TimeWindowNode, { TimeWindowNodeData } from "@/components/topology/TimeWindowNode";
 import ThresholdNode, { ThresholdNodeData } from "@/components/topology/ThresholdNode";
+import DeviceDetailsNode, { DeviceDetailsNodeData } from "@/components/topology/DeviceDetailsNode";
 import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
 import { useGroup } from "@/context/GroupContext";
@@ -57,6 +58,7 @@ const nodeTypes = {
     'traffic-trigger': TrafficTriggerNode,
     'time-window': TimeWindowNode,
     'threshold': ThresholdNode,
+    'details': DeviceDetailsNode,
 };
 
 function TopologyEditor() {
@@ -660,7 +662,7 @@ function TopologyEditor() {
                     // we should check if that node is still connected to ANY device.
                     // Since we usually only allow 1 device connection, we can just clear it.
 
-                    if (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger') {
+                    if (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details') {
                         // If the edge was connected to this node
                         if (deletedEdge.target === node.id || deletedEdge.source === node.id) {
                             // Ideally we check if the other node was indeed a device, but clearing it is safer to avoid stale data.
@@ -712,8 +714,8 @@ function TopologyEditor() {
             if (!source || !target) return;
 
             setNodes((nds) => nds.map((node) => {
-                // Case 1: Target is Monitoring, Action, Traffic, or Traffic Trigger
-                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger')) {
+                // Case 1: Target is Monitoring, Action, Traffic, Traffic Trigger, or Details
+                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details')) {
                     const sourceNode = nds.find(n => n.id === source);
                     if (sourceNode && sourceNode.type === 'device') {
                         return {
@@ -726,8 +728,8 @@ function TopologyEditor() {
                         };
                     }
                 }
-                // Case 2: Source is Monitoring, Action, Traffic, or Traffic Trigger (inverse connection)
-                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger')) {
+                // Case 2: Source is Monitoring, Action, Traffic, Traffic Trigger, or Details (inverse connection)
+                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details')) {
                     const targetNode = nds.find(n => n.id === target);
                     if (targetNode && targetNode.type === 'device') {
                         return {
@@ -844,6 +846,19 @@ function TopologyEditor() {
         };
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes]);
+
+    const handleAddDetailsNode = useCallback(() => {
+        const id = `details-${++nodeIdCounter.current}`;
+        const newNode: Node<DeviceDetailsNodeData> = {
+            id,
+            type: "details",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                jwt: jwt || undefined,
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [jwt, setNodes]);
 
     // Check Traffic Triggers
     // Use a ref to access current nodes inside interval without resetting it
@@ -1175,6 +1190,30 @@ function TopologyEditor() {
                         operator: 'is',
                         value: 'HIGH',
                         isActive: false,
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'threshold') {
+                const id = `th-${++nodeIdCounter.current}`;
+                const newNode: Node<ThresholdNodeData> = {
+                    id,
+                    type: "threshold",
+                    position,
+                    data: {
+                        threshold: 3,
+                        timeWindow: 60,
+                        currentCount: 0,
+                    },
+                };
+                setNodes((nds) => [...nds, newNode]);
+            } else if (type === 'details') {
+                const id = `details-${++nodeIdCounter.current}`;
+                const newNode: Node<DeviceDetailsNodeData> = {
+                    id,
+                    type: "details",
+                    position,
+                    data: {
+                        jwt: jwt || undefined,
                     },
                 };
                 setNodes((nds) => [...nds, newNode]);
@@ -1591,6 +1630,7 @@ function TopologyEditor() {
                     onAddTrafficTriggerNode={() => { }} // Placeholder, handled in controls
                     onAddTimeWindowNode={handleAddTimeWindowNode}
                     onAddThresholdNode={handleAddThresholdNode}
+                    onAddDetailsNode={handleAddDetailsNode}
                     selectedNode={selectedNode}
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}
