@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 
@@ -140,6 +140,8 @@ export default function TopologyControls({
         { id: 'actions', label: 'Acciones' },
     ];
 
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
     return (
         <div
             className={`absolute right-0 top-0 h-full w-80 transition-transform duration-300 ease-in-out z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'
@@ -164,22 +166,43 @@ export default function TopologyControls({
 
                 {/* Herramientas */}
                 <div className="space-y-3">
-                    <label className="text-sm font-medium">Herramientas</label>
+                    <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Herramientas</label>
 
-                    {/* Category Filter */}
-                    <div className="flex flex-wrap gap-1.5">
-                        {categories.map(cat => (
+                        {/* Category Filter Dropdown */}
+                        <div className="relative">
                             <button
-                                key={cat.id}
-                                onClick={() => setActiveCategory(cat.id as any)}
-                                className={`px-2.5 py-1 text-[10px] rounded-full border transition-all ${activeCategory === cat.id
-                                        ? "bg-primary text-primary-foreground border-primary"
-                                        : "bg-background/50 hover:bg-accent border-border text-muted-foreground"
-                                    }`}
+                                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                className="flex items-center gap-2 px-2 py-1 bg-background/50 border border-border rounded text-xs hover:bg-accent transition-colors min-w-[100px] justify-between"
                             >
-                                {cat.label}
+                                <span>{categories.find(c => c.id === activeCategory)?.label}</span>
+                                <ChevronDownIcon className={`w-3 h-3 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
                             </button>
-                        ))}
+
+                            {isFilterOpen && (
+                                <>
+                                    <div
+                                        className="fixed inset-0 z-10"
+                                        onClick={() => setIsFilterOpen(false)}
+                                    />
+                                    <div className="absolute top-full right-0 mt-1 w-32 bg-popover border border-border rounded-md shadow-md overflow-hidden animate-in fade-in zoom-in-95 duration-100 z-20 flex flex-col">
+                                        {categories.map(cat => (
+                                            <button
+                                                key={cat.id}
+                                                onClick={() => {
+                                                    setActiveCategory(cat.id as any);
+                                                    setIsFilterOpen(false);
+                                                }}
+                                                className={`text-left px-3 py-2 text-xs hover:bg-accent transition-colors ${activeCategory === cat.id ? "bg-accent/50 font-medium text-primary" : "text-muted-foreground"
+                                                    }`}
+                                            >
+                                                {cat.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
