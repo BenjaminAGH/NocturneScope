@@ -14,6 +14,7 @@ import {
     Connection,
     ReactFlowProvider,
     useReactFlow,
+    SelectionMode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -643,8 +644,44 @@ function TopologyEditor() {
     const onEdgesDelete = useCallback(
         (deleted: Edge[]) => {
             setEdges((eds) => eds.filter((e) => !deleted.some((d) => d.id === e.id)));
+
+            // Clear connectedDevice from nodes if connection is removed
+            setNodes((nds) => nds.map((node) => {
+                const deletedEdge = deleted.find(e => e.target === node.id || e.source === node.id);
+                if (deletedEdge) {
+                    // Check if the deleted edge was connecting a device
+                    // We need to check if the OTHER end of the edge was a device
+                    // But we don't have easy access to the other node's type here without searching 'nds' again.
+                    // However, we can just check if 'connectedDevice' is set and if this edge was likely the one providing it.
+                    // A safer approach: If a node has 'connectedDevice', check if it still has a valid connection to a device.
+                    // But 'deleted' edges are already gone from 'edges' state in the next render, but here we are setting state.
+
+                    // Simplest approach: If we delete an edge connected to a node that relies on a device,
+                    // we should check if that node is still connected to ANY device.
+                    // Since we usually only allow 1 device connection, we can just clear it.
+
+                    if (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger') {
+                        // If the edge was connected to this node
+                        if (deletedEdge.target === node.id || deletedEdge.source === node.id) {
+                            // Ideally we check if the other node was indeed a device, but clearing it is safer to avoid stale data.
+                            // If the user deleted the edge, they likely want to disconnect it.
+                            const { connectedDevice, ...restData } = node.data as any;
+                            if (connectedDevice) {
+                                return {
+                                    ...node,
+                                    data: {
+                                        ...restData,
+                                        connectedDevice: undefined
+                                    }
+                                };
+                            }
+                        }
+                    }
+                }
+                return node;
+            }));
         },
-        [setEdges]
+        [setEdges, setNodes]
     );
 
     const handleAddDevice = useCallback((deviceName: string) => {
@@ -1519,6 +1556,9 @@ function TopologyEditor() {
                     className="bg-background"
                     onDragOver={onDragOver}
                     onDrop={onDrop}
+                    selectionOnDrag={true}
+                    panOnDrag={[1, 2]}
+                    selectionMode={SelectionMode.Partial}
                 >
                     <Controls />
                     <Background />
