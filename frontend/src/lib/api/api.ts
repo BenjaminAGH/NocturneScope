@@ -5,6 +5,64 @@ function pickString(...vals: any[]) {
   return vals.find((v) => typeof v === "string" && v.trim()) as string | undefined;
 }
 
+
+async function refreshAccessToken(): Promise<string | null> {
+  const refresh = localStorage.getItem("refresh");
+  if (!refresh) return null;
+
+  try {
+    const res = await fetch(`${BASE}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: refresh }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const newAccess = data.access_token || data.accessToken || data.token;
+      const newRefresh = data.refresh_token || data.refreshToken;
+
+      if (newAccess) {
+        saveTokens(newAccess, newRefresh);
+        return newAccess;
+      }
+    }
+  } catch (e) {
+    console.error("Token refresh failed", e);
+  }
+
+  clearTokens();
+  return null;
+}
+
+async function apiFetch(url: string, options: RequestInit = {}, token?: string) {
+  let currentToken = token;
+
+  const makeHeaders = (t?: string) => {
+    const h: any = { ...options.headers };
+    if (t) h.Authorization = `Bearer ${t}`;
+    return h;
+  };
+
+  let res = await fetch(url, {
+    ...options,
+    headers: makeHeaders(currentToken),
+  });
+
+  if (res.status === 401) {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      currentToken = newToken;
+      res = await fetch(url, {
+        ...options,
+        headers: makeHeaders(currentToken),
+      });
+    }
+  }
+
+  return handle(res);
+}
+
 async function handle(res: Response) {
   if (res.status === 401) {
     clearTokens();
@@ -82,38 +140,38 @@ export function clearTokens() {
 }
 
 export async function getUserProfile(jwt: string) {
-  const res = await fetch(`${BASE}/users/me`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-    cache: "no-store",
-  });
-  return handle(res);
+  return apiFetch(`${BASE}/users/me`, { cache: "no-store" }, jwt);
 }
 
 export async function listApiTokens(jwt: string) {
-  const res = await fetch(`${BASE}/api-tokens`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-    cache: "no-store",
-  });
-  return handle(res);
+  return apiFetch(`${BASE}/api-tokens`, { cache: "no-store" }, jwt);
 }
 
 export async function createApiToken(jwt: string, name: string, deviceName: string, groupId?: number) {
-  const res = await fetch(`${BASE}/api-tokens`, {
+  return apiFetch(`${BASE}/api-tokens`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, device_name: deviceName, group_id: groupId }),
-  });
-  return handle(res);
+  }, jwt);
 }
 
 export async function deleteApiToken(jwt: string, id: number) {
+  // Special case for 204
   const res = await fetch(`${BASE}/api-tokens/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${jwt}` },
   });
+  if (res.status === 401) {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      const retryRes = await fetch(`${BASE}/api-tokens/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${newToken}` },
+      });
+      if (retryRes.status === 204) return true;
+      return handle(retryRes);
+    }
+  }
   if (res.status === 204) return true;
   return handle(res);
 }
@@ -123,20 +181,12 @@ export async function getDevices(jwt: string, groupId?: number) {
   if (groupId) {
     url += `?group_id=${groupId}`;
   }
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${jwt}` },
-    cache: "no-store",
-  });
-  const data = await handle(res);
+  const data = await apiFetch(url, { cache: "no-store" }, jwt);
   return (Array.isArray(data) ? data : []) as string[];
 }
 
 export async function getLastStats(jwt: string, device: string) {
-  const res = await fetch(`${BASE}/metrics/last?device=${encodeURIComponent(device)}`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-    cache: "no-store",
-  });
-  return handle(res) as Promise<Record<string, any>>;
+  return apiFetch(`${BASE}/metrics/last?device=${encodeURIComponent(device)}`, { cache: "no-store" }, jwt) as Promise<Record<string, any>>;
 }
 
 export async function getTimeseries(
@@ -144,111 +194,73 @@ export async function getTimeseries(
   params: { device: string; field: string; range: string; agg: string; interval: string }
 ) {
   const q = new URLSearchParams(params as any).toString();
-  const res = await fetch(`${BASE}/metrics/timeseries?${q}`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-    cache: "no-store",
-  });
-  return handle(res) as Promise<{ points: { t: string; v: number }[] }>;
+  return apiFetch(`${BASE}/metrics/timeseries?${q}`, { cache: "no-store" }, jwt) as Promise<{ points: { t: string; v: number }[] }>;
 }
 
 export async function getHistory(jwt: string, device: string, range: string) {
   const q = new URLSearchParams({ device, range }).toString();
-  const res = await fetch(`${BASE}/metrics/history?${q}`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-    cache: "no-store",
-  });
-  return handle(res) as Promise<any[]>;
+  return apiFetch(`${BASE}/metrics/history?${q}`, { cache: "no-store" }, jwt) as Promise<any[]>;
 }
 
 export async function getRecentAlerts(jwt: string) {
-  const res = await fetch(`${BASE}/alerts/recent`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-    cache: "no-store",
-  });
-  const data = await handle(res);
+  const data = await apiFetch(`${BASE}/alerts/recent`, { cache: "no-store" }, jwt);
   return (data.recent_alerts || []) as string[];
 }
 
 export async function sendTestEmail(jwt: string, email: string) {
-  const res = await fetch(`${BASE}/alerts/test-email`, {
+  return apiFetch(`${BASE}/alerts/test-email`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
-  });
-  return handle(res);
+  }, jwt);
 }
 
 export async function sendCustomEmail(jwt: string, to: string, subject: string, body: string) {
-  const res = await fetch(`${BASE}/alerts/send-email`, {
+  return apiFetch(`${BASE}/alerts/send-email`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ to, subject, body }),
-  });
-  return handle(res);
+  }, jwt);
 }
 
 export async function updateLastTopology(jwt: string, topologyId: number) {
-  const res = await fetch(`${BASE}/users/me/last-topology`, {
+  // updateLastTopology returns void/error, so we can use apiFetch but ignore result or check if it throws
+  await apiFetch(`${BASE}/users/me/last-topology`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ topology_id: topologyId }),
-  });
-  if (!res.ok) throw new Error("Failed to update last topology");
+  }, jwt);
 }
 
 export async function deleteTopology(jwt: string, id: number) {
-  const res = await fetch(`${BASE}/topologies/${id}`, {
+  // deleteTopology returns void/error
+  await apiFetch(`${BASE}/topologies/${id}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${jwt}` },
-  });
-  if (!res.ok) throw new Error("Failed to delete topology");
+  }, jwt);
 }
 
 export async function updateTopology(jwt: string, id: number, name: string, data: any) {
-  const res = await fetch(`${BASE}/topologies/${id}`, {
+  return apiFetch(`${BASE}/topologies/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, data }),
-  });
-  return handle(res);
+  }, jwt);
 }
 
 export async function getTopologies(jwt: string) {
-  const res = await fetch(`${BASE}/topologies`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-  });
-  return handle(res);
+  return apiFetch(`${BASE}/topologies`, {}, jwt);
 }
 
 export async function getTopology(jwt: string, id: number) {
-  const res = await fetch(`${BASE}/topologies/${id}`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-  });
-  return handle(res);
+  return apiFetch(`${BASE}/topologies/${id}`, {}, jwt);
 }
 
 export async function createTopology(jwt: string, name: string, data: any) {
-  const res = await fetch(`${BASE}/topologies`, {
+  return apiFetch(`${BASE}/topologies`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, data }),
-  });
-  return handle(res);
+  }, jwt);
 }
 
 export async function getUser(jwt: string) {
@@ -263,16 +275,9 @@ export async function getUser(jwt: string) {
   // Let's add a /users/me endpoint in the backend first if it doesn't exist.
   // Wait, I can just use the ID from the token in the frontend if I decode it, but better to have an endpoint.
   // Let's check user_routes.go if it exists.
-  const res = await fetch(`${BASE}/users/me`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-  });
-  return handle(res);
+  return apiFetch(`${BASE}/users/me`, {}, jwt);
 }
 
 export async function getNetworkTraffic(jwt: string, deviceName: string) {
-  const res = await fetch(`${BASE}/network-traffic?device=${encodeURIComponent(deviceName)}`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-    cache: "no-store",
-  });
-  return handle(res) as Promise<any[]>;
+  return apiFetch(`${BASE}/network-traffic?device=${encodeURIComponent(deviceName)}`, { cache: "no-store" }, jwt) as Promise<any[]>;
 }

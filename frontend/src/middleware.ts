@@ -7,7 +7,7 @@ const publicRoutes = ['/', '/auth/login', '/auth/register'];
 // Rutas protegidas que requieren autenticación
 const protectedRoutes = ['/dashboard', '/topology', '/tokens', '/groups', '/admin'];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Verificar si la ruta actual es protegida
