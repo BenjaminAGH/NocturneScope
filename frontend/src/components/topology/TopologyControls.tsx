@@ -224,9 +224,23 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de gráfico para visualizar métricas"
                                     >
                                         <ChartBarIcon className="w-6 h-6" />
                                         <span className="text-xs">Gráfico</span>
+                                    </button>
+                                    <button
+                                        onClick={onAddDetailsNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'details');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de detalles del dispositivo"
+                                    >
+                                        <ChartBarIcon className="w-6 h-6" />
+                                        <span className="text-xs">Detalles</span>
                                     </button>
                                     <button
                                         onClick={onAddTrafficNode}
@@ -236,6 +250,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de tráfico de red"
                                     >
                                         <GlobeAltIcon className="w-6 h-6" />
                                         <span className="text-xs">Tráfico</span>
@@ -254,6 +269,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de acción condicional"
                                     >
                                         <BoltIcon className="w-6 h-6" />
                                         <span className="text-xs">Acción</span>
@@ -266,6 +282,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo disparador de tráfico"
                                     >
                                         <FunnelIcon className="w-6 h-6" />
                                         <span className="text-xs">Trigger</span>
@@ -284,6 +301,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de retraso"
                                     >
                                         <ClockIcon className="w-6 h-6" />
                                         <span className="text-xs">Delay</span>
@@ -296,6 +314,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de ventana de tiempo"
                                     >
                                         <ClockIcon className="w-6 h-6" />
                                         <span className="text-xs">Ventana</span>
@@ -308,6 +327,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de umbral de intentos"
                                     >
                                         <div className="w-6 h-6 flex items-center justify-center font-bold text-xs border border-current rounded">#</div>
                                         <span className="text-xs">Umbral</span>
@@ -326,6 +346,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de envío de correo"
                                     >
                                         <EnvelopeIcon className="w-6 h-6" />
                                         <span className="text-xs">Email</span>
@@ -338,6 +359,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de notificación en pantalla"
                                     >
                                         <BellIcon className="w-6 h-6" />
                                         <span className="text-xs">Notificación</span>
@@ -350,6 +372,7 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Añadir nodo de alerta sonora"
                                     >
                                         <SpeakerWaveIcon className="w-6 h-6" />
                                         <span className="text-xs">Sonido</span>
