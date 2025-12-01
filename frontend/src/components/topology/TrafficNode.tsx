@@ -150,11 +150,11 @@ function TrafficNode({ id, data, selected }: NodeProps) {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-muted text-muted-foreground sticky top-0 z-10 shadow-sm">
                             <tr>
-                                <th className="px-2 py-1 border-r border-border/50 w-16">Time</th>
-                                <th className="px-2 py-1 border-r border-border/50 w-28">Source</th>
-                                <th className="px-2 py-1 border-r border-border/50 w-16">Proto</th>
-                                <th className="px-2 py-1 border-r border-border/50 w-16">Port</th>
-                                <th className="px-2 py-1">Info</th>
+                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Hora del evento registrado">Time</th>
+                                <th className="px-2 py-1 border-r border-border/50 w-28" title="Dirección IP de origen del paquete">Source</th>
+                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Protocolo de transporte (TCP/UDP)">Proto</th>
+                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Puerto de destino">Port</th>
+                                <th className="px-2 py-1" title="Información adicional (Estado, Nivel de Amenaza)">Info</th>
                             </tr>
                         </thead>
                         <tbody>

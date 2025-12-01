@@ -101,6 +101,107 @@ function TopologyEditor() {
 
     const nodeIdCounter = useRef(0);
 
+    // Undo/Redo State
+    const [past, setPast] = useState<{ nodes: Node[], edges: Edge[] }[]>([]);
+    const [future, setFuture] = useState<{ nodes: Node[], edges: Edge[] }[]>([]);
+
+    // Clipboard State
+    const [clipboard, setClipboard] = useState<{ nodes: Node[], edges: Edge[] } | null>(null);
+
+    // Snapshot helper
+    const takeSnapshot = useCallback(() => {
+        setPast(p => [...p.slice(-19), { nodes, edges }]); // Limit history to 20
+        setFuture([]);
+    }, [nodes, edges]);
+
+    // Keyboard Shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Undo: Ctrl+Z
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                if (past.length > 0) {
+                    const previous = past[past.length - 1];
+                    const newPast = past.slice(0, past.length - 1);
+                    setFuture(f => [{ nodes, edges }, ...f]);
+                    setPast(newPast);
+                    setNodes(previous.nodes);
+                    setEdges(previous.edges);
+                }
+            }
+            // Redo: Ctrl+Y or Ctrl+Shift+Z
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                if (future.length > 0) {
+                    const next = future[0];
+                    const newFuture = future.slice(1);
+                    setPast(p => [...p, { nodes, edges }]);
+                    setFuture(newFuture);
+                    setNodes(next.nodes);
+                    setEdges(next.edges);
+                }
+            }
+            // Copy: Ctrl+C
+            if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                const selectedNodes = nodes.filter(n => n.selected);
+                if (selectedNodes.length > 0) {
+                    // Copy connected edges between selected nodes too?
+                    // For simplicity, just nodes for now, or edges if both source/target are selected.
+                    const selectedIds = new Set(selectedNodes.map(n => n.id));
+                    const selectedEdges = edges.filter(e => selectedIds.has(e.source) && selectedIds.has(e.target));
+                    setClipboard({ nodes: selectedNodes, edges: selectedEdges });
+                    notify(`${selectedNodes.length} elementos copiados`, "info");
+                }
+            }
+            // Paste: Ctrl+V
+            if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                if (clipboard) {
+                    takeSnapshot(); // Save state before paste
+
+                    const idMap = new Map<string, string>();
+                    const newNodes = clipboard.nodes.map(n => {
+                        const newId = `${n.type}-${++nodeIdCounter.current}-${Date.now()}`;
+                        idMap.set(n.id, newId);
+                        return {
+                            ...n,
+                            id: newId,
+                            position: { x: n.position.x + 50, y: n.position.y + 50 },
+                            selected: true,
+                            data: { ...n.data } // Deep copy data if needed
+                        };
+                    });
+
+                    const newEdges = clipboard.edges.map(e => ({
+                        ...e,
+                        id: `edge-${idMap.get(e.source)}-${idMap.get(e.target)}`,
+                        source: idMap.get(e.source)!,
+                        target: idMap.get(e.target)!,
+                        selected: true
+                    }));
+
+                    // Deselect current nodes
+                    setNodes(nds => [...nds.map(n => ({ ...n, selected: false })), ...newNodes]);
+                    setEdges(eds => [...eds.map(e => ({ ...e, selected: false })), ...newEdges]);
+                    notify("Elementos pegados", "success");
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [nodes, edges, past, future, clipboard, setNodes, setEdges, notify, takeSnapshot]);
+
+    // Hook into node/edge changes to save history?
+    // This is tricky because onNodesChange fires on drag.
+    // We should probably only snapshot on explicit actions (add, delete, connect).
+    // For now, let's rely on the user manually saving or just snapshotting on specific events if we can hook them.
+    // But since we don't control the internal ReactFlow hooks easily here without wrapping,
+    // we might just snapshot on "mouse up" if dragging happened?
+    // A simple approach: Snapshot when selection changes? No.
+    // Let's snapshot when we add/delete/connect in our callbacks.
+
+
+
     useEffect(() => {
         const token = localStorage.getItem("jwt");
         if (!token) {
@@ -645,6 +746,7 @@ function TopologyEditor() {
 
     const onEdgesDelete = useCallback(
         (deleted: Edge[]) => {
+            takeSnapshot();
             setEdges((eds) => eds.filter((e) => !deleted.some((d) => d.id === e.id)));
 
             // Clear connectedDevice from nodes if connection is removed
@@ -687,6 +789,7 @@ function TopologyEditor() {
     );
 
     const handleAddDevice = useCallback((deviceName: string) => {
+        takeSnapshot();
         const id = deviceName;
         // Verificar si ya existe
         setNodes((nds) => {
@@ -707,6 +810,7 @@ function TopologyEditor() {
 
     const onConnect = useCallback(
         (params: Connection) => {
+            takeSnapshot();
             setEdges((eds) => addEdge(params, eds));
 
             // Lógica para conectar nodos de monitoreo a dispositivos
@@ -749,6 +853,7 @@ function TopologyEditor() {
     );
 
     const handleAddMonitoringNode = useCallback(() => {
+        takeSnapshot();
         const id = `mon-${++nodeIdCounter.current}`;
         const newNode: Node<MonitoringNodeData> = {
             id,
@@ -764,6 +869,7 @@ function TopologyEditor() {
     }, [jwt, setNodes]);
 
     const handleAddActionNode = useCallback(() => {
+        takeSnapshot();
         const id = `act-${++nodeIdCounter.current}`;
         const newNode: Node<ActionNodeData> = {
             id,
@@ -779,6 +885,7 @@ function TopologyEditor() {
     }, [setNodes]);
 
     const handleAddEmailNode = useCallback(() => {
+        takeSnapshot();
         const id = `email-${++nodeIdCounter.current}`;
         const newNode: Node<EmailNodeData> = {
             id,
@@ -793,6 +900,7 @@ function TopologyEditor() {
     }, [setNodes]);
 
     const handleAddNotificationNode = useCallback(() => {
+        takeSnapshot();
         const id = `notif-${++nodeIdCounter.current}`;
         const newNode: Node<NotificationNodeData> = {
             id,
@@ -806,6 +914,7 @@ function TopologyEditor() {
     }, [setNodes]);
 
     const handleAddDelayNode = useCallback(() => {
+        takeSnapshot();
         const id = `delay-${++nodeIdCounter.current}`;
         const newNode: Node<DelayNodeData> = {
             id,
@@ -819,6 +928,7 @@ function TopologyEditor() {
     }, [setNodes]);
 
     const handleAddTimeWindowNode = useCallback(() => {
+        takeSnapshot();
         const id = `tw-${++nodeIdCounter.current}`;
         const newNode: Node<TimeWindowNodeData> = {
             id,
@@ -833,6 +943,7 @@ function TopologyEditor() {
     }, [setNodes]);
 
     const handleAddThresholdNode = useCallback(() => {
+        takeSnapshot();
         const id = `th-${++nodeIdCounter.current}`;
         const newNode: Node<ThresholdNodeData> = {
             id,
@@ -848,6 +959,7 @@ function TopologyEditor() {
     }, [setNodes]);
 
     const handleAddDetailsNode = useCallback(() => {
+        takeSnapshot();
         const id = `details-${++nodeIdCounter.current}`;
         const newNode: Node<DeviceDetailsNodeData> = {
             id,
@@ -1034,6 +1146,7 @@ function TopologyEditor() {
     // Better approach: Integrate into the existing checkAlerts or a unified propagation effect.
 
     const handleAddSoundNode = useCallback(() => {
+        takeSnapshot();
         const id = `sound-${++nodeIdCounter.current}`;
         const newNode: Node<SoundNodeData> = {
             id,
@@ -1047,6 +1160,7 @@ function TopologyEditor() {
     }, [setNodes]);
 
     const handleAddTrafficNode = useCallback(() => {
+        takeSnapshot();
         const id = `traffic-${++nodeIdCounter.current}`;
         const newNode: Node<TrafficNodeData> = {
             id,
@@ -1084,6 +1198,7 @@ function TopologyEditor() {
     const onDrop = useCallback(
         (event: React.DragEvent) => {
             event.preventDefault();
+            takeSnapshot();
 
             const type = event.dataTransfer.getData('application/reactflow');
 
@@ -1672,6 +1787,47 @@ function TopologyEditor() {
             </div>
         </div>
     );
+}
+
+// Custom Hook for Undo/Redo
+function useUndoRedo<T>(initialState: T) {
+    const [past, setPast] = useState<T[]>([]);
+    const [present, setPresent] = useState<T>(initialState);
+    const [future, setFuture] = useState<T[]>([]);
+
+    const canUndo = past.length > 0;
+    const canRedo = future.length > 0;
+
+    const undo = useCallback(() => {
+        if (!canUndo) return;
+
+        const previous = past[past.length - 1];
+        const newPast = past.slice(0, past.length - 1);
+
+        setPast(newPast);
+        setFuture([present, ...future]);
+        setPresent(previous);
+    }, [past, present, future, canUndo]);
+
+    const redo = useCallback(() => {
+        if (!canRedo) return;
+
+        const next = future[0];
+        const newFuture = future.slice(1);
+
+        setPast([...past, present]);
+        setPresent(next);
+        setFuture(newFuture);
+    }, [past, present, future, canRedo]);
+
+    const set = useCallback((newPresent: T) => {
+        if (newPresent === present) return;
+        setPast([...past, present]);
+        setPresent(newPresent);
+        setFuture([]);
+    }, [past, present]);
+
+    return [present, set, undo, redo, canUndo, canRedo] as const;
 }
 
 export default function TopologyPage() {
