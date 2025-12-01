@@ -10,6 +10,7 @@ export interface DeviceNodeData extends Record<string, unknown> {
     status?: "online" | "offline" | "unknown";
     ip?: string;
     notifications?: number;
+    stats?: any;
 }
 
 function DeviceNode({ data }: NodeProps) {

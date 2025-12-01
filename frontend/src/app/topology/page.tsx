@@ -145,7 +145,7 @@ function TopologyEditor() {
                     }
                 });
 
-                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string }>();
+                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string; stats?: any }>();
 
                 // Mapear estados
                 Object.entries(stats).forEach(([device, data]: [string, any]) => {
@@ -170,7 +170,8 @@ function TopologyEditor() {
                     deviceUpdates.set(device, {
                         status: isActive ? "online" : "offline",
                         ip: data.ip,
-                        gateway: data.gateway
+                        gateway: data.gateway,
+                        stats: data
                     });
                 });
 
@@ -197,13 +198,15 @@ function TopologyEditor() {
                             }
 
                             // Verificar cambios
-                            if (currentData.status !== update.status || (update.ip && currentData.ip !== update.ip)) {
+                            // Always update if we have stats to ensure freshness
+                            if (currentData.status !== update.status || (update.ip && currentData.ip !== update.ip) || update.stats) {
                                 nextNodes[index] = {
                                     ...node,
                                     data: {
                                         ...currentData,
                                         status: update.status,
                                         ip: update.ip || currentData.ip,
+                                        stats: update.stats,
                                     }
                                 };
                                 nodesChanged = true;
