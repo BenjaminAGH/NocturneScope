@@ -72,17 +72,17 @@ func (s *MetricService) LastStats(ctx context.Context, device string) (map[strin
 		return nil, err
 	}
 
-	fields := []string{"cpu", "ram", "disk", "net_rx", "net_tx", "temp", "uptime"}
+	fields := []string{"cpu", "ram", "ram_total", "ram_used", "ram_free", "disk", "net_rx", "net_tx", "temp", "uptime"}
 
 	flux := fmt.Sprintf(`
 from(bucket: "%[1]s")
   |> range(start: -10m)
   |> filter(fn: (r) => r._measurement == "system_metrics" and r.device == "%[2]s")
-  |> filter(fn: (r) => contains(value: r._field, set: %[3]s))
+  |> filter(fn: (r) => contains(value: r._field, set: %[3]s) or r._field =~ /^cpu_core_/)
   |> last()
   |> pivot(rowKey:["_time"], columnKey:["_field"], valueColumn:"_value")
   |> group()
-  |> keep(columns: ["_time","cpu","ram","disk","net_rx","net_tx","temp","uptime","os","ip","gateway"])
+  |> keep(columns: ["_time","cpu","ram","ram_total","ram_used","ram_free","disk","net_rx","net_tx","temp","uptime","os","ip","gateway"])
 `, s.writer.Bucket(), device, fieldsToFluxArray(fields))
 
 	res, err := q.Query(ctx, flux)
@@ -111,6 +111,14 @@ from(bucket: "%[1]s")
 		// Fields (floats)
 		for _, k := range fields {
 			if v := rec.ValueByKey(k); v != nil {
+				if f, ok := toFloat(v); ok {
+					out[k] = f
+				}
+			}
+		}
+		// Handle dynamic cpu_core_* fields
+		for k, v := range rec.Values() {
+			if len(k) > 9 && k[:9] == "cpu_core_" {
 				if f, ok := toFloat(v); ok {
 					out[k] = f
 				}

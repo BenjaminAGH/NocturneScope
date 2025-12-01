@@ -25,6 +25,11 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 	if err != nil {
 		return domain.Metric{}, err
 	}
+	cpuPerCore, err := cpu.Percent(0, true)
+	if err != nil {
+		// Log error but continue? Or return empty slice
+		cpuPerCore = []float64{}
+	}
 	memInfo, err := mem.VirtualMemory()
 	if err != nil {
 		return domain.Metric{}, err
@@ -39,7 +44,11 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 		IpAddress:  c.ipAddress,
 		Timestamp:  time.Now(),
 		CPUUsage:   cpuPercent[0],
+		CPUPerCore: cpuPerCore,
 		RAMUsage:   memInfo.UsedPercent,
+		RAMTotal:   memInfo.Total,
+		RAMUsed:    memInfo.Used,
+		RAMFree:    memInfo.Free,
 		DiskUsage:  diskInfo.UsedPercent,
 	}, nil
 }

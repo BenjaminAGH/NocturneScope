@@ -11,6 +11,9 @@ type Metric struct {
 
 	CPUUsage  float64 `json:"cpu_usage"`
 	RAMUsage  float64 `json:"ram_usage"`
+	RAMTotal  uint64  `json:"ram_total,omitempty"`
+	RAMUsed   uint64  `json:"ram_used,omitempty"`
+	RAMFree   uint64  `json:"ram_free,omitempty"`
 	DiskUsage float64 `json:"disk_usage"`
 
 	CPUPerCore  []float64 `json:"cpu_per_core,omitempty"`

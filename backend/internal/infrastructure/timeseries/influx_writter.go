@@ -2,6 +2,7 @@ package timeseries
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -69,6 +70,15 @@ func (w *InfluxWriter) WriteMetric(m domain.Metric) error {
 	if m.RAMUsage != 0 {
 		fields["ram"] = m.RAMUsage
 	}
+	if m.RAMTotal != 0 {
+		fields["ram_total"] = float64(m.RAMTotal)
+	}
+	if m.RAMUsed != 0 {
+		fields["ram_used"] = float64(m.RAMUsed)
+	}
+	if m.RAMFree != 0 {
+		fields["ram_free"] = float64(m.RAMFree)
+	}
 	if m.DiskUsage != 0 {
 		fields["disk"] = m.DiskUsage
 	}
@@ -86,11 +96,11 @@ func (w *InfluxWriter) WriteMetric(m domain.Metric) error {
 		fields["uptime"] = float64(m.UptimeSec)
 	}
 
-	// if len(m.CPUPerCore) > 0 {
-	// 	for i, v := range m.CPUPerCore {
-	// 		fields[fmt.Sprintf("cpu_core_%d", i)] = v
-	// 	}
-	// }
+	if len(m.CPUPerCore) > 0 {
+		for i, v := range m.CPUPerCore {
+			fields[fmt.Sprintf("cpu_core_%d", i)] = v
+		}
+	}
 
 	if len(fields) == 0 {
 		return nil

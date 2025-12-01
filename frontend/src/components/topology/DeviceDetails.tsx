@@ -89,6 +89,21 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
+    // Helper for CPU Cores
+    const getCpuCores = () => {
+        if (!stats) return [];
+        const cores = Object.keys(stats)
+            .filter(k => k.startsWith('cpu_core_'))
+            .sort((a, b) => {
+                const numA = parseInt(a.replace('cpu_core_', ''));
+                const numB = parseInt(b.replace('cpu_core_', ''));
+                return numA - numB;
+            })
+            .map(k => ({ id: k, val: stats[k] }));
+        return cores;
+    };
+    const cpuCores = getCpuCores();
+
     return (
         <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
             <div className="flex items-center gap-2 pb-2 border-b border-border">
@@ -173,6 +188,26 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                     </div>
                 </div>
 
+                {/* CPU Cores (Collapsible or just list) */}
+                {cpuCores.length > 0 && (
+                    <div className="space-y-1 pt-1">
+                        <div className="text-[10px] text-muted-foreground uppercase">Núcleos ({cpuCores.length})</div>
+                        <div className="grid grid-cols-4 gap-1">
+                            {cpuCores.map((core) => (
+                                <div key={core.id} className="bg-muted/20 rounded p-1 text-center" title={`Core ${core.id.replace('cpu_core_', '')}`}>
+                                    <div className="h-8 w-full bg-secondary rounded-sm relative overflow-hidden flex items-end justify-center">
+                                        <div
+                                            className="absolute bottom-0 left-0 right-0 bg-blue-400/50 transition-all duration-500"
+                                            style={{ height: `${Math.min(core.val || 0, 100)}%` }}
+                                        />
+                                        <span className="relative z-10 text-[9px] font-mono">{core.val?.toFixed(0)}%</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* RAM */}
                 <div className="space-y-1">
                     <div className="flex justify-between text-xs">
@@ -187,9 +222,13 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                             style={{ width: `${Math.min(stats.ram || 0, 100)}%` }}
                         />
                     </div>
+                    {stats.ram_total > 0 && (
+                        <div className="flex justify-between text-[10px] text-muted-foreground pt-0.5">
+                            <span>Usado: {formatBytes(stats.ram_used)}</span>
+                            <span>Total: {formatBytes(stats.ram_total)}</span>
+                        </div>
+                    )}
                 </div>
-
-                {/* Network */}
                 <div className="grid grid-cols-2 gap-2 pt-1">
                     <div className="p-1.5 bg-muted/20 rounded border border-border text-center">
                         <div className="text-[10px] text-muted-foreground">Net RX</div>
