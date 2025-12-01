@@ -356,6 +356,8 @@ export default function TopologyControls({
                             {selectedNode.type === 'sound' && "Configuración de Sonido"}
                             {selectedNode.type === 'traffic' && "Configuración de Tráfico"}
                             {selectedNode.type === 'traffic-trigger' && "Configuración de Traffic Trigger"}
+                            {selectedNode.type === 'time-window' && "Configuración de Ventana de Tiempo"}
+                            {selectedNode.type === 'threshold' && "Configuración de Umbral"}
                         </label>
 
                         <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">
@@ -564,6 +566,59 @@ export default function TopologyControls({
                                         ))}
                                     </select>
                                 </div>
+                            )}
+
+                            {/* Time Window Node Config */}
+                            {selectedNode.type === 'time-window' && (
+                                <>
+                                    <div>
+                                        <label className="text-xs text-muted-foreground">Hora Inicio (HH:mm)</label>
+                                        <input
+                                            type="time"
+                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                            value={selectedNode.data.startTime || '09:00'}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { startTime: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-muted-foreground">Hora Fin (HH:mm)</label>
+                                        <input
+                                            type="time"
+                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                            value={selectedNode.data.endTime || '17:00'}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { endTime: e.target.value })}
+                                        />
+                                    </div>
+                                </>
+                            )}
+
+                            {/* Threshold Node Config */}
+                            {selectedNode.type === 'threshold' && (
+                                <>
+                                    <div>
+                                        <label className="text-xs text-muted-foreground">Umbral (Intentos)</label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                            value={selectedNode.data.threshold || 3}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { threshold: Number(e.target.value) })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-muted-foreground">Ventana de Tiempo (segundos)</label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                            value={selectedNode.data.timeWindow || 60}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { timeWindow: Number(e.target.value) })}
+                                        />
+                                    </div>
+                                    <div className="text-xs text-muted-foreground pt-2 border-t border-border/50">
+                                        Estado actual: {selectedNode.data.currentCount || 0} / {selectedNode.data.threshold || 3}
+                                    </div>
+                                </>
                             )}
 
                             {/* Connection Status for Monitoring and Action */}
