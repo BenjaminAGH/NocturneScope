@@ -208,150 +208,152 @@ export default function TopologyControls({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                        {/* Monitoring Tools */}
-                        {(activeCategory === 'all' || activeCategory === 'monitoring') && (
-                            <>
-                                <button
-                                    onClick={onAddMonitoringNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'monitoring');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <ChartBarIcon className="w-6 h-6" />
-                                    <span className="text-xs">Gráfico</span>
-                                </button>
-                                <button
-                                    onClick={onAddTrafficNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'traffic');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <GlobeAltIcon className="w-6 h-6" />
-                                    <span className="text-xs">Tráfico</span>
-                                </button>
-                            </>
-                        )}
+                    <div className="max-h-[180px] overflow-y-auto pr-1">
+                        <div className="grid grid-cols-3 gap-2">
+                            {/* Monitoring Tools */}
+                            {(activeCategory === 'all' || activeCategory === 'monitoring') && (
+                                <>
+                                    <button
+                                        onClick={onAddMonitoringNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'monitoring');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <ChartBarIcon className="w-6 h-6" />
+                                        <span className="text-xs">Gráfico</span>
+                                    </button>
+                                    <button
+                                        onClick={onAddTrafficNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'traffic');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <GlobeAltIcon className="w-6 h-6" />
+                                        <span className="text-xs">Tráfico</span>
+                                    </button>
+                                </>
+                            )}
 
-                        {/* Trigger Tools */}
-                        {(activeCategory === 'all' || activeCategory === 'triggers') && (
-                            <>
-                                <button
-                                    onClick={onAddActionNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'action');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <BoltIcon className="w-6 h-6" />
-                                    <span className="text-xs">Acción</span>
-                                </button>
-                                <button
-                                    onClick={onAddTrafficTriggerNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'traffic-trigger');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <FunnelIcon className="w-6 h-6" />
-                                    <span className="text-xs">Trigger</span>
-                                </button>
-                            </>
-                        )}
+                            {/* Trigger Tools */}
+                            {(activeCategory === 'all' || activeCategory === 'triggers') && (
+                                <>
+                                    <button
+                                        onClick={onAddActionNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'action');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <BoltIcon className="w-6 h-6" />
+                                        <span className="text-xs">Acción</span>
+                                    </button>
+                                    <button
+                                        onClick={onAddTrafficTriggerNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'traffic-trigger');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <FunnelIcon className="w-6 h-6" />
+                                        <span className="text-xs">Trigger</span>
+                                    </button>
+                                </>
+                            )}
 
-                        {/* Logic Tools */}
-                        {(activeCategory === 'all' || activeCategory === 'logic') && (
-                            <>
-                                <button
-                                    onClick={onAddDelayNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'delay');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <ClockIcon className="w-6 h-6" />
-                                    <span className="text-xs">Delay</span>
-                                </button>
-                                <button
-                                    onClick={onAddTimeWindowNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'time-window');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <ClockIcon className="w-6 h-6" />
-                                    <span className="text-xs">Ventana</span>
-                                </button>
-                                <button
-                                    onClick={onAddThresholdNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'threshold');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <div className="w-6 h-6 flex items-center justify-center font-bold text-xs border border-current rounded">#</div>
-                                    <span className="text-xs">Umbral</span>
-                                </button>
-                            </>
-                        )}
+                            {/* Logic Tools */}
+                            {(activeCategory === 'all' || activeCategory === 'logic') && (
+                                <>
+                                    <button
+                                        onClick={onAddDelayNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'delay');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <ClockIcon className="w-6 h-6" />
+                                        <span className="text-xs">Delay</span>
+                                    </button>
+                                    <button
+                                        onClick={onAddTimeWindowNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'time-window');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <ClockIcon className="w-6 h-6" />
+                                        <span className="text-xs">Ventana</span>
+                                    </button>
+                                    <button
+                                        onClick={onAddThresholdNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'threshold');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <div className="w-6 h-6 flex items-center justify-center font-bold text-xs border border-current rounded">#</div>
+                                        <span className="text-xs">Umbral</span>
+                                    </button>
+                                </>
+                            )}
 
-                        {/* Action Tools */}
-                        {(activeCategory === 'all' || activeCategory === 'actions') && (
-                            <>
-                                <button
-                                    onClick={onAddEmailNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'email');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <EnvelopeIcon className="w-6 h-6" />
-                                    <span className="text-xs">Email</span>
-                                </button>
-                                <button
-                                    onClick={onAddNotificationNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'notification');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <BellIcon className="w-6 h-6" />
-                                    <span className="text-xs">Notificación</span>
-                                </button>
-                                <button
-                                    onClick={onAddSoundNode}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        event.dataTransfer.setData('application/reactflow', 'sound');
-                                        event.dataTransfer.effectAllowed = 'move';
-                                    }}
-                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                >
-                                    <SpeakerWaveIcon className="w-6 h-6" />
-                                    <span className="text-xs">Sonido</span>
-                                </button>
-                            </>
-                        )}
+                            {/* Action Tools */}
+                            {(activeCategory === 'all' || activeCategory === 'actions') && (
+                                <>
+                                    <button
+                                        onClick={onAddEmailNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'email');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <EnvelopeIcon className="w-6 h-6" />
+                                        <span className="text-xs">Email</span>
+                                    </button>
+                                    <button
+                                        onClick={onAddNotificationNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'notification');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <BellIcon className="w-6 h-6" />
+                                        <span className="text-xs">Notificación</span>
+                                    </button>
+                                    <button
+                                        onClick={onAddSoundNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'sound');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                    >
+                                        <SpeakerWaveIcon className="w-6 h-6" />
+                                        <span className="text-xs">Sonido</span>
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -810,13 +812,6 @@ export default function TopologyControls({
                         className="w-full px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-medium transition-colors"
                     >
                         Guardar
-                    </button>
-
-                    <button
-                        onClick={onExport}
-                        className="w-full px-4 py-2 bg-background/50 hover:bg-accent border border-border rounded text-sm font-medium transition-colors"
-                    >
-                        Exportar JSON
                     </button>
                 </div>
 
