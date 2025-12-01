@@ -130,6 +130,16 @@ export default function TopologyControls({
         }
     };
 
+    const [activeCategory, setActiveCategory] = useState<'all' | 'monitoring' | 'triggers' | 'logic' | 'actions'>('all');
+
+    const categories = [
+        { id: 'all', label: 'Todos' },
+        { id: 'monitoring', label: 'Monitoreo' },
+        { id: 'triggers', label: 'Disparadores' },
+        { id: 'logic', label: 'Lógica' },
+        { id: 'actions', label: 'Acciones' },
+    ];
+
     return (
         <div
             className={`absolute right-0 top-0 h-full w-80 transition-transform duration-300 ease-in-out z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'
@@ -153,129 +163,169 @@ export default function TopologyControls({
                 <h2 className="text-lg font-semibold">Controles de Topología</h2>
 
                 {/* Herramientas */}
-                <div className="space-y-2">
+                <div className="space-y-3">
                     <label className="text-sm font-medium">Herramientas</label>
+
+                    {/* Category Filter */}
+                    <div className="flex flex-wrap gap-1.5">
+                        {categories.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setActiveCategory(cat.id as any)}
+                                className={`px-2.5 py-1 text-[10px] rounded-full border transition-all ${activeCategory === cat.id
+                                        ? "bg-primary text-primary-foreground border-primary"
+                                        : "bg-background/50 hover:bg-accent border-border text-muted-foreground"
+                                    }`}
+                            >
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
+
                     <div className="grid grid-cols-2 gap-2">
-                        <button
-                            onClick={onAddMonitoringNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'monitoring');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <ChartBarIcon className="w-6 h-6" />
-                            <span className="text-xs">Gráfico</span>
-                        </button>
-                        <button
-                            onClick={onAddActionNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'action');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <BoltIcon className="w-6 h-6" />
-                            <span className="text-xs">Acción</span>
-                        </button>
-                        <button
-                            onClick={onAddEmailNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'email');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <EnvelopeIcon className="w-6 h-6" />
-                            <span className="text-xs">Email</span>
-                        </button>
-                        <button
-                            onClick={onAddNotificationNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'notification');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <BellIcon className="w-6 h-6" />
-                            <span className="text-xs">Notificación</span>
-                        </button>
-                        <button
-                            onClick={onAddDelayNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'delay');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <ClockIcon className="w-6 h-6" />
-                            <span className="text-xs">Delay</span>
-                        </button>
-                        <button
-                            onClick={onAddSoundNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'sound');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <SpeakerWaveIcon className="w-6 h-6" />
-                            <span className="text-xs">Sonido</span>
-                        </button>
-                        <button
-                            onClick={onAddTrafficNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'traffic');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <GlobeAltIcon className="w-6 h-6" />
-                            <span className="text-xs">Tráfico</span>
-                        </button>
-                        <button
-                            onClick={onAddTrafficTriggerNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'traffic-trigger');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <FunnelIcon className="w-6 h-6" />
-                            <span className="text-xs">Trigger</span>
-                        </button>
-                        <button
-                            onClick={onAddTimeWindowNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'time-window');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <ClockIcon className="w-6 h-6" />
-                            <span className="text-xs">Ventana</span>
-                        </button>
-                        <button
-                            onClick={onAddThresholdNode}
-                            draggable
-                            onDragStart={(event) => {
-                                event.dataTransfer.setData('application/reactflow', 'threshold');
-                                event.dataTransfer.effectAllowed = 'move';
-                            }}
-                            className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                        >
-                            <div className="w-6 h-6 flex items-center justify-center font-bold text-xs border border-current rounded">#</div>
-                            <span className="text-xs">Umbral</span>
-                        </button>
+                        {/* Monitoring Tools */}
+                        {(activeCategory === 'all' || activeCategory === 'monitoring') && (
+                            <>
+                                <button
+                                    onClick={onAddMonitoringNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'monitoring');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <ChartBarIcon className="w-6 h-6" />
+                                    <span className="text-xs">Gráfico</span>
+                                </button>
+                                <button
+                                    onClick={onAddTrafficNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'traffic');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <GlobeAltIcon className="w-6 h-6" />
+                                    <span className="text-xs">Tráfico</span>
+                                </button>
+                            </>
+                        )}
+
+                        {/* Trigger Tools */}
+                        {(activeCategory === 'all' || activeCategory === 'triggers') && (
+                            <>
+                                <button
+                                    onClick={onAddActionNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'action');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <BoltIcon className="w-6 h-6" />
+                                    <span className="text-xs">Acción</span>
+                                </button>
+                                <button
+                                    onClick={onAddTrafficTriggerNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'traffic-trigger');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <FunnelIcon className="w-6 h-6" />
+                                    <span className="text-xs">Trigger</span>
+                                </button>
+                            </>
+                        )}
+
+                        {/* Logic Tools */}
+                        {(activeCategory === 'all' || activeCategory === 'logic') && (
+                            <>
+                                <button
+                                    onClick={onAddDelayNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'delay');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <ClockIcon className="w-6 h-6" />
+                                    <span className="text-xs">Delay</span>
+                                </button>
+                                <button
+                                    onClick={onAddTimeWindowNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'time-window');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <ClockIcon className="w-6 h-6" />
+                                    <span className="text-xs">Ventana</span>
+                                </button>
+                                <button
+                                    onClick={onAddThresholdNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'threshold');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <div className="w-6 h-6 flex items-center justify-center font-bold text-xs border border-current rounded">#</div>
+                                    <span className="text-xs">Umbral</span>
+                                </button>
+                            </>
+                        )}
+
+                        {/* Action Tools */}
+                        {(activeCategory === 'all' || activeCategory === 'actions') && (
+                            <>
+                                <button
+                                    onClick={onAddEmailNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'email');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <EnvelopeIcon className="w-6 h-6" />
+                                    <span className="text-xs">Email</span>
+                                </button>
+                                <button
+                                    onClick={onAddNotificationNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'notification');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <BellIcon className="w-6 h-6" />
+                                    <span className="text-xs">Notificación</span>
+                                </button>
+                                <button
+                                    onClick={onAddSoundNode}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData('application/reactflow', 'sound');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                >
+                                    <SpeakerWaveIcon className="w-6 h-6" />
+                                    <span className="text-xs">Sonido</span>
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
 
