@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -19,6 +19,7 @@ import {
 import { formatCL, formatTickCL } from "@/lib/time";
 import LogViewer from "@/components/LogViewer";
 import NetworkTrafficLog from "@/components/dashboard/NetworkTrafficLog";
+import DeviceDetails from "@/components/topology/DeviceDetails";
 
 type Point = { t: string; v: number };
 
@@ -40,6 +41,7 @@ import { useGroup } from "@/context/GroupContext";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { selectedGroup, initialized } = useGroup();
 
   const [jwt, setJwt] = useState<string | null>(null);
@@ -83,7 +85,13 @@ export default function DashboardPage() {
       try {
         const devs = await getDevices(jwt, selectedGroup.ID);
         setDevices(devs);
-        if (!device && devs.length) setDevice(devs[0]);
+
+        const deviceQuery = searchParams.get('device');
+        if (deviceQuery && devs.includes(deviceQuery)) {
+          setDevice(deviceQuery);
+        } else if (!device && devs.length) {
+          setDevice(devs[0]);
+        }
       } catch (e: any) {
         setErr(e?.message || "Error cargando dispositivos");
       } finally {
@@ -91,7 +99,7 @@ export default function DashboardPage() {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jwt, selectedGroup]);
+  }, [jwt, selectedGroup, searchParams]);
 
   useEffect(() => {
     if (!jwt || !device) return;
@@ -251,21 +259,11 @@ export default function DashboardPage() {
 
         {/* Info Dispositivo */}
         <div className="rounded-lg bg-card text-card-foreground p-4 ring-1 ring-border/50">
-          <div className="text-sm text-muted-foreground">Info Dispositivo</div>
-          <div className="text-sm font-semibold mt-1 space-y-1">
-            {last ? (
-              <>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground font-normal">OS:</span>
-                  <span>{last.os || "—"}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground font-normal">IP:</span>
-                  <span>{last.ip || "—"}</span>
-                </div>
-              </>
-            ) : "—"}
-          </div>
+          {jwt && device ? (
+            <DeviceDetails deviceId={device} jwt={jwt} />
+          ) : (
+            <div className="text-sm text-muted-foreground">Seleccione un dispositivo</div>
+          )}
         </div>
       </section>
 
