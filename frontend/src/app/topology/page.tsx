@@ -145,7 +145,7 @@ function TopologyEditor() {
                     }
                 });
 
-                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string; stats?: any }>();
+                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string }>();
 
                 // Mapear estados
                 Object.entries(stats).forEach(([device, data]: [string, any]) => {
@@ -170,8 +170,7 @@ function TopologyEditor() {
                     deviceUpdates.set(device, {
                         status: isActive ? "online" : "offline",
                         ip: data.ip,
-                        gateway: data.gateway,
-                        stats: data
+                        gateway: data.gateway
                     });
                 });
 
@@ -198,15 +197,13 @@ function TopologyEditor() {
                             }
 
                             // Verificar cambios
-                            // Always update if we have stats to ensure freshness
-                            if (currentData.status !== update.status || (update.ip && currentData.ip !== update.ip) || update.stats) {
+                            if (currentData.status !== update.status || (update.ip && currentData.ip !== update.ip)) {
                                 nextNodes[index] = {
                                     ...node,
                                     data: {
                                         ...currentData,
                                         status: update.status,
                                         ip: update.ip || currentData.ip,
-                                        stats: update.stats,
                                     }
                                 };
                                 nodesChanged = true;
@@ -1558,6 +1555,7 @@ function TopologyEditor() {
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}
                     onRename={handleRenameTopology}
+                    jwt={jwt}
                 />
             </div>
         </div>

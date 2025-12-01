@@ -5,8 +5,10 @@ import { createPortal } from "react-dom";
 import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
+import DeviceDetails from "./DeviceDetails";
 
 interface TopologyControlsProps {
+    jwt: string | null;
     devices: string[];
     topologies: Array<{ ID: number; Name: string }>;
     selectedTopology: number | null;
@@ -85,6 +87,7 @@ export default function TopologyControls({
     onUpdateNodeData,
     onDelete,
     onRename,
+    jwt,
 }: TopologyControlsProps) {
     const { notify } = useNotification();
     const [isOpen, setIsOpen] = useState(true);
@@ -431,48 +434,13 @@ export default function TopologyControls({
                             {selectedNode.type === 'traffic-trigger' && "Configuración de Traffic Trigger"}
                             {selectedNode.type === 'time-window' && "Configuración de Ventana de Tiempo"}
                             {selectedNode.type === 'threshold' && "Configuración de Umbral"}
-                            {selectedNode.type === 'device' && "Estadísticas del Dispositivo"}
+                            {selectedNode.type === 'device' && "Detalles del Dispositivo"}
                         </label>
 
                         <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">
-                            {/* Device Node Stats */}
-                            {selectedNode.type === 'device' && (
-                                <div className="space-y-2">
-                                    {selectedNode.data.stats ? (
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {METRIC_OPTIONS.map(opt => (
-                                                <div key={opt.value} className="bg-background/50 p-2 rounded border border-border">
-                                                    <div className="text-[10px] text-muted-foreground uppercase">{opt.label}</div>
-                                                    <div className="text-sm font-mono font-medium">
-                                                        {selectedNode.data.stats[opt.value] !== undefined
-                                                            ? (['cpu', 'ram', 'disk'].includes(opt.value)
-                                                                ? `${Number(selectedNode.data.stats[opt.value]).toFixed(1)}%`
-                                                                : opt.value === 'temp'
-                                                                    ? `${Number(selectedNode.data.stats[opt.value]).toFixed(1)}°C`
-                                                                    : Number(selectedNode.data.stats[opt.value]).toFixed(2))
-                                                            : 'N/A'}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            <div className="col-span-2 bg-background/50 p-2 rounded border border-border">
-                                                <div className="text-[10px] text-muted-foreground uppercase">Última Actualización</div>
-                                                <div className="text-xs font-mono">
-                                                    {selectedNode.data.stats.timestamp ? new Date(selectedNode.data.stats.timestamp).toLocaleString() : 'N/A'}
-                                                </div>
-                                            </div>
-                                            <div className="col-span-2 bg-background/50 p-2 rounded border border-border">
-                                                <div className="text-[10px] text-muted-foreground uppercase">IP Address</div>
-                                                <div className="text-xs font-mono">
-                                                    {selectedNode.data.ip || 'Unknown'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="text-xs text-muted-foreground italic text-center py-4">
-                                            Esperando datos de telemetría...
-                                        </div>
-                                    )}
-                                </div>
+                            {/* Device Details */}
+                            {selectedNode.type === 'device' && jwt && (
+                                <DeviceDetails deviceId={selectedNode.id} jwt={jwt} />
                             )}
 
                             {/* Monitoring Node Config */}
