@@ -6,6 +6,7 @@ import (
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/mem"
+	"github.com/shirou/gopsutil/v3/net"
 
 	"github.com/BenjaminAGH/nocturneagent/internal/domain"
 )
@@ -39,6 +40,13 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 		return domain.Metric{}, err
 	}
 
+	netStats, err := net.IOCounters(false)
+	var rx, tx uint64
+	if err == nil && len(netStats) > 0 {
+		rx = netStats[0].BytesRecv
+		tx = netStats[0].BytesSent
+	}
+
 	return domain.Metric{
 		DeviceName: c.deviceName,
 		IpAddress:  c.ipAddress,
@@ -53,5 +61,7 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 		DiskTotal:  diskInfo.Total,
 		DiskUsed:   diskInfo.Used,
 		DiskFree:   diskInfo.Free,
+		NetRxBytes: rx,
+		NetTxBytes: tx,
 	}, nil
 }

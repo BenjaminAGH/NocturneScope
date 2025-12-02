@@ -271,8 +271,8 @@ function TopologyEditor() {
                     let rxRate = 0;
                     let txRate = 0;
 
-                    const currentRx = data.net_rx_bytes || 0;
-                    const currentTx = data.net_tx_bytes || 0;
+                    const currentRx = data.net_rx || 0;
+                    const currentTx = data.net_tx || 0;
 
                     if (lastDeviceStats.current[device]) {
                         const last = lastDeviceStats.current[device];
