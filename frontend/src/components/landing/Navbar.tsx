@@ -234,7 +234,7 @@ export const Navbar = () => {
               >
                 <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-card py-2 shadow-xl ring-1 ring-border focus:outline-none">
                   <div className="px-4 py-2 border-b border-border/50 mb-1">
-                    <p className="text-xs font-medium text-muted-foreground">Mi Cuenta</p>
+                    <p className="text-xs font-medium text-muted-foreground">Mi Cuenta ({userRole})</p>
                   </div>
 
                   <Menu.Item>
