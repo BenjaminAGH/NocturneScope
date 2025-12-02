@@ -385,29 +385,24 @@ function DashboardContent() {
           </div>
         </div>
 
-        {/* Disk & Temp Row */}
+        {/* Disk Card */}
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
-          <div className="flex items-center gap-2 mb-2">
-            <CircleStackIcon className="w-5 h-5 text-emerald-500" />
-            <span className="text-sm font-medium text-muted-foreground">Almacenamiento</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <CircleStackIcon className="w-5 h-5 text-emerald-500" />
+              <span className="text-sm font-medium text-muted-foreground">Almacenamiento</span>
+            </div>
+            <span className="text-xl font-bold">{last?.disk?.toFixed(1) || "0"}%</span>
           </div>
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-2xl font-bold">{last?.disk?.toFixed(1) || "0"}%</div>
-              <div className="text-xs text-muted-foreground">
-                {last?.disk_total ? (
-                  <>
-                    {formatBytes(last.disk_used)} / {formatBytes(last.disk_total)}
-                  </>
-                ) : "Usado"}
-              </div>
-            </div>
-            <div className="h-10 w-1 bg-secondary rounded-full overflow-hidden">
-              <div
-                className="bg-emerald-500 w-full transition-all duration-500"
-                style={{ height: `${Math.min(last?.disk || 0, 100)}%`, marginTop: `${100 - Math.min(last?.disk || 0, 100)}%` }}
-              />
-            </div>
+          <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-emerald-500 h-full transition-all duration-500"
+              style={{ width: `${Math.min(last?.disk || 0, 100)}%` }}
+            />
+          </div>
+          <div className="mt-2 text-xs text-muted-foreground flex justify-between">
+            <span>Usado: {last?.disk_used ? formatBytes(last.disk_used) : "0 B"}</span>
+            <span>Total: {last?.disk_total ? formatBytes(last.disk_total) : "0 B"}</span>
           </div>
         </div>
 
