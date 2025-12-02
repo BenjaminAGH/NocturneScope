@@ -257,7 +257,7 @@ export const Navbar = () => {
                     )}
                   </Menu.Item>
 
-                  {userRole === "devadmin" && (
+                  {(userRole === "devadmin" || userRole === "devuser") && (
                     <Menu.Item>
                       {({ active }) => (
                         <Link

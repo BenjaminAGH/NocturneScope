@@ -14,9 +14,9 @@ import {
 
 interface UserProfile {
     ID: number;
-    username: string;
-    email: string;
-    role: string;
+    Username: string;
+    Email: string;
+    Role: string;
 }
 
 interface DeviceToken {
@@ -59,23 +59,12 @@ export default function AccountPage() {
 
     const loadData = async (token: string) => {
         try {
-            const { getUserProfile, listApiTokens, getGroups } = await import("@/lib/api/api");
+            const { getUserProfile } = await import("@/lib/api/api");
 
-            const [userData, tokensData, groupsData] = await Promise.all([
-                getUserProfile(token),
-                listApiTokens(token),
-                getGroups(token) // Assuming getGroups exists or we use listApiTokens to infer? No, we need groups.
-                // Wait, getGroups is not exported in api.ts? Let's check.
-                // If not, we might need to add it or skip groups for now.
-                // Based on Navbar, there is a GroupContext which loads groups.
-                // Let's assume we can fetch them or use context.
-                // For now, let's try to fetch if available, or just skip.
-            ]);
+            const userData = await getUserProfile(token);
 
             setUser(userData);
-            setUsername(userData.username);
-            // setDevices(tokensData);
-            // setGroups(groupsData); // We'll handle groups separately if needed
+            setUsername(userData.Username);
 
         } catch (error) {
             console.error("Error loading account data:", error);
@@ -167,7 +156,7 @@ export default function AccountPage() {
                         <div>
                             <label className="text-sm font-medium text-muted-foreground">Rol</label>
                             <div className="mt-1 p-2 bg-muted/50 rounded border border-border text-sm font-mono">
-                                {user?.role.toUpperCase()}
+                                {user?.Role.toUpperCase()}
                             </div>
                         </div>
 
@@ -175,7 +164,7 @@ export default function AccountPage() {
                             <label className="text-sm font-medium text-muted-foreground">Email</label>
                             <div className="mt-1 p-2 bg-muted/50 rounded border border-border text-sm flex items-center gap-2">
                                 <EnvelopeIcon className="w-4 h-4 text-muted-foreground" />
-                                {user?.email}
+                                {user?.Email}
                             </div>
                             <p className="text-[10px] text-muted-foreground mt-1">El email no se puede cambiar.</p>
                         </div>
@@ -218,7 +207,7 @@ export default function AccountPage() {
                                         type="button"
                                         onClick={() => {
                                             setIsEditing(false);
-                                            setUsername(user?.username || "");
+                                            setUsername(user?.Username || "");
                                             setPassword("");
                                             setConfirmPassword("");
                                         }}
