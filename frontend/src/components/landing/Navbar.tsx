@@ -41,8 +41,13 @@ export const Navbar = () => {
       import("@/lib/api/api").then(({ getUserProfile }) => {
         getUserProfile(token)
           .then(data => {
+            console.log("User Profile Data:", data);
             if (data.Role) {
+              console.log("Setting user role to:", data.Role);
               setUserRole(data.Role);
+            } else if (data.role) {
+              console.log("Setting user role to (lowercase):", data.role);
+              setUserRole(data.role);
             }
           })
           .catch(() => {
