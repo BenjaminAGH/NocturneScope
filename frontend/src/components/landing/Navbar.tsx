@@ -235,12 +235,12 @@ export const Navbar = () => {
                   <Menu.Item>
                     {({ active }) => (
                       <Link
-                        href="/tokens"
+                        href="/account"
                         className={`${active ? "bg-muted" : ""
                           } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
                       >
-                        <KeyIcon className="w-4 h-4" />
-                        Tokens API
+                        <UserCircleIcon className="w-4 h-4" />
+                        Administrar Cuenta
                       </Link>
                     )}
                   </Menu.Item>

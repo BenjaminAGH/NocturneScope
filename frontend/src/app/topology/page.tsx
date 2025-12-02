@@ -44,6 +44,7 @@ import DeviceDetailsNode, { DeviceDetailsNodeData } from "@/components/topology/
 import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
 import { useGroup } from "@/context/GroupContext";
+import { migrateTopology } from "@/lib/topologyMigration";
 
 const nodeTypes = {
     device: DeviceNode,
@@ -1550,7 +1551,11 @@ function TopologyEditor() {
 
             try {
                 const topo = await getTopology(jwt, id);
-                const data: TopologyData = JSON.parse(topo.Data);
+                const rawData: TopologyData = JSON.parse(topo.Data);
+
+                // Migrar datos antiguos
+                const { nodes: migratedNodes, edges: migratedEdges } = migrateTopology(rawData.nodes, rawData.edges);
+                const data = { nodes: migratedNodes, edges: migratedEdges };
 
                 // Reconstruir connectedDevice basado en edges
                 const edges = data.edges;

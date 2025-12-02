@@ -281,3 +281,10 @@ export async function getUser(jwt: string) {
 export async function getNetworkTraffic(jwt: string, deviceName: string) {
   return apiFetch(`${BASE}/network-traffic?device=${encodeURIComponent(deviceName)}`, { cache: "no-store" }, jwt) as Promise<any[]>;
 }
+export async function updateUser(jwt: string, id: number, data: { username?: string; email?: string; password?: string }) {
+  return apiFetch(`${BASE}/users/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  }, jwt);
+}

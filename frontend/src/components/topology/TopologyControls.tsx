@@ -767,9 +767,19 @@ export default function TopologyControls({
                     </div>
                 )}
 
+                {/* Separator */}
+                <div className="relative py-2">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">Dispositivos</span>
+                    </div>
+                </div>
+
                 {/* Dispositivos disponibles */}
                 <div className="space-y-2 flex-1 min-h-0 flex flex-col">
-                    <label className="text-sm font-medium">Dispositivos Disponibles</label>
+                    <label className="text-sm font-medium">Disponibles</label>
                     <div className="space-y-1 overflow-y-auto flex-1 pr-2">
                         {devices.length === 0 ? (
                             <p className="text-xs text-muted-foreground">No hay dispositivos</p>
