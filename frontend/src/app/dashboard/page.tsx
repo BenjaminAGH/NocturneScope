@@ -342,10 +342,10 @@ function DashboardContent() {
                   return (
                     <div
                       key={core.id}
-                      className={`aspect-square rounded-sm ${bgColor} transition-colors duration-500 flex items-center justify-center relative cursor-help`}
+                      className={`aspect-square rounded-sm ${bgColor} transition-colors duration-500 flex items-center justify-center relative cursor-default`}
                       title={`Core ${core.id.replace('cpu_core_', '')}: ${val.toFixed(1)}%`}
                     >
-                      <span className="text-[6px] font-mono text-white font-bold leading-none">
+                      <span className="text-[9px] font-mono text-white font-bold leading-none select-none">
                         {val.toFixed(0)}
                       </span>
                     </div>
