@@ -72,7 +72,7 @@ func (s *MetricService) LastStats(ctx context.Context, device string) (map[strin
 		return nil, err
 	}
 
-	fields := []string{"cpu", "ram", "ram_total", "ram_used", "ram_free", "disk", "net_rx", "net_tx", "temp", "uptime"}
+	fields := []string{"cpu", "ram", "ram_total", "ram_used", "ram_free", "disk", "disk_total", "disk_used", "disk_free", "net_rx", "net_tx", "temp", "uptime"}
 
 	flux := fmt.Sprintf(`
 from(bucket: "%[1]s")
@@ -162,6 +162,7 @@ from(bucket: "%s")
   |> filter(fn: (r) => r._measurement == "system_metrics" and r.device == "%s" and r._field == "%s")
   |> aggregateWindow(every: %s, fn: %s, createEmpty: false)
   |> keep(columns: ["_time","_value"])
+  |> sort(columns: ["_time"])
 `, s.writer.Bucket(), r, device, field, every, fn)
 
 	res, err := q.Query(ctx, flux)

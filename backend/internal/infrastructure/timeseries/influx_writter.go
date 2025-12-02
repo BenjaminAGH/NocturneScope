@@ -82,6 +82,15 @@ func (w *InfluxWriter) WriteMetric(m domain.Metric) error {
 	if m.DiskUsage != 0 {
 		fields["disk"] = m.DiskUsage
 	}
+	if m.DiskTotal != 0 {
+		fields["disk_total"] = float64(m.DiskTotal)
+	}
+	if m.DiskUsed != 0 {
+		fields["disk_used"] = float64(m.DiskUsed)
+	}
+	if m.DiskFree != 0 {
+		fields["disk_free"] = float64(m.DiskFree)
+	}
 
 	if m.NetRxBytes != 0 {
 		fields["net_rx"] = float64(m.NetRxBytes)

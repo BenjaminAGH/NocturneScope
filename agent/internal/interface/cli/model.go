@@ -305,7 +305,7 @@ func (m Model) View() string {
 			renderMetricRow("OS", m.lastM.OS),
 			renderMetricRow("CPU", fmt.Sprintf("%.2f%%", m.lastM.CPUUsage)),
 			renderMetricRow("RAM", fmt.Sprintf("%.2f%% (%.2f/%.2f GB)", m.lastM.RAMUsage, float64(m.lastM.RAMUsed)/1024/1024/1024, float64(m.lastM.RAMTotal)/1024/1024/1024)),
-			renderMetricRow("Disk", fmt.Sprintf("%.2f%%", m.lastM.DiskUsage)),
+			renderMetricRow("Disk", fmt.Sprintf("%.2f%% (%.2f/%.2f GB)", m.lastM.DiskUsage, float64(m.lastM.DiskUsed)/1024/1024/1024, float64(m.lastM.DiskTotal)/1024/1024/1024)),
 			renderMetricRow("Temp", fmt.Sprintf("%.1f°C", m.lastM.Temperature)),
 			renderMetricRow("Net RX", fmt.Sprintf("%d B", m.lastM.NetRxBytes)),
 			renderMetricRow("Net TX", fmt.Sprintf("%d B", m.lastM.NetTxBytes)),
@@ -318,9 +318,9 @@ func (m Model) View() string {
 			// Grid layout: 4 cores per row
 			var currentRow string
 			for i, v := range m.lastM.CPUPerCore {
-				coreStr := fmt.Sprintf("#%d: %s", i, metricValueStyle.Render(fmt.Sprintf("%.1f%%", v)))
+				coreStr := fmt.Sprintf("#%d: %s ", i, metricValueStyle.Render(fmt.Sprintf("%.1f%%", v)))
 				// Pad to fixed width
-				coreStr = fmt.Sprintf("%-15s", coreStr)
+				coreStr = fmt.Sprintf("%-16s", coreStr)
 
 				currentRow += coreStr
 				if (i+1)%4 == 0 {

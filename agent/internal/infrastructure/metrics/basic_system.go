@@ -50,5 +50,8 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 		RAMUsed:    memInfo.Used,
 		RAMFree:    memInfo.Free,
 		DiskUsage:  diskInfo.UsedPercent,
+		DiskTotal:  diskInfo.Total,
+		DiskUsed:   diskInfo.Used,
+		DiskFree:   diskInfo.Free,
 	}, nil
 }

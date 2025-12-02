@@ -118,6 +118,15 @@ func merge(dst, src domain.Metric) domain.Metric {
 	if src.DiskUsage != 0 {
 		dst.DiskUsage = src.DiskUsage
 	}
+	if src.DiskTotal != 0 {
+		dst.DiskTotal = src.DiskTotal
+	}
+	if src.DiskUsed != 0 {
+		dst.DiskUsed = src.DiskUsed
+	}
+	if src.DiskFree != 0 {
+		dst.DiskFree = src.DiskFree
+	}
 	if len(src.CPUPerCore) > 0 {
 		dst.CPUPerCore = src.CPUPerCore
 	}

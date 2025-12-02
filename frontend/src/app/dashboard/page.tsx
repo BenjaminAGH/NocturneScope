@@ -122,7 +122,10 @@ function DashboardContent() {
           getTimeseries(jwt, { device, field, range, agg, interval }),
         ]);
         setLast(lastStats);
-        setPoints(ts.points || []);
+        const sortedPoints = (ts.points || []).sort((a: Point, b: Point) =>
+          new Date(a.t).getTime() - new Date(b.t).getTime()
+        );
+        setPoints(sortedPoints);
       } catch (e: any) {
         setErr(e?.message || "Error cargando métricas");
       } finally {
@@ -391,7 +394,13 @@ function DashboardContent() {
           <div className="flex items-end justify-between">
             <div>
               <div className="text-2xl font-bold">{last?.disk?.toFixed(1) || "0"}%</div>
-              <div className="text-xs text-muted-foreground">Usado</div>
+              <div className="text-xs text-muted-foreground">
+                {last?.disk_total ? (
+                  <>
+                    {formatBytes(last.disk_used)} / {formatBytes(last.disk_total)}
+                  </>
+                ) : "Usado"}
+              </div>
             </div>
             <div className="h-10 w-1 bg-secondary rounded-full overflow-hidden">
               <div
