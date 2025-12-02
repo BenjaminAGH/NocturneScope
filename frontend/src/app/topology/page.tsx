@@ -271,26 +271,35 @@ function TopologyEditor() {
                     let rxRate = 0;
                     let txRate = 0;
 
+                    const currentRx = data.net_rx_bytes || 0;
+                    const currentTx = data.net_tx_bytes || 0;
+
                     if (lastDeviceStats.current[device]) {
                         const last = lastDeviceStats.current[device];
                         const timeDelta = (now - last.timestamp); // seconds
-                        if (timeDelta > 0 && data.net_rx_bytes >= last.rx && data.net_tx_bytes >= last.tx) {
-                            rxRate = (data.net_rx_bytes - last.rx) / timeDelta;
-                            txRate = (data.net_tx_bytes - last.tx) / timeDelta;
+
+                        // Handle counter reset or normal increment
+                        if (timeDelta > 0) {
+                            if (currentRx >= last.rx && currentTx >= last.tx) {
+                                rxRate = (currentRx - last.rx) / timeDelta;
+                                txRate = (currentTx - last.tx) / timeDelta;
+                            } else {
+                                // Counter reset (e.g. device reboot), assume rate is current value / timeDelta (approx) or just 0
+                                // For now, let's just ignore this interval to avoid spikes
+                                console.warn(`Counter reset detected for ${device}`);
+                            }
                         }
                     }
 
-                    // Update last stats
-                    if (data.net_rx_bytes !== undefined && data.net_tx_bytes !== undefined) {
-                        lastDeviceStats.current[device] = {
-                            timestamp: now,
-                            rx: data.net_rx_bytes,
-                            tx: data.net_tx_bytes
-                        };
-                    }
+                    // Update last stats always (treating missing as 0)
+                    lastDeviceStats.current[device] = {
+                        timestamp: now,
+                        rx: currentRx,
+                        tx: currentTx
+                    };
 
                     // Debug logging
-                    // console.log(`Device: ${device}, timestamp: ${data.timestamp}, timeDiff: ${timeDiff}s, isActive: ${isActive}, rxRate: ${rxRate}, txRate: ${txRate}`);
+                    // console.log(`Device: ${device}, RX: ${currentRx}, TX: ${currentTx}, Rate: ${rxRate.toFixed(1)}/${txRate.toFixed(1)}`);
 
                     deviceUpdates.set(device, {
                         status: isActive ? "online" : "offline",
