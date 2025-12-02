@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 import DeviceDetails from "./DeviceDetails";
@@ -784,9 +784,15 @@ export default function TopologyControls({
                                         event.dataTransfer.setData('device/name', device);
                                         event.dataTransfer.effectAllowed = 'move';
                                     }}
-                                    className="w-full text-left px-3 py-2 text-sm bg-background/50 hover:bg-accent rounded border border-border transition-colors cursor-grab active:cursor-grabbing"
+                                    className="w-full group flex items-center gap-3 p-2.5 bg-card/50 hover:bg-accent border border-border rounded-lg transition-all shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing"
                                 >
-                                    {device}
+                                    <div className="p-2 bg-primary/10 rounded-md group-hover:bg-primary/20 transition-colors">
+                                        <ComputerDesktopIcon className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div className="flex-1 text-left">
+                                        <div className="text-sm font-medium leading-none truncate">{device}</div>
+                                        <div className="text-[10px] text-muted-foreground mt-1">Arrastra para agregar</div>
+                                    </div>
                                 </button>
                             ))
                         )}

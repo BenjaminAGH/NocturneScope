@@ -403,8 +403,8 @@ function DashboardContent() {
             />
           </div>
           <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-            <span>Total: {last?.disk_total ? formatBytes(last.disk_total) : "0 B"}</span>
             <span>Usado: {last?.disk_used ? formatBytes(last.disk_used) : "0 B"}</span>
+            <span>Total: {last?.disk_total ? formatBytes(last.disk_total) : "0 B"}</span>
           </div>
         </div>
 
