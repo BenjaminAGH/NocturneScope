@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 import DeviceDetails from "./DeviceDetails";
@@ -239,7 +239,7 @@ export default function TopologyControls({
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                                         title="Muestra información detallada (OS, IP, Estado) del dispositivo conectado en el canvas."
                                     >
-                                        <ChartBarIcon className="w-6 h-6" />
+                                        <InformationCircleIcon className="w-6 h-6" />
                                         <span className="text-xs">Detalles</span>
                                     </button>
                                     <button
@@ -316,7 +316,7 @@ export default function TopologyControls({
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                                         title="Permite el paso de señales solo dentro de un horario específico configurado."
                                     >
-                                        <ClockIcon className="w-6 h-6" />
+                                        <CalendarDaysIcon className="w-6 h-6" />
                                         <span className="text-xs">Ventana</span>
                                     </button>
                                     <button
@@ -329,7 +329,7 @@ export default function TopologyControls({
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
                                         title="Requiere que una señal se repita X veces en un tiempo dado antes de activarse."
                                     >
-                                        <div className="w-6 h-6 flex items-center justify-center font-bold text-xs border border-current rounded">#</div>
+                                        <HashtagIcon className="w-6 h-6" />
                                         <span className="text-xs">Umbral</span>
                                     </button>
                                 </>

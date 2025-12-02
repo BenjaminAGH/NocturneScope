@@ -28,7 +28,9 @@ import {
   ClockIcon,
   GlobeAltIcon,
   CircleStackIcon,
-  FireIcon
+  FireIcon,
+  ArrowDownIcon,
+  ArrowUpIcon
 } from "@heroicons/react/24/outline";
 
 type Point = { t: string; v: number };
@@ -401,8 +403,8 @@ function DashboardContent() {
             />
           </div>
           <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-            <span>Usado: {last?.disk_used ? formatBytes(last.disk_used) : "0 B"}</span>
             <span>Total: {last?.disk_total ? formatBytes(last.disk_total) : "0 B"}</span>
+            <span>Usado: {last?.disk_used ? formatBytes(last.disk_used) : "0 B"}</span>
           </div>
         </div>
 
@@ -426,16 +428,35 @@ function DashboardContent() {
             <span className="text-sm font-medium text-muted-foreground">Tráfico de Red</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-3 bg-secondary/50 rounded-lg">
-              <div className="text-xs text-muted-foreground mb-1">Descarga (RX)</div>
-              <div className="text-lg font-mono font-semibold">
-                {last?.net_rx ? (last.net_rx / 1024).toFixed(2) : "0"} KB/s
+            <div className="relative overflow-hidden rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 flex items-center gap-4">
+              <div className="p-2 bg-blue-500/20 rounded-full">
+                <ArrowDownIcon className="w-6 h-6 text-blue-500" />
+              </div>
+              <div>
+                <div className="text-xs font-medium text-blue-500 mb-0.5">Descarga (RX)</div>
+                <div className="text-xl font-bold font-mono text-foreground">
+                  {last?.net_rx ? formatBytes(last.net_rx) : "0 B"}/s
+                </div>
+              </div>
+              {/* Background decoration */}
+              <div className="absolute -right-4 -bottom-4 opacity-10">
+                <ArrowDownIcon className="w-24 h-24 text-blue-500" />
               </div>
             </div>
-            <div className="p-3 bg-secondary/50 rounded-lg">
-              <div className="text-xs text-muted-foreground mb-1">Subida (TX)</div>
-              <div className="text-lg font-mono font-semibold">
-                {last?.net_tx ? (last.net_tx / 1024).toFixed(2) : "0"} KB/s
+
+            <div className="relative overflow-hidden rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-4 flex items-center gap-4">
+              <div className="p-2 bg-indigo-500/20 rounded-full">
+                <ArrowUpIcon className="w-6 h-6 text-indigo-500" />
+              </div>
+              <div>
+                <div className="text-xs font-medium text-indigo-500 mb-0.5">Subida (TX)</div>
+                <div className="text-xl font-bold font-mono text-foreground">
+                  {last?.net_tx ? formatBytes(last.net_tx) : "0 B"}/s
+                </div>
+              </div>
+              {/* Background decoration */}
+              <div className="absolute -right-4 -bottom-4 opacity-10">
+                <ArrowUpIcon className="w-24 h-24 text-indigo-500" />
               </div>
             </div>
           </div>
