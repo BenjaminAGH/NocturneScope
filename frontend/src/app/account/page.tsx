@@ -14,9 +14,9 @@ import {
 
 interface UserProfile {
     ID: number;
-    Username: string;
-    Email: string;
-    Role: string;
+    username: string;
+    email: string;
+    role: string;
 }
 
 interface DeviceToken {
@@ -73,8 +73,8 @@ export default function AccountPage() {
             ]);
 
             setUser(userData);
-            setUsername(userData.Username);
-            setDevices(tokensData);
+            setUsername(userData.username);
+            // setDevices(tokensData);
             // setGroups(groupsData); // We'll handle groups separately if needed
 
         } catch (error) {
@@ -167,7 +167,7 @@ export default function AccountPage() {
                         <div>
                             <label className="text-sm font-medium text-muted-foreground">Rol</label>
                             <div className="mt-1 p-2 bg-muted/50 rounded border border-border text-sm font-mono">
-                                {user?.Role.toUpperCase()}
+                                {user?.role.toUpperCase()}
                             </div>
                         </div>
 
@@ -175,7 +175,7 @@ export default function AccountPage() {
                             <label className="text-sm font-medium text-muted-foreground">Email</label>
                             <div className="mt-1 p-2 bg-muted/50 rounded border border-border text-sm flex items-center gap-2">
                                 <EnvelopeIcon className="w-4 h-4 text-muted-foreground" />
-                                {user?.Email}
+                                {user?.email}
                             </div>
                             <p className="text-[10px] text-muted-foreground mt-1">El email no se puede cambiar.</p>
                         </div>
@@ -218,7 +218,7 @@ export default function AccountPage() {
                                         type="button"
                                         onClick={() => {
                                             setIsEditing(false);
-                                            setUsername(user?.Username || "");
+                                            setUsername(user?.username || "");
                                             setPassword("");
                                             setConfirmPassword("");
                                         }}
@@ -238,63 +238,7 @@ export default function AccountPage() {
                     </form>
                 </div>
 
-                {/* Devices Section */}
-                <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold flex items-center gap-2 mb-6">
-                        <KeyIcon className="w-5 h-5 text-primary" />
-                        Dispositivos y Tokens
-                    </h2>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
-                                <tr>
-                                    <th className="px-4 py-3 rounded-l-lg">Nombre</th>
-                                    <th className="px-4 py-3">Dispositivo</th>
-                                    <th className="px-4 py-3">Estado</th>
-                                    <th className="px-4 py-3">Creado</th>
-                                    <th className="px-4 py-3 rounded-r-lg text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border/50">
-                                {devices.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                                            No tienes dispositivos asociados.
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    devices.map((device) => (
-                                        <tr key={device.ID} className="hover:bg-muted/30 transition-colors">
-                                            <td className="px-4 py-3 font-medium">{device.Name}</td>
-                                            <td className="px-4 py-3 text-muted-foreground">{device.DeviceName || "-"}</td>
-                                            <td className="px-4 py-3">
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${device.Status === 'online'
-                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                                        : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
-                                                    }`}>
-                                                    {device.Status === 'online' ? 'Online' : 'Offline'}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3 text-muted-foreground">
-                                                {new Date(device.CreatedAt).toLocaleDateString()}
-                                            </td>
-                                            <td className="px-4 py-3 text-right">
-                                                <button
-                                                    onClick={() => handleDeleteDevice(device.ID)}
-                                                    className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
-                                                    title="Eliminar dispositivo y revocar token"
-                                                >
-                                                    <TrashIcon className="w-4 h-4" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
                 {/* Groups Section (Read Only for now based on context) */}
                 {/* We can use the GroupContext to show groups if we want, or fetch them. */}
