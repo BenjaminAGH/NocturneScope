@@ -294,7 +294,7 @@ function DashboardContent() {
           <div className="mt-4 space-y-1">
             <div className="text-2xl font-bold truncate" title={device}>{device || "—"}</div>
             <div className="text-xs text-muted-foreground truncate">
-              {last?.os_name || last?.platform || "Sistema Desconocido"} {last?.os_version || ""}
+              {last?.os || last?.os_name || last?.platform || "Sistema Desconocido"} {last?.os_version || ""}
             </div>
           </div>
         </div>
