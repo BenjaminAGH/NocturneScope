@@ -48,10 +48,11 @@ func Register(
 	protected.Get("/api-tokens", apiTokenHandler.List)
 	protected.Delete("/api-tokens/:id", apiTokenHandler.Delete)
 
-	RegisterUserRoutes(protected, userService)
 	userHandler := handlers.NewUserHandler(userService)
 	protected.Put("/users/me/last-topology", userHandler.UpdateLastTopology)
 	protected.Get("/users/me", userHandler.Me)
+
+	RegisterUserRoutes(protected, userService)
 
 	// topologías del usuario
 	RegisterTopologyRoutes(protected, topologyService)
