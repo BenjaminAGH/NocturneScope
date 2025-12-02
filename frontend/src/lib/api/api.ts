@@ -288,3 +288,7 @@ export async function updateUser(jwt: string, id: number, data: { username?: str
     body: JSON.stringify(data),
   }, jwt);
 }
+
+export async function getGroups(jwt: string) {
+  return apiFetch(`${BASE}/device-groups`, { cache: "no-store" }, jwt);
+}
