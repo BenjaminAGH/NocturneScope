@@ -101,6 +101,7 @@ function TopologyEditor() {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     const nodeIdCounter = useRef(0);
+    const lastDeviceStats = useRef<Record<string, { timestamp: number, rx: number, tx: number }>>({});
 
     // Undo/Redo State
     const [past, setPast] = useState<{ nodes: Node[], edges: Edge[] }[]>([]);
@@ -250,15 +251,12 @@ function TopologyEditor() {
                     }
                 });
 
-                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string }>();
+                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string; rxRate?: number; txRate?: number }>();
 
                 // Mapear estados
                 Object.entries(stats).forEach(([device, data]: [string, any]) => {
                     const now = Date.now() / 1000;
                     const lastSeen = data.timestamp ? new Date(data.timestamp).getTime() / 1000 : 0;
-                    // El timestamp viene como string ISO8601 desde Go/JSON
-                    // Ojo: si data.timestamp ya es un objeto Date o número, ajustar.
-                    // Asumimos string ISO por defecto en JSON.
 
                     // Mejor validación del timestamp
                     let timeDiff = 999999;
@@ -269,13 +267,37 @@ function TopologyEditor() {
 
                     const isActive = timeDiff < 300; // 5 minutos
 
+                    // Calculate Traffic Rates
+                    let rxRate = 0;
+                    let txRate = 0;
+
+                    if (lastDeviceStats.current[device]) {
+                        const last = lastDeviceStats.current[device];
+                        const timeDelta = (now - last.timestamp); // seconds
+                        if (timeDelta > 0 && data.net_rx_bytes >= last.rx && data.net_tx_bytes >= last.tx) {
+                            rxRate = (data.net_rx_bytes - last.rx) / timeDelta;
+                            txRate = (data.net_tx_bytes - last.tx) / timeDelta;
+                        }
+                    }
+
+                    // Update last stats
+                    if (data.net_rx_bytes !== undefined && data.net_tx_bytes !== undefined) {
+                        lastDeviceStats.current[device] = {
+                            timestamp: now,
+                            rx: data.net_rx_bytes,
+                            tx: data.net_tx_bytes
+                        };
+                    }
+
                     // Debug logging
-                    console.log(`Device: ${device}, timestamp: ${data.timestamp}, timeDiff: ${timeDiff}s, isActive: ${isActive}`);
+                    // console.log(`Device: ${device}, timestamp: ${data.timestamp}, timeDiff: ${timeDiff}s, isActive: ${isActive}, rxRate: ${rxRate}, txRate: ${txRate}`);
 
                     deviceUpdates.set(device, {
                         status: isActive ? "online" : "offline",
                         ip: data.ip,
-                        gateway: data.gateway
+                        gateway: data.gateway,
+                        rxRate,
+                        txRate
                     });
                 });
 
@@ -283,7 +305,7 @@ function TopologyEditor() {
                 // Actualizar nodos
                 setNodes(currentNodes => {
                     const nextNodes = [...currentNodes];
-                    const gatewaysFound = new Map<string, { ip: string; devices: string[] }>();
+                    const gatewaysFound = new Map<string, { ip: string; devices: string[]; rxRate: number; txRate: number }>();
                     let nodesChanged = false;
                     const currentNodesSnapshot = [...currentNodes]; // Para uso en edges
 
@@ -296,9 +318,12 @@ function TopologyEditor() {
                             // Recolectar info de gateway
                             if (update.gateway) {
                                 if (!gatewaysFound.has(update.gateway)) {
-                                    gatewaysFound.set(update.gateway, { ip: update.gateway, devices: [] });
+                                    gatewaysFound.set(update.gateway, { ip: update.gateway, devices: [], rxRate: 0, txRate: 0 });
                                 }
-                                gatewaysFound.get(update.gateway)?.devices.push(node.id);
+                                const gw = gatewaysFound.get(update.gateway)!;
+                                gw.devices.push(node.id);
+                                gw.rxRate += update.rxRate || 0;
+                                gw.txRate += update.txRate || 0;
                             }
 
                             // Verificar cambios
@@ -325,6 +350,9 @@ function TopologyEditor() {
                                 n => n.type === 'router' && (n.data as RouterNodeData).gatewayIP === gwIP
                             )?.id;
 
+                            const deviceCount = gwInfo.devices.length;
+                            const deletable = deviceCount === 0;
+
                             if (!routerNodeId) {
                                 routerNodeId = `router-${gwIP.replace(/\./g, '-')}`;
                                 const firstDevice = finalNodes.find(n => n.id === gwInfo.devices[0]);
@@ -334,10 +362,13 @@ function TopologyEditor() {
                                     id: routerNodeId,
                                     type: 'router',
                                     position,
+                                    deletable,
                                     data: {
                                         gatewayIP: gwIP,
                                         label: `Router ${gwIP}`,
-                                        deviceCount: gwInfo.devices.length
+                                        deviceCount,
+                                        rxRate: gwInfo.rxRate,
+                                        txRate: gwInfo.txRate
                                     } as RouterNodeData
                                 });
                                 nodesChanged = true;
@@ -346,10 +377,23 @@ function TopologyEditor() {
                                 if (idx !== -1) {
                                     const rNode = finalNodes[idx];
                                     const rData = rNode.data as RouterNodeData;
-                                    if (rData.deviceCount !== gwInfo.devices.length) {
+
+                                    // Check if we need to update
+                                    if (
+                                        rData.deviceCount !== deviceCount ||
+                                        rData.rxRate !== gwInfo.rxRate ||
+                                        rData.txRate !== gwInfo.txRate ||
+                                        rNode.deletable !== deletable
+                                    ) {
                                         finalNodes[idx] = {
                                             ...rNode,
-                                            data: { ...rData, deviceCount: gwInfo.devices.length }
+                                            deletable,
+                                            data: {
+                                                ...rData,
+                                                deviceCount,
+                                                rxRate: gwInfo.rxRate,
+                                                txRate: gwInfo.txRate
+                                            }
                                         };
                                         nodesChanged = true;
                                     }
