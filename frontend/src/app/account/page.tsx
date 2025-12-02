@@ -136,9 +136,10 @@ export default function AccountPage() {
                 </div>
 
                 {/* Profile Section */}
-                <div className="relative overflow-hidden bg-card/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
-                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-                    <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="relative overflow-hidden bg-card border border-border rounded-xl p-8 shadow-sm">
+                    {/* Decorative background elements using theme colors */}
+                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
 
                     <div className="relative z-10">
                         <div className="flex items-center justify-between mb-8">
@@ -162,15 +163,15 @@ export default function AccountPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Rol</label>
-                                    <div className="px-4 py-3 bg-background/50 border border-border/50 rounded-xl text-sm font-mono text-foreground/80 flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                    <div className="px-4 py-3 bg-muted/30 border border-border rounded-xl text-sm font-mono text-foreground flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-primary"></div>
                                         {user?.Role.toUpperCase()}
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email</label>
-                                    <div className="px-4 py-3 bg-background/50 border border-border/50 rounded-xl text-sm text-foreground/80 flex items-center gap-2 overflow-hidden">
+                                    <div className="px-4 py-3 bg-muted/30 border border-border rounded-xl text-sm text-foreground flex items-center gap-2 overflow-hidden">
                                         <EnvelopeIcon className="w-4 h-4 text-muted-foreground shrink-0" />
                                         <span className="truncate">{user?.Email}</span>
                                     </div>
@@ -182,20 +183,20 @@ export default function AccountPage() {
                                 <input
                                     type="text"
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 bg-background/50 border border-border/50 rounded-xl text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none disabled:opacity-60 disabled:cursor-not-allowed"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                 />
                             </div>
 
                             {isEditing && (
-                                <div className="space-y-6 pt-6 border-t border-border/50 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div className="space-y-6 pt-6 border-t border-border animate-in fade-in slide-in-from-top-4 duration-300">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nueva Contraseña</label>
                                             <input
                                                 type="password"
-                                                className="w-full px-4 py-3 bg-background/50 border border-border/50 rounded-xl text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                                                className="w-full px-4 py-3 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
                                                 placeholder="••••••••"
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
@@ -205,7 +206,7 @@ export default function AccountPage() {
                                             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Confirmar Contraseña</label>
                                             <input
                                                 type="password"
-                                                className="w-full px-4 py-3 bg-background/50 border border-border/50 rounded-xl text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                                                className="w-full px-4 py-3 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
                                                 placeholder="••••••••"
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
