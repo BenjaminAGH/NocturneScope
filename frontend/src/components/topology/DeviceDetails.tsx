@@ -152,9 +152,10 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                         <span className="text-[10px] uppercase">Sistema Operativo</span>
                     </div>
                     <div className="text-xs truncate">
-                        {stats.os_name || stats.platform || "Desconocido"} {stats.os_version || ""}
+                        {stats.os || stats.os_name || stats.platform || "Desconocido"} {stats.os_version || ""}
                     </div>
                 </div>
+
 
                 {/* Last Seen */}
                 <div className="col-span-2 p-2 bg-muted/30 rounded border border-border space-y-1">
@@ -247,6 +248,6 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
