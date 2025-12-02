@@ -342,7 +342,7 @@ function TopologyEditor() {
                     });
 
                     // B. Lógica de Gateways (Router Nodes)
-                    if (autoDetectGateways && gatewaysFound.size > 0) {
+                    if (autoDetectGateways) {
                         const finalNodes = [...nextNodes];
 
                         gatewaysFound.forEach((gwInfo, gwIP) => {
@@ -400,6 +400,21 @@ function TopologyEditor() {
                                 }
                             }
                         });
+
+                        // 2. Remove stale gateways (Routers with no devices)
+                        const activeGatewayIPs = new Set(gatewaysFound.keys());
+                        const nodesToRemoveIndices = finalNodes
+                            .map((n, idx) => ({ n, idx }))
+                            .filter(({ n }) => n.type === 'router' && !activeGatewayIPs.has((n.data as RouterNodeData).gatewayIP))
+                            .map(({ idx }) => idx)
+                            .sort((a, b) => b - a); // Sort descending to remove from end
+
+                        if (nodesToRemoveIndices.length > 0) {
+                            nodesToRemoveIndices.forEach(idx => {
+                                finalNodes.splice(idx, 1);
+                            });
+                            nodesChanged = true;
+                        }
 
                         if (nodesChanged) return finalNodes;
                     }
