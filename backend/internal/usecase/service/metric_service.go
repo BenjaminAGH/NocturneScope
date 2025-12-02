@@ -82,7 +82,6 @@ from(bucket: "%[1]s")
   |> last()
   |> pivot(rowKey:["_time"], columnKey:["_field"], valueColumn:"_value")
   |> group()
-  |> keep(columns: ["_time","cpu","ram","ram_total","ram_used","ram_free","disk","net_rx","net_tx","temp","uptime","os","ip","gateway"])
 `, s.writer.Bucket(), device, fieldsToFluxArray(fields))
 
 	res, err := q.Query(ctx, flux)
