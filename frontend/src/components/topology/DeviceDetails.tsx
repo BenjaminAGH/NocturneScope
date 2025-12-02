@@ -192,7 +192,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                 {cpuCores.length > 0 && (
                     <div className="space-y-1 pt-1">
                         <div className="text-[10px] text-muted-foreground uppercase">Núcleos ({cpuCores.length})</div>
-                        <div className="grid grid-cols-6 gap-1.5">
+                        <div className="grid grid-cols-8 gap-1">
                             {cpuCores.map((core) => {
                                 const val = core.val || 0;
                                 let bgColor = "bg-muted"; // Gray (Idle)
@@ -202,10 +202,10 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                                 return (
                                     <div
                                         key={core.id}
-                                        className={`aspect-square rounded-sm ${bgColor} transition-colors duration-500 flex items-center justify-center relative group cursor-help`}
+                                        className={`aspect-square rounded-sm ${bgColor} transition-colors duration-500 flex items-center justify-center relative cursor-help`}
                                         title={`Core ${core.id.replace('cpu_core_', '')}: ${val.toFixed(1)}%`}
                                     >
-                                        <span className="text-[8px] font-mono opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold absolute">
+                                        <span className="text-[6px] font-mono text-white font-bold leading-none">
                                             {val.toFixed(0)}
                                         </span>
                                     </div>
