@@ -136,11 +136,8 @@ export default function AccountPage() {
                 </div>
 
                 {/* Profile Section */}
-                <div className="relative overflow-hidden bg-card border border-border rounded-xl p-8 shadow-sm">
-                    {/* Decorative background elements using theme colors */}
-                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-                    <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
-
+                <div className="bg-card border border-border rounded-xl p-8 shadow-sm">
+                    
                     <div className="relative z-10">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
