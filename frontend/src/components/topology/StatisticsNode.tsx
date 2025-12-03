@@ -30,23 +30,23 @@ function StatisticsNode({ data }: NodeProps) {
     const typedData = data as StatisticsNodeData;
     const { deviceId, metricType, stats } = typedData;
 
-    if (!deviceId) {
-        return (
-            <div className="min-w-[200px] rounded-lg bg-card border border-border shadow-sm p-4 text-center">
-                <div className="text-sm text-muted-foreground">Selecciona un dispositivo</div>
-            </div>
-        );
-    }
-
-    if (!metricType) {
-        return (
-            <div className="min-w-[200px] rounded-lg bg-card border border-border shadow-sm p-4 text-center">
-                <div className="text-sm text-muted-foreground">Selecciona una métrica</div>
-            </div>
-        );
-    }
-
     const renderContent = () => {
+        if (!deviceId) {
+            return (
+                <div className="text-center py-2">
+                    <div className="text-sm text-muted-foreground">Selecciona un dispositivo</div>
+                </div>
+            );
+        }
+
+        if (!metricType) {
+            return (
+                <div className="text-center py-2">
+                    <div className="text-sm text-muted-foreground">Selecciona una métrica</div>
+                </div>
+            );
+        }
+
         switch (metricType) {
             case "cpu":
                 return (
@@ -187,9 +187,11 @@ function StatisticsNode({ data }: NodeProps) {
             <Handle type="target" position={Position.Bottom} className="w-3 h-3 !bg-background !border-2 !border-primary" />
 
             <div className="p-4">
-                <div className="text-xs text-muted-foreground mb-2 truncate" title={deviceId}>
-                    {deviceId}
-                </div>
+                {deviceId && (
+                    <div className="text-xs text-muted-foreground mb-2 truncate" title={deviceId}>
+                        {deviceId}
+                    </div>
+                )}
                 {renderContent()}
             </div>
         </div>
