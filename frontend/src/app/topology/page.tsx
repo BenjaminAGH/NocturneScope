@@ -251,7 +251,7 @@ function TopologyEditor() {
                     }
                 });
 
-                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string; rxRate?: number; txRate?: number }>();
+                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string; rxRate?: number; txRate?: number; diskPartitions?: any[] }>();
 
                 // Mapear estados
                 Object.entries(stats).forEach(([device, data]: [string, any]) => {
@@ -306,7 +306,20 @@ function TopologyEditor() {
                         ip: data.ip,
                         gateway: data.gateway,
                         rxRate,
-                        txRate
+                        txRate,
+                        diskPartitions: Object.keys(data)
+                            .filter(k => k.startsWith('disk_usage_'))
+                            .map(k => {
+                                const mount = k.replace('disk_usage_', '').replace('_root', '/').replace(/_/g, '/');
+                                return {
+                                    id: k,
+                                    mount: k.replace('disk_usage_', '').replace('_root', '/'),
+                                    usage: data[k],
+                                    total: data[k.replace('usage', 'total')],
+                                    used: data[k.replace('usage', 'used')]
+                                };
+                            })
+                            .sort((a, b) => a.mount.localeCompare(b.mount))
                     });
                 });
 
@@ -343,6 +356,7 @@ function TopologyEditor() {
                                         ...currentData,
                                         status: update.status,
                                         ip: update.ip || currentData.ip,
+                                        diskPartitions: update.diskPartitions
                                     }
                                 };
                                 nodesChanged = true;

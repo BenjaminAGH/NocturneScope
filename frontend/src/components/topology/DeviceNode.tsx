@@ -10,6 +10,7 @@ export interface DeviceNodeData extends Record<string, unknown> {
     status?: "online" | "offline" | "unknown";
     ip?: string;
     notifications?: number;
+    diskPartitions?: any[];
 }
 
 function DeviceNode({ data }: NodeProps) {
@@ -85,6 +86,28 @@ function DeviceNode({ data }: NodeProps) {
                     <div className="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400">
                         <BellAlertIcon className="w-4 h-4" />
                         <span>{notifications} {notifications === 1 ? "alerta" : "alertas"}</span>
+                    </div>
+                )}
+
+                {/* Particiones de Disco */}
+                {typedData.diskPartitions && typedData.diskPartitions.length > 0 && (
+                    <div className="pt-2 border-t border-border/50 space-y-1">
+                        <div className="text-[10px] text-muted-foreground uppercase">Particiones</div>
+                        <div className="space-y-1">
+                            {typedData.diskPartitions.map((p: any) => (
+                                <div key={p.id} className="flex items-center justify-between text-xs">
+                                    <span className="font-mono text-[10px] truncate max-w-[60px]" title={p.mount}>{p.mount}</span>
+                                    <div className="flex items-center gap-1 flex-1 ml-2">
+                                        <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                                            <div
+                                                className={`h-full ${p.usage > 90 ? 'bg-red-500' : 'bg-emerald-500'}`}
+                                                style={{ width: `${Math.min(p.usage || 0, 100)}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>
