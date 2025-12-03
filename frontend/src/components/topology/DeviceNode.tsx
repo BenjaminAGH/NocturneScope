@@ -91,19 +91,24 @@ function DeviceNode({ data }: NodeProps) {
 
                 {/* Particiones de Disco */}
                 {typedData.diskPartitions && typedData.diskPartitions.length > 0 && (
-                    <div className="pt-2 border-t border-border/50 space-y-1">
+                    <div className="pt-2 border-t border-border/50 space-y-2">
                         <div className="text-[10px] text-muted-foreground uppercase">Particiones</div>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                             {typedData.diskPartitions.map((p: any) => (
-                                <div key={p.id} className="flex items-center justify-between text-xs">
-                                    <span className="font-mono text-[10px] truncate max-w-[60px]" title={p.mount}>{p.mount}</span>
-                                    <div className="flex items-center gap-1 flex-1 ml-2">
-                                        <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
-                                            <div
-                                                className={`h-full ${p.usage > 90 ? 'bg-red-500' : 'bg-emerald-500'}`}
-                                                style={{ width: `${Math.min(p.usage || 0, 100)}%` }}
-                                            />
-                                        </div>
+                                <div key={p.id} className="space-y-1">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="font-mono text-[10px] truncate max-w-[80px]" title={p.mount}>{p.mount}</span>
+                                        <span className="text-[10px] font-mono">{p.usage?.toFixed(0)}%</span>
+                                    </div>
+                                    <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                                        <div
+                                            className={`h-full ${p.usage > 90 ? 'bg-red-500' : 'bg-emerald-500'}`}
+                                            style={{ width: `${Math.min(p.usage || 0, 100)}%` }}
+                                        />
+                                    </div>
+                                    <div className="flex justify-between text-[9px] text-muted-foreground font-mono">
+                                        <span>{formatBytes(p.used)}</span>
+                                        <span>{formatBytes(p.total)}</span>
                                     </div>
                                 </div>
                             ))}
@@ -113,6 +118,15 @@ function DeviceNode({ data }: NodeProps) {
             </div>
         </div>
     );
+}
+
+function formatBytes(bytes: number, decimals = 1) {
+    if (!+bytes) return '0 B';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
 export default memo(DeviceNode);

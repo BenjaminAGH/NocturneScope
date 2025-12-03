@@ -433,18 +433,22 @@ function DashboardContent() {
             return (
               <div className="mt-3 space-y-1 border-t border-border/50 pt-2">
                 <div className="text-[10px] text-muted-foreground uppercase">Particiones ({partitions.length})</div>
-                <div className="grid grid-cols-1 gap-1">
+                <div className="grid grid-cols-1 gap-3">
                   {partitions.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between text-xs">
-                      <span className="font-mono text-[10px] truncate max-w-[80px]" title={p.mount}>{p.mount}</span>
-                      <div className="flex items-center gap-2 flex-1 ml-2">
-                        <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
-                          <div
-                            className={`h-full ${p.usage > 90 ? 'bg-red-500' : 'bg-emerald-500'}`}
-                            style={{ width: `${Math.min(p.usage || 0, 100)}%` }}
-                          />
-                        </div>
-                        <span className="text-[10px] font-mono w-8 text-right">{p.usage?.toFixed(0)}%</span>
+                    <div key={p.id} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-mono text-[10px] truncate max-w-[100px]" title={p.mount}>{p.mount}</span>
+                        <span className="text-[10px] font-mono">{p.usage?.toFixed(0)}%</span>
+                      </div>
+                      <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`h-full ${p.usage > 90 ? 'bg-red-500' : 'bg-emerald-500'}`}
+                          style={{ width: `${Math.min(p.usage || 0, 100)}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
+                        <span>{formatBytes(p.used)}</span>
+                        <span>{formatBytes(p.total)}</span>
                       </div>
                     </div>
                   ))}
