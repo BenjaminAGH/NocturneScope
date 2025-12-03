@@ -31,4 +31,13 @@ type Metric struct {
 
 	// opcional: procesos top-N (lo dejamos como texto simple)
 	TopProcs []string `json:"top_procs,omitempty"`
+
+	DiskPartitions map[string]DiskStat `json:"disk_partitions,omitempty"`
+}
+
+type DiskStat struct {
+	Total       uint64  `json:"total"`
+	Used        uint64  `json:"used"`
+	Free        uint64  `json:"free"`
+	UsedPercent float64 `json:"used_percent"`
 }

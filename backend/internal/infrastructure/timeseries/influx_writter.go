@@ -3,6 +3,7 @@ package timeseries
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -90,6 +91,22 @@ func (w *InfluxWriter) WriteMetric(m domain.Metric) error {
 	}
 	if m.DiskFree != 0 {
 		fields["disk_free"] = float64(m.DiskFree)
+	}
+
+	// Disk Partitions
+	if len(m.DiskPartitions) > 0 {
+		for mount, stat := range m.DiskPartitions {
+			// Sanitize mount point
+			safeMount := strings.ReplaceAll(mount, "/", "_")
+			if safeMount == "_" {
+				safeMount = "_root"
+			}
+
+			fields[fmt.Sprintf("disk_usage%s", safeMount)] = stat.UsedPercent
+			fields[fmt.Sprintf("disk_total%s", safeMount)] = float64(stat.Total)
+			fields[fmt.Sprintf("disk_used%s", safeMount)] = float64(stat.Used)
+			fields[fmt.Sprintf("disk_free%s", safeMount)] = float64(stat.Free)
+		}
 	}
 
 	if m.NetRxBytes != 0 {

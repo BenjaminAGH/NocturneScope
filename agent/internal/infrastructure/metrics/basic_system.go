@@ -47,21 +47,37 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 		tx = netStats[0].BytesSent
 	}
 
+	// Disk Partitions
+	partitions, _ := disk.Partitions(false)
+	diskPartitions := make(map[string]domain.DiskStat)
+	for _, p := range partitions {
+		u, err := disk.Usage(p.Mountpoint)
+		if err == nil {
+			diskPartitions[p.Mountpoint] = domain.DiskStat{
+				Total:       u.Total,
+				Used:        u.Used,
+				Free:        u.Free,
+				UsedPercent: u.UsedPercent,
+			}
+		}
+	}
+
 	return domain.Metric{
-		DeviceName: c.deviceName,
-		IpAddress:  c.ipAddress,
-		Timestamp:  time.Now(),
-		CPUUsage:   cpuPercent[0],
-		CPUPerCore: cpuPerCore,
-		RAMUsage:   memInfo.UsedPercent,
-		RAMTotal:   memInfo.Total,
-		RAMUsed:    memInfo.Used,
-		RAMFree:    memInfo.Free,
-		DiskUsage:  diskInfo.UsedPercent,
-		DiskTotal:  diskInfo.Total,
-		DiskUsed:   diskInfo.Used,
-		DiskFree:   diskInfo.Free,
-		NetRxBytes: rx,
-		NetTxBytes: tx,
+		DeviceName:     c.deviceName,
+		IpAddress:      c.ipAddress,
+		Timestamp:      time.Now(),
+		CPUUsage:       cpuPercent[0],
+		CPUPerCore:     cpuPerCore,
+		RAMUsage:       memInfo.UsedPercent,
+		RAMTotal:       memInfo.Total,
+		RAMUsed:        memInfo.Used,
+		RAMFree:        memInfo.Free,
+		DiskUsage:      diskInfo.UsedPercent,
+		DiskTotal:      diskInfo.Total,
+		DiskUsed:       diskInfo.Used,
+		DiskFree:       diskInfo.Free,
+		NetRxBytes:     rx,
+		NetTxBytes:     tx,
+		DiskPartitions: diskPartitions,
 	}, nil
 }

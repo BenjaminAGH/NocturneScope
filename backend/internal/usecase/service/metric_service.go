@@ -78,7 +78,7 @@ func (s *MetricService) LastStats(ctx context.Context, device string) (map[strin
 from(bucket: "%[1]s")
   |> range(start: -10m)
   |> filter(fn: (r) => r._measurement == "system_metrics" and r.device == "%[2]s")
-  |> filter(fn: (r) => contains(value: r._field, set: %[3]s) or r._field =~ /^cpu_core_/)
+  |> filter(fn: (r) => contains(value: r._field, set: %[3]s) or r._field =~ /^cpu_core_/ or r._field =~ /^disk_(usage|total|used|free)_/)
   |> last()
   |> pivot(rowKey:["_time"], columnKey:["_field"], valueColumn:"_value")
   |> group()

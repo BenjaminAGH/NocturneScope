@@ -406,6 +406,52 @@ function DashboardContent() {
             <span>Usado: {last?.disk_used ? formatBytes(last.disk_used) : "0 B"}</span>
             <span>Total: {last?.disk_total ? formatBytes(last.disk_total) : "0 B"}</span>
           </div>
+
+          {/* Disk Partitions Grid */}
+          {(() => {
+            if (!last) return null;
+            const partitions = Object.keys(last)
+              .filter(k => k.startsWith('disk_usage_'))
+              .map(k => {
+                const mount = k.replace('disk_usage_', '').replace('_root', '/').replace(/_/g, '/'); // Simple reverse mapping
+                // Note: Reverse mapping might be imperfect if paths had underscores.
+                // Better to just show the sanitized name or try to reconstruct.
+                // For now, let's just show the suffix.
+                const displayMount = k.replace('disk_usage_', '').replace('_root', '/');
+                return {
+                  id: k,
+                  mount: displayMount,
+                  usage: last[k],
+                  total: last[k.replace('usage', 'total')],
+                  used: last[k.replace('usage', 'used')]
+                };
+              })
+              .sort((a, b) => a.mount.localeCompare(b.mount));
+
+            if (partitions.length === 0) return null;
+
+            return (
+              <div className="mt-3 space-y-1 border-t border-border/50 pt-2">
+                <div className="text-[10px] text-muted-foreground uppercase">Particiones ({partitions.length})</div>
+                <div className="grid grid-cols-1 gap-1">
+                  {partitions.map((p) => (
+                    <div key={p.id} className="flex items-center justify-between text-xs">
+                      <span className="font-mono text-[10px] truncate max-w-[80px]" title={p.mount}>{p.mount}</span>
+                      <div className="flex items-center gap-2 flex-1 ml-2">
+                        <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className={`h-full ${p.usage > 90 ? 'bg-red-500' : 'bg-emerald-500'}`}
+                            style={{ width: `${Math.min(p.usage || 0, 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] font-mono w-8 text-right">{p.usage?.toFixed(0)}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">

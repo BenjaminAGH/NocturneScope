@@ -19,12 +19,20 @@ type Metric struct {
 	DiskUsed  uint64  `json:"disk_used,omitempty"`
 	DiskFree  uint64  `json:"disk_free,omitempty"`
 
-	CPUPerCore  []float64 `json:"cpu_per_core,omitempty"`
-	UptimeSec   uint64    `json:"uptime_sec,omitempty"`
-	NetRxBytes  uint64    `json:"net_rx_bytes,omitempty"`
-	NetTxBytes  uint64    `json:"net_tx_bytes,omitempty"`
-	Temperature float64   `json:"temperature,omitempty"`
-	OS          string    `json:"os,omitempty"`
-	DeviceType  string    `json:"device_type,omitempty"`
-	TopProcs    []string  `json:"top_procs,omitempty"`
+	CPUPerCore     []float64           `json:"cpu_per_core,omitempty"`
+	UptimeSec      uint64              `json:"uptime_sec,omitempty"`
+	NetRxBytes     uint64              `json:"net_rx_bytes,omitempty"`
+	NetTxBytes     uint64              `json:"net_tx_bytes,omitempty"`
+	Temperature    float64             `json:"temperature,omitempty"`
+	OS             string              `json:"os,omitempty"`
+	DeviceType     string              `json:"device_type,omitempty"`
+	TopProcs       []string            `json:"top_procs,omitempty"`
+	DiskPartitions map[string]DiskStat `json:"disk_partitions,omitempty"`
+}
+
+type DiskStat struct {
+	Total       uint64  `json:"total"`
+	Used        uint64  `json:"used"`
+	Free        uint64  `json:"free"`
+	UsedPercent float64 `json:"used_percent"`
 }
