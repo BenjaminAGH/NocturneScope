@@ -115,9 +115,15 @@ from(bucket: "%[1]s")
 				}
 			}
 		}
-		// Handle dynamic cpu_core_* fields
+		// Handle dynamic cpu_core_* and disk_* fields
 		for k, v := range rec.Values() {
 			if len(k) > 9 && k[:9] == "cpu_core_" {
+				if f, ok := toFloat(v); ok {
+					out[k] = f
+				}
+			}
+			// disk_usage_, disk_total_, disk_used_, disk_free_
+			if len(k) > 5 && k[:5] == "disk_" {
 				if f, ok := toFloat(v); ok {
 					out[k] = f
 				}
