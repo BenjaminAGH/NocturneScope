@@ -180,11 +180,9 @@ function StatisticsNode({ data }: NodeProps) {
 
     return (
         <div className="min-w-[220px] rounded-xl bg-card border-2 border-border shadow-sm relative overflow-hidden">
-            {/* Input handles for flexible connections */}
-            <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-background !border-2 !border-primary" />
+            {/* Single Input and Output handles */}
             <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-background !border-2 !border-primary" />
-            <Handle type="target" position={Position.Right} className="w-3 h-3 !bg-background !border-2 !border-primary" />
-            <Handle type="target" position={Position.Bottom} className="w-3 h-3 !bg-background !border-2 !border-primary" />
+            <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-background !border-2 !border-primary" />
 
             <div className="p-4">
                 {deviceId && (

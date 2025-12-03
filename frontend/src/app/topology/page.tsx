@@ -977,6 +977,22 @@ function TopologyEditor() {
                         };
                     }
                 }
+                // Case 3: Source is Statistics, Target is Action (Smart Trigger)
+                if (node.id === target && node.type === 'action') {
+                    const sourceNode = nds.find(n => n.id === source);
+                    if (sourceNode && sourceNode.type === 'statistics') {
+                        const statsData = sourceNode.data as StatisticsNodeData;
+                        return {
+                            ...node,
+                            data: {
+                                ...node.data,
+                                connectedDevice: statsData.deviceId,
+                                metric: statsData.metricType,
+                                jwt: jwt
+                            }
+                        };
+                    }
+                }
                 return node;
             }));
         },
