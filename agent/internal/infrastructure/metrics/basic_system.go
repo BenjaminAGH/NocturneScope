@@ -36,10 +36,6 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 	if err != nil {
 		return domain.Metric{}, err
 	}
-	diskInfo, err := disk.Usage("/")
-	if err != nil {
-		return domain.Metric{}, err
-	}
 
 	netStats, err := net.IOCounters(false)
 	var rx, tx uint64
@@ -73,6 +69,20 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 		// log.Printf("Collected %d partitions", len(diskPartitions))
 	}
 
+	// Calculate total disk usage from partitions
+	var totalDisk, usedDisk, freeDisk uint64
+	for _, p := range diskPartitions {
+		totalDisk += p.Total
+		usedDisk += p.Used
+		freeDisk += p.Free
+	}
+
+	// Avoid division by zero
+	var usedPercent float64
+	if totalDisk > 0 {
+		usedPercent = (float64(usedDisk) / float64(totalDisk)) * 100.0
+	}
+
 	return domain.Metric{
 		DeviceName:     c.deviceName,
 		IpAddress:      c.ipAddress,
@@ -83,10 +93,10 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 		RAMTotal:       memInfo.Total,
 		RAMUsed:        memInfo.Used,
 		RAMFree:        memInfo.Free,
-		DiskUsage:      diskInfo.UsedPercent,
-		DiskTotal:      diskInfo.Total,
-		DiskUsed:       diskInfo.Used,
-		DiskFree:       diskInfo.Free,
+		DiskUsage:      usedPercent,
+		DiskTotal:      totalDisk,
+		DiskUsed:       usedDisk,
+		DiskFree:       freeDisk,
 		NetRxBytes:     rx,
 		NetTxBytes:     tx,
 		DiskPartitions: diskPartitions,

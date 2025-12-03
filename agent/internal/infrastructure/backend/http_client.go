@@ -162,7 +162,7 @@ func (c *HTTPClient) sendOnce(m domain.Metric) error {
 	}
 
 	if !c.silent {
-		fmt.Printf("✅ Métrica enviada exitosamente (device: %s)\n", m.DeviceName)
+		fmt.Printf("✅ Métrica enviada exitosamente (device: %s, partitions: %d)\n", m.DeviceName, len(m.DiskPartitions))
 	}
 	return nil
 }
