@@ -389,7 +389,7 @@ function DashboardContent() {
 
         {/* Disk Card - Overview */}
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <CircleStackIcon className="w-5 h-5 text-emerald-500" />
               <span className="text-sm font-medium text-muted-foreground">Almacenamiento</span>
@@ -441,9 +441,9 @@ function DashboardContent() {
             ];
 
             return (
-              <div className="flex flex-col justify-end flex-1">
-                <div className="relative group w-full mt-2">
-                  <div className="w-full bg-muted/30 rounded-full h-4 overflow-hidden flex ring-1 ring-border/20">
+              <div className="flex flex-col justify-end flex-1 mt-2">
+                <div className="relative group w-full">
+                  <div className="w-full bg-muted/30 rounded-full h-3 overflow-hidden flex ring-1 ring-border/20">
                     {partitions.map((p, i) => {
                       // Calculate width relative to TOTAL disk size
                       let width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
@@ -477,7 +477,7 @@ function DashboardContent() {
                   </div>
                 </div>
 
-                <div className="mt-3 text-xs text-muted-foreground flex justify-between">
+                <div className="mt-2 text-xs text-muted-foreground flex justify-between">
                   <span>Usado: {formatBytes(totalDiskUsed)}</span>
                   <span>Total: {formatBytes(totalDiskSize)}</span>
                 </div>
@@ -493,46 +493,40 @@ function DashboardContent() {
           </div>
           <div className="flex items-end justify-between">
             <div>
-              <div className="text-4xl font-bold">{last?.temp?.toFixed(1) || "—"}°C</div>
+              <div className="text-3xl font-bold">{last?.temp?.toFixed(1) || "—"}°C</div>
               <div className="text-xs text-muted-foreground mt-1">Core Temp</div>
             </div>
           </div>
         </div>
 
         {/* Network Traffic */}
-        <div className="col-span-1 md:col-span-2 rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 h-52 flex flex-col">
-          <div className="flex items-center gap-2 mb-3 shrink-0">
+        <div className="col-span-1 md:col-span-2 rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+          <div className="flex items-center gap-2 mb-2 shrink-0">
             <SignalIcon className="w-5 h-5 text-indigo-500" />
             <span className="text-sm font-medium text-muted-foreground">Tráfico de Red</span>
           </div>
-          <div className="grid grid-cols-2 gap-4 grow">
-            <div className="relative overflow-hidden rounded-lg border border-blue-500/20 bg-blue-500/10 p-3 flex items-center gap-3">
-              <div className="p-2 bg-blue-500/20 rounded-full">
-                <ArrowDownIcon className="w-5 h-5 text-blue-500" />
+          <div className="grid grid-cols-2 gap-4 grow items-end">
+            <div className="relative overflow-hidden rounded-lg border border-blue-500/20 bg-blue-500/10 p-2.5 flex items-center gap-3">
+              <div className="p-1.5 bg-blue-500/20 rounded-full">
+                <ArrowDownIcon className="w-4 h-4 text-blue-500" />
               </div>
               <div>
                 <div className="text-[10px] font-medium text-blue-500 mb-0.5">Descarga (RX)</div>
-                <div className="text-lg font-bold font-mono text-foreground">
+                <div className="text-sm font-bold font-mono text-foreground">
                   {last?.net_rx ? formatBytes(last.net_rx) : "0 B"}/s
                 </div>
               </div>
-              <div className="absolute -right-4 -bottom-4 opacity-10">
-                <ArrowDownIcon className="w-16 h-16 text-blue-500" />
-              </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-3 flex items-center gap-3">
-              <div className="p-2 bg-indigo-500/20 rounded-full">
-                <ArrowUpIcon className="w-5 h-5 text-indigo-500" />
+            <div className="relative overflow-hidden rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-2.5 flex items-center gap-3">
+              <div className="p-1.5 bg-indigo-500/20 rounded-full">
+                <ArrowUpIcon className="w-4 h-4 text-indigo-500" />
               </div>
               <div>
                 <div className="text-[10px] font-medium text-indigo-500 mb-0.5">Subida (TX)</div>
-                <div className="text-lg font-bold font-mono text-foreground">
+                <div className="text-sm font-bold font-mono text-foreground">
                   {last?.net_tx ? formatBytes(last.net_tx) : "0 B"}/s
                 </div>
-              </div>
-              <div className="absolute -right-4 -bottom-4 opacity-10">
-                <ArrowUpIcon className="w-16 h-16 text-indigo-500" />
               </div>
             </div>
           </div>
