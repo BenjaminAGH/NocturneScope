@@ -46,6 +46,7 @@ import { playSound, SoundType } from "@/lib/soundPlayer";
 import { useGroup } from "@/context/GroupContext";
 import { migrateTopology } from "@/lib/topologyMigration";
 import { CpuNode, RamNode, DiskNode, NetworkNode } from "@/components/topology/StatisticNodes";
+import StatNode from "@/components/topology/StatNode";
 
 const nodeTypes = {
     device: DeviceNode,
@@ -65,6 +66,7 @@ const nodeTypes = {
     ram: RamNode,
     disk: DiskNode,
     network: NetworkNode,
+    stat: StatNode,
 };
 
 function TopologyEditor() {
@@ -908,8 +910,8 @@ function TopologyEditor() {
             if (!source || !target) return;
 
             setNodes((nds) => nds.map((node) => {
-                // Case 1: Target is Monitoring, Action, Traffic, Traffic Trigger, or Details
-                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details')) {
+                // Case 1: Target is Monitoring, Action, Traffic, Traffic Trigger, Details, or Stat
+                if (node.id === target && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details' || node.type === 'stat')) {
                     const sourceNode = nds.find(n => n.id === source);
                     if (sourceNode && sourceNode.type === 'device') {
                         return {
@@ -917,13 +919,15 @@ function TopologyEditor() {
                             data: {
                                 ...node.data,
                                 connectedDevice: sourceNode.data.deviceName,
-                                jwt: jwt
+                                jwt: jwt,
+                                // Default metric for stat nodes
+                                ...(node.type === 'stat' && !node.data.metric ? { metric: 'cpu', label: 'CPU' } : {})
                             }
                         };
                     }
                 }
-                // Case 2: Source is Monitoring, Action, Traffic, Traffic Trigger, or Details (inverse connection)
-                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details')) {
+                // Case 2: Source is Monitoring, Action, Traffic, Traffic Trigger, Details, or Stat (inverse connection)
+                if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details' || node.type === 'stat')) {
                     const targetNode = nds.find(n => n.id === target);
                     if (targetNode && targetNode.type === 'device') {
                         return {
@@ -931,7 +935,9 @@ function TopologyEditor() {
                             data: {
                                 ...node.data,
                                 connectedDevice: targetNode.data.deviceName,
-                                jwt: jwt
+                                jwt: jwt,
+                                // Default metric for stat nodes
+                                ...(node.type === 'stat' && !node.data.metric ? { metric: 'cpu', label: 'CPU' } : {})
                             }
                         };
                     }
