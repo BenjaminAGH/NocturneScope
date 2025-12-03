@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"log"
 	"time"
 
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -48,7 +49,10 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 	}
 
 	// Disk Partitions
-	partitions, _ := disk.Partitions(false)
+	partitions, err := disk.Partitions(false)
+	if err != nil {
+		log.Printf("Error getting partitions: %v", err)
+	}
 	diskPartitions := make(map[string]domain.DiskStat)
 	for _, p := range partitions {
 		u, err := disk.Usage(p.Mountpoint)
@@ -59,7 +63,14 @@ func (c *BasicSystemCollector) Collect() (domain.Metric, error) {
 				Free:        u.Free,
 				UsedPercent: u.UsedPercent,
 			}
+		} else {
+			log.Printf("Error getting usage for %s: %v", p.Mountpoint, err)
 		}
+	}
+	if len(diskPartitions) == 0 {
+		log.Println("No partitions found or all failed.")
+	} else {
+		// log.Printf("Collected %d partitions", len(diskPartitions))
 	}
 
 	return domain.Metric{

@@ -333,6 +333,38 @@ func (m Model) View() string {
 			}
 		}
 
+		if len(m.lastM.DiskPartitions) > 0 {
+			rows = append(rows, "")
+			rows = append(rows, metricLabelStyle.Render("Partitions:"))
+
+			// Sort partitions by mount point
+			var mounts []string
+			for k := range m.lastM.DiskPartitions {
+				mounts = append(mounts, k)
+			}
+			sort.Strings(mounts)
+
+			for _, mount := range mounts {
+				stat := m.lastM.DiskPartitions[mount]
+				// Format: /mnt/data: 50.5% (10/20 GB)
+				usageStr := fmt.Sprintf("%.1f%%", stat.UsedPercent)
+				detailsStr := fmt.Sprintf("(%.1f/%.1f GB)", float64(stat.Used)/1024/1024/1024, float64(stat.Total)/1024/1024/1024)
+
+				// Colorize usage
+				usageStyle := metricValueStyle.Copy()
+				if stat.UsedPercent > 90 {
+					usageStyle.Foreground(lipgloss.Color("196")) // Red
+				} else if stat.UsedPercent > 70 {
+					usageStyle.Foreground(lipgloss.Color("214")) // Orange
+				} else {
+					usageStyle.Foreground(lipgloss.Color("46")) // Green
+				}
+
+				row := fmt.Sprintf("  %-15s %s %s", mount, usageStyle.Render(usageStr), detailsStr)
+				rows = append(rows, row)
+			}
+		}
+
 		stats := lipgloss.JoinVertical(lipgloss.Left, rows...)
 
 		content = lipgloss.JoinVertical(lipgloss.Left,

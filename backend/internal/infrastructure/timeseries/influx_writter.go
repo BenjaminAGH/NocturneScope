@@ -107,6 +107,9 @@ func (w *InfluxWriter) WriteMetric(m domain.Metric) error {
 			fields[fmt.Sprintf("disk_used%s", safeMount)] = float64(stat.Used)
 			fields[fmt.Sprintf("disk_free%s", safeMount)] = float64(stat.Free)
 		}
+		// fmt.Printf("Writing %d partitions for %s\n", len(m.DiskPartitions), m.DeviceName)
+	} else {
+		// fmt.Printf("No partitions to write for %s\n", m.DeviceName)
 	}
 
 	if m.NetRxBytes != 0 {

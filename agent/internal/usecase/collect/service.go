@@ -101,6 +101,9 @@ func mergeMetric(dst, src domain.Metric) domain.Metric {
 	if len(src.TopProcs) > 0 {
 		dst.TopProcs = src.TopProcs
 	}
+	if len(src.DiskPartitions) > 0 {
+		dst.DiskPartitions = src.DiskPartitions
+	}
 
 	// uints
 	if src.UptimeSec != 0 {

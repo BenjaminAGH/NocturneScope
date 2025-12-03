@@ -160,5 +160,8 @@ func merge(dst, src domain.Metric) domain.Metric {
 	if src.Hostname != "" {
 		dst.Hostname = src.Hostname
 	}
+	if len(src.DiskPartitions) > 0 {
+		dst.DiskPartitions = src.DiskPartitions
+	}
 	return dst
 }
