@@ -442,19 +442,37 @@ function DashboardContent() {
 
             return (
               <div className="flex flex-col justify-end flex-1">
-                <div className="w-full bg-muted/30 rounded-full h-4 overflow-hidden flex ring-1 ring-border/20">
+                <div className="w-full bg-muted/30 rounded-full h-4 overflow-hidden flex ring-1 ring-border/20 relative group cursor-help">
                   {partitions.map((p, i) => {
                     // Calculate width relative to TOTAL disk size
-                    const width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
+                    let width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
+                    // Ensure minimum width for visibility if used > 0
+                    if (p.used > 0 && width < 2) width = 2;
+
                     return (
                       <div
                         key={p.id}
                         className={`${colors[i % colors.length]} h-full transition-all duration-500 hover:opacity-80`}
                         style={{ width: `${width}%` }}
-                        title={`${p.mount}: ${formatBytes(p.used)} (${p.usage?.toFixed(1)}%)`}
                       />
                     );
                   })}
+
+                  {/* Tooltip for all partitions */}
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 bg-popover text-popover-foreground text-xs rounded-md border border-border shadow-md p-2 z-50">
+                    <div className="font-medium mb-1 border-b border-border/50 pb-1">Detalle de Particiones</div>
+                    <div className="space-y-1">
+                      {partitions.map((p, i) => (
+                        <div key={p.id} className="flex justify-between items-center">
+                          <div className="flex items-center gap-1.5">
+                            <div className={`w-2 h-2 rounded-full ${colors[i % colors.length]}`} />
+                            <span className="font-mono truncate max-w-[80px]">{p.mount}</span>
+                          </div>
+                          <span className="font-mono text-muted-foreground">{formatBytes(p.used)} / {formatBytes(p.total)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-3 text-xs text-muted-foreground flex justify-between">
@@ -464,57 +482,6 @@ function DashboardContent() {
               </div>
             );
           })()}
-        </div>
-
-        {/* Partition Details Card */}
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col h-52">
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/50 shrink-0">
-            <CircleStackIcon className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Detalle Particiones</span>
-          </div>
-          <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-border pr-2 grow">
-            {(() => {
-              if (!last) return null;
-              const partitions = Object.keys(last)
-                .filter(k => k.startsWith('disk_usage_'))
-                .map(k => {
-                  const displayMount = k.replace('disk_usage_', '').replace('_root', '/');
-                  return {
-                    id: k,
-                    mount: displayMount,
-                    usage: last[k],
-                    total: last[k.replace('usage', 'total')],
-                    used: last[k.replace('usage', 'used')]
-                  };
-                })
-                .sort((a, b) => a.mount.localeCompare(b.mount));
-
-              const colors = [
-                "bg-emerald-500",
-                "bg-blue-500",
-                "bg-purple-500",
-                "bg-orange-500",
-                "bg-pink-500",
-                "bg-cyan-500",
-              ];
-
-              return (
-                <div className="grid grid-cols-1 gap-3">
-                  {partitions.map((p, i) => (
-                    <div key={p.id} className="flex items-center justify-between text-xs group">
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <div className={`w-2 h-2 rounded-full ${colors[i % colors.length]}`} />
-                        <span className="font-mono text-[11px] truncate max-w-[80px]" title={p.mount}>{p.mount}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <span className="font-mono text-[10px]">{formatBytes(p.used)} / {formatBytes(p.total)}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })()}
-          </div>
         </div>
 
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between h-52">
@@ -531,33 +498,39 @@ function DashboardContent() {
         </div>
 
         {/* Network Traffic */}
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 h-52 flex flex-col">
+        <div className="col-span-1 md:col-span-2 rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 h-52 flex flex-col">
           <div className="flex items-center gap-2 mb-3 shrink-0">
             <SignalIcon className="w-5 h-5 text-indigo-500" />
-            <span className="text-sm font-medium text-muted-foreground">Tráfico</span>
+            <span className="text-sm font-medium text-muted-foreground">Tráfico de Red</span>
           </div>
-          <div className="flex flex-col gap-2 grow justify-center">
-            <div className="relative overflow-hidden rounded-lg border border-blue-500/20 bg-blue-500/10 p-2.5 flex items-center gap-3">
-              <div className="p-1.5 bg-blue-500/20 rounded-full">
-                <ArrowDownIcon className="w-4 h-4 text-blue-500" />
+          <div className="grid grid-cols-2 gap-4 grow">
+            <div className="relative overflow-hidden rounded-lg border border-blue-500/20 bg-blue-500/10 p-3 flex items-center gap-3">
+              <div className="p-2 bg-blue-500/20 rounded-full">
+                <ArrowDownIcon className="w-5 h-5 text-blue-500" />
               </div>
               <div>
-                <div className="text-[10px] font-medium text-blue-500 mb-0.5">RX</div>
-                <div className="text-sm font-bold font-mono text-foreground">
+                <div className="text-[10px] font-medium text-blue-500 mb-0.5">Descarga (RX)</div>
+                <div className="text-lg font-bold font-mono text-foreground">
                   {last?.net_rx ? formatBytes(last.net_rx) : "0 B"}/s
                 </div>
               </div>
+              <div className="absolute -right-4 -bottom-4 opacity-10">
+                <ArrowDownIcon className="w-16 h-16 text-blue-500" />
+              </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-2.5 flex items-center gap-3">
-              <div className="p-1.5 bg-indigo-500/20 rounded-full">
-                <ArrowUpIcon className="w-4 h-4 text-indigo-500" />
+            <div className="relative overflow-hidden rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-3 flex items-center gap-3">
+              <div className="p-2 bg-indigo-500/20 rounded-full">
+                <ArrowUpIcon className="w-5 h-5 text-indigo-500" />
               </div>
               <div>
-                <div className="text-[10px] font-medium text-indigo-500 mb-0.5">TX</div>
-                <div className="text-sm font-bold font-mono text-foreground">
+                <div className="text-[10px] font-medium text-indigo-500 mb-0.5">Subida (TX)</div>
+                <div className="text-lg font-bold font-mono text-foreground">
                   {last?.net_tx ? formatBytes(last.net_tx) : "0 B"}/s
                 </div>
+              </div>
+              <div className="absolute -right-4 -bottom-4 opacity-10">
+                <ArrowUpIcon className="w-16 h-16 text-indigo-500" />
               </div>
             </div>
           </div>
