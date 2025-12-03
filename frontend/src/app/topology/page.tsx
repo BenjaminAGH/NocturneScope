@@ -251,7 +251,7 @@ function TopologyEditor() {
                     }
                 });
 
-                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string; rxRate?: number; txRate?: number; diskPartitions?: any[] }>();
+                const deviceUpdates = new Map<string, { status: "online" | "offline" | "unknown"; ip?: string; gateway?: string; rxRate?: number; txRate?: number; diskPartitions?: any[]; os?: string }>();
 
                 // Mapear estados
                 Object.entries(stats).forEach(([device, data]: [string, any]) => {
@@ -307,6 +307,7 @@ function TopologyEditor() {
                         gateway: data.gateway,
                         rxRate,
                         txRate,
+                        os: data.os,
                         diskPartitions: Object.keys(data)
                             .filter(k => k.startsWith('disk_usage_'))
                             .map(k => {
@@ -356,7 +357,8 @@ function TopologyEditor() {
                                         ...currentData,
                                         status: update.status,
                                         ip: update.ip || currentData.ip,
-                                        diskPartitions: update.diskPartitions
+                                        diskPartitions: update.diskPartitions,
+                                        os: update.os || currentData.os
                                     }
                                 };
                                 nodesChanged = true;
