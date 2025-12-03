@@ -135,9 +135,9 @@ function DeviceNode({ data }: NodeProps) {
 
                     {/* Uptime */}
                     {uptime > 0 && (
-                        <div className="flex items-center gap-1.5 px-2 py-1 bg-black/20 rounded-md">
-                            <ClockIcon className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-[10px] font-mono text-muted-foreground/90">{formatDuration(uptime)}</span>
+                        <div className="flex items-center justify-center gap-1.5 px-2 py-1 mt-1 rounded-full bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20">
+                            <ClockIcon className="w-3 h-3 text-violet-400" />
+                            <span className="text-[10px] font-medium text-violet-300/90">{formatDuration(uptime)}</span>
                         </div>
                     )}
 

@@ -307,7 +307,21 @@ function TopologyEditor() {
 
                     deviceUpdates.set(device, {
                         status: isActive ? "online" : "offline",
-                        ip: data.ip,
+                        ip: (() => {
+                            let bestIP = data.ip;
+                            // Si es loopback o vacío, buscar en interfaces
+                            if (!bestIP || bestIP === "127.0.0.1" || bestIP === "::1" || bestIP === "localhost") {
+                                const ifaceKeys = Object.keys(data).filter(k => k.startsWith('net_iface_') && k.endsWith('_ip'));
+                                for (const k of ifaceKeys) {
+                                    const val = data[k];
+                                    if (typeof val === 'string' && val && val !== "127.0.0.1" && val !== "::1") {
+                                        bestIP = val;
+                                        break; // Tomar la primera IP válida encontrada
+                                    }
+                                }
+                            }
+                            return bestIP;
+                        })(),
                         gateway: data.gateway,
                         rxRate,
                         txRate,
