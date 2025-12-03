@@ -49,7 +49,7 @@ function DeviceNode({ data }: NodeProps) {
     const ip = typedData.ip || "—";
     const notifications = typedData.notifications || 0;
     const os = typedData.os || "";
-    const color = typedData.color || "#3b82f6"; // Default blue
+    const color = typedData.color || "#c4a7e7"; // Default Rose Pine Iris
 
     const statusColors = {
         online: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]",

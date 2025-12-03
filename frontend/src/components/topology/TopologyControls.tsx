@@ -483,15 +483,36 @@ export default function TopologyControls({
                                     </div>
                                     <div>
                                         <label className="text-xs text-muted-foreground">Color del Nodo</label>
-                                        <div className="flex items-center gap-2 mt-1">
+                                        <div className="flex flex-wrap gap-1 mt-1 mb-2">
+                                            {[
+                                                '#eb6f92', // Love
+                                                '#f6c177', // Gold
+                                                '#ebbcba', // Rose
+                                                '#31748f', // Pine
+                                                '#9ccfd8', // Foam
+                                                '#c4a7e7', // Iris
+                                                '#908caa', // Subtle
+                                                '#1f1d2e', // Surface
+                                            ].map((color) => (
+                                                <button
+                                                    key={color}
+                                                    className={`w-5 h-5 rounded-full border border-border transition-transform hover:scale-110 ${((selectedNode.data as any).color || '#c4a7e7') === color ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : ''
+                                                        }`}
+                                                    style={{ backgroundColor: color }}
+                                                    onClick={() => onUpdateNodeData(selectedNode.id, { color })}
+                                                    title={color}
+                                                />
+                                            ))}
+                                        </div>
+                                        <div className="flex items-center gap-2">
                                             <input
                                                 type="color"
                                                 className="h-8 w-12 bg-transparent border border-border rounded cursor-pointer"
-                                                value={(selectedNode.data as any).color || '#3b82f6'}
+                                                value={(selectedNode.data as any).color || '#c4a7e7'}
                                                 onChange={(e) => onUpdateNodeData(selectedNode.id, { color: e.target.value })}
                                             />
                                             <span className="text-xs font-mono text-muted-foreground">
-                                                {(selectedNode.data as any).color || '#3b82f6'}
+                                                {(selectedNode.data as any).color || '#c4a7e7'}
                                             </span>
                                         </div>
                                     </div>
