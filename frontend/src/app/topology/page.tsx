@@ -937,6 +937,19 @@ function TopologyEditor() {
                         };
                     }
                 }
+                // Case 1b: Target is Statistics
+                if (node.id === target && node.type === 'statistics') {
+                    const sourceNode = nds.find(n => n.id === source);
+                    if (sourceNode && sourceNode.type === 'device') {
+                        return {
+                            ...node,
+                            data: {
+                                ...node.data,
+                                deviceId: sourceNode.data.deviceName
+                            }
+                        };
+                    }
+                }
                 // Case 2: Source is Monitoring, Action, Traffic, Traffic Trigger, or Details (inverse connection)
                 if (node.id === source && (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details')) {
                     const targetNode = nds.find(n => n.id === target);
@@ -947,6 +960,19 @@ function TopologyEditor() {
                                 ...node.data,
                                 connectedDevice: targetNode.data.deviceName,
                                 jwt: jwt
+                            }
+                        };
+                    }
+                }
+                // Case 2b: Source is Statistics (inverse connection)
+                if (node.id === source && node.type === 'statistics') {
+                    const targetNode = nds.find(n => n.id === target);
+                    if (targetNode && targetNode.type === 'device') {
+                        return {
+                            ...node,
+                            data: {
+                                ...node.data,
+                                deviceId: targetNode.data.deviceName
                             }
                         };
                     }
@@ -1506,7 +1532,7 @@ function TopologyEditor() {
                         (e.target === id && e.source === n.id)
                     );
 
-                    if (isConnected && (n.type === 'monitoring' || n.type === 'action' || n.type === 'traffic' || n.type === 'traffic-trigger' || n.type === 'details')) {
+                    if (isConnected && (n.type === 'monitoring' || n.type === 'action' || n.type === 'traffic' || n.type === 'traffic-trigger' || n.type === 'details' || n.type === 'statistics')) {
                         return {
                             ...n,
                             data: {
