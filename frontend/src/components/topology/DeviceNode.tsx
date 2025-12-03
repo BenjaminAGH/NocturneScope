@@ -65,20 +65,11 @@ function DeviceNode({ data }: NodeProps) {
 
     return (
         <div
-            className="min-w-[220px] rounded-xl backdrop-blur-md border border-white/10 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/20 relative overflow-hidden group"
+            className="min-w-[220px] rounded-xl bg-card border-2 shadow-sm transition-all duration-300 hover:shadow-md relative overflow-hidden group"
             style={{
-                background: `linear-gradient(145deg, ${color}15, ${color}05)`,
-                boxShadow: `0 4px 20px -2px ${color}20`
+                borderColor: color
             }}
         >
-            {/* Glow effect on hover */}
-            <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{
-                    background: `radial-gradient(circle at center, ${color}10 0%, transparent 70%)`
-                }}
-            />
-
             {/* Top Border Accent */}
             <div className="absolute top-0 left-0 right-0 h-1" style={{ background: color }} />
 
