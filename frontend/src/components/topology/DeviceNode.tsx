@@ -115,27 +115,11 @@ function DeviceNode({ data }: NodeProps) {
                     </div>
                 </div>
 
-                {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                    {/* Estado */}
-                    <div className="flex items-center gap-2 bg-black/20 rounded-md px-2 py-1.5">
-                        <div className={`w-2 h-2 rounded-full ${statusColors[status]} ${status === "online" ? "animate-pulse" : ""}`} />
-                        <span className="text-[10px] font-medium text-muted-foreground/90">{statusLabels[status]}</span>
-                    </div>
-
-                    {/* IP */}
-                    <div className="flex items-center justify-end px-2 py-1.5">
-                        <span className="text-[10px] text-muted-foreground font-mono tracking-wide">{ip}</span>
-                    </div>
+                {/* Estado */}
+                <div className="flex items-center gap-2 bg-black/20 rounded-md px-2 py-1.5 justify-center">
+                    <div className={`w-2 h-2 rounded-full ${statusColors[status]} ${status === "online" ? "animate-pulse" : ""}`} />
+                    <span className="text-[10px] font-medium text-muted-foreground/90">{statusLabels[status]}</span>
                 </div>
-
-                {/* Notificaciones */}
-                {notifications > 0 && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-orange-500/10 border border-orange-500/20 text-orange-500 animate-in fade-in slide-in-from-bottom-1">
-                        <BellAlertIcon className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-medium">{notifications} {notifications === 1 ? "alerta" : "alertas"}</span>
-                    </div>
-                )}
             </div>
         </div>
     );

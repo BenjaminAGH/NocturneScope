@@ -26,11 +26,12 @@ import {
     saveTopology,
     getTopologies,
     getTopology,
-    updateTopology,
     type Topology,
     type TopologyData,
 } from "@/lib/api/topology";
 import MonitoringNode, { MonitoringNodeData } from "@/components/topology/MonitoringNode";
+import MetricNode, { MetricNodeData } from "@/components/topology/MetricNode";
+import DetailNode, { DetailNodeData } from "@/components/topology/DetailNode";
 import ActionNode, { ActionNodeData } from "@/components/topology/ActionNode";
 import EmailNode, { EmailNodeData } from "@/components/topology/EmailNode";
 import NotificationNode, { NotificationNodeData } from "@/components/topology/NotificationNode";
@@ -50,6 +51,8 @@ const nodeTypes = {
     device: DeviceNode,
     router: RouterNode,
     monitoring: MonitoringNode,
+    metric: MetricNode,
+    detail: DetailNode,
     action: ActionNode,
     email: EmailNode,
     notification: NotificationNode,
@@ -1043,19 +1046,7 @@ function TopologyEditor() {
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes]);
 
-    const handleAddDetailsNode = useCallback(() => {
-        takeSnapshot();
-        const id = `details-${++nodeIdCounter.current}`;
-        const newNode: Node<DeviceDetailsNodeData> = {
-            id,
-            type: "details",
-            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
-            data: {
-                jwt: jwt || undefined,
-            },
-        };
-        setNodes((nds) => [...nds, newNode]);
-    }, [jwt, setNodes]);
+
 
     // Check Traffic Triggers
     // Use a ref to access current nodes inside interval without resetting it
@@ -1257,7 +1248,37 @@ function TopologyEditor() {
             },
         };
         setNodes((nds) => [...nds, newNode]);
-    }, [jwt, setNodes]);
+    }, [setNodes, jwt]);
+
+    const handleAddMetricNode = useCallback(() => {
+        takeSnapshot();
+        const id = `metric-${++nodeIdCounter.current}`;
+        const newNode: Node<MetricNodeData> = {
+            id,
+            type: "metric",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                jwt: jwt || undefined,
+                metric: 'cpu',
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes, jwt]);
+
+    const handleAddDetailsNode = useCallback(() => {
+        takeSnapshot();
+        const id = `detail-${++nodeIdCounter.current}`;
+        const newNode: Node<DetailNodeData> = {
+            id,
+            type: "detail",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                jwt: jwt || undefined,
+                selectedMetrics: ['cpu', 'ram', 'disk'],
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [setNodes, jwt]);
 
     const handleAddTrafficTriggerNode = useCallback(() => {
         const id = `tt-${++nodeIdCounter.current}`;
@@ -1867,6 +1888,7 @@ function TopologyEditor() {
                     onAddTimeWindowNode={handleAddTimeWindowNode}
                     onAddThresholdNode={handleAddThresholdNode}
                     onAddDetailsNode={handleAddDetailsNode}
+                    onAddMetricNode={handleAddMetricNode}
                     selectedNode={selectedNode}
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}
