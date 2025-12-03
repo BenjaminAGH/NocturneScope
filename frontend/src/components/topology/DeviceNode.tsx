@@ -11,6 +11,7 @@ export interface DeviceNodeData extends Record<string, unknown> {
     ip?: string;
     notifications?: number;
     os?: string;
+    color?: string;
 }
 
 function getOSIcon(os: string) {
@@ -48,10 +49,11 @@ function DeviceNode({ data }: NodeProps) {
     const ip = typedData.ip || "—";
     const notifications = typedData.notifications || 0;
     const os = typedData.os || "";
+    const color = typedData.color || "#3b82f6"; // Default blue
 
     const statusColors = {
-        online: "bg-green-500",
-        offline: "bg-red-500",
+        online: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]",
+        offline: "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]",
         unknown: "bg-gray-400",
     };
 
@@ -62,12 +64,29 @@ function DeviceNode({ data }: NodeProps) {
     };
 
     return (
-        <div className="min-w-[200px] rounded-lg bg-card border-2 border-border shadow-lg hover:shadow-xl transition-shadow relative">
+        <div
+            className="min-w-[220px] rounded-xl backdrop-blur-md border border-white/10 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/20 relative overflow-hidden group"
+            style={{
+                background: `linear-gradient(145deg, ${color}15, ${color}05)`,
+                boxShadow: `0 4px 20px -2px ${color}20`
+            }}
+        >
+            {/* Glow effect on hover */}
+            <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{
+                    background: `radial-gradient(circle at center, ${color}10 0%, transparent 70%)`
+                }}
+            />
+
+            {/* Top Border Accent */}
+            <div className="absolute top-0 left-0 right-0 h-1" style={{ background: color }} />
+
             {/* Input */}
             <Handle
                 type="target"
                 position={Position.Top}
-                className="w-3 h-3"
+                className="w-3 h-3 !bg-background !border-2 !border-primary"
             />
 
             {/* Outputs */}
@@ -75,48 +94,55 @@ function DeviceNode({ data }: NodeProps) {
                 type="source"
                 position={Position.Right}
                 id="s-right"
-                className="w-3 h-3"
+                className="w-3 h-3 !bg-background !border-2 !border-primary"
             />
             <Handle
                 type="source"
                 position={Position.Bottom}
                 id="s-bottom"
-                className="w-3 h-3"
+                className="w-3 h-3 !bg-background !border-2 !border-primary"
             />
             <Handle
                 type="source"
                 position={Position.Left}
                 id="s-left"
-                className="w-3 h-3"
+                className="w-3 h-3 !bg-background !border-2 !border-primary"
             />
 
-            <div className="p-4 space-y-2">
+            <div className="p-4 space-y-3 relative z-10">
                 {/* Header con icono y nombre */}
-                <div className="flex items-center gap-2">
-                    <div className="text-foreground">
+                <div className="flex items-center gap-3">
+                    <div
+                        className="p-2 rounded-lg bg-white/5 border border-white/10 shadow-inner text-foreground"
+                        style={{ color: color }}
+                    >
                         {getOSIcon(os)}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-sm truncate">{label}</div>
+                        <div className="font-bold text-sm truncate text-foreground/90">{label}</div>
+                        <div className="text-[10px] text-muted-foreground font-mono truncate opacity-70">{typedData.deviceName}</div>
                     </div>
                 </div>
 
-                {/* Estado */}
-                <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${statusColors[status]} ${status === "online" ? "animate-pulse" : ""}`} />
-                    <span className="text-xs text-muted-foreground">{statusLabels[status]}</span>
-                </div>
+                {/* Info Grid */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                    {/* Estado */}
+                    <div className="flex items-center gap-2 bg-black/20 rounded-md px-2 py-1.5">
+                        <div className={`w-2 h-2 rounded-full ${statusColors[status]} ${status === "online" ? "animate-pulse" : ""}`} />
+                        <span className="text-[10px] font-medium text-muted-foreground/90">{statusLabels[status]}</span>
+                    </div>
 
-                {/* IP */}
-                <div className="text-xs text-muted-foreground font-mono">
-                    {ip}
+                    {/* IP */}
+                    <div className="flex items-center justify-end px-2 py-1.5">
+                        <span className="text-[10px] text-muted-foreground font-mono tracking-wide">{ip}</span>
+                    </div>
                 </div>
 
                 {/* Notificaciones */}
                 {notifications > 0 && (
-                    <div className="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400">
-                        <BellAlertIcon className="w-4 h-4" />
-                        <span>{notifications} {notifications === 1 ? "alerta" : "alertas"}</span>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-orange-500/10 border border-orange-500/20 text-orange-500 animate-in fade-in slide-in-from-bottom-1">
+                        <BellAlertIcon className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-medium">{notifications} {notifications === 1 ? "alerta" : "alertas"}</span>
                     </div>
                 )}
             </div>

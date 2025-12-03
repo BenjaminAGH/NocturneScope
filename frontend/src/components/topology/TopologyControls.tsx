@@ -481,6 +481,20 @@ export default function TopologyControls({
                                             ))}
                                         </select>
                                     </div>
+                                    <div>
+                                        <label className="text-xs text-muted-foreground">Color del Nodo</label>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <input
+                                                type="color"
+                                                className="h-8 w-12 bg-transparent border border-border rounded cursor-pointer"
+                                                value={(selectedNode.data as any).color || '#3b82f6'}
+                                                onChange={(e) => onUpdateNodeData(selectedNode.id, { color: e.target.value })}
+                                            />
+                                            <span className="text-xs font-mono text-muted-foreground">
+                                                {(selectedNode.data as any).color || '#3b82f6'}
+                                            </span>
+                                        </div>
+                                    </div>
                                     {jwt && (
                                         <DeviceDetails deviceId={(selectedNode.data as any).deviceName || selectedNode.id} jwt={jwt} />
                                     )}
