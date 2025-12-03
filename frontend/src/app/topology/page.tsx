@@ -40,7 +40,9 @@ import TrafficNode, { TrafficNodeData } from "@/components/topology/TrafficNode"
 import TrafficTriggerNode, { TrafficTriggerNodeData } from "@/components/topology/TrafficTriggerNode";
 import TimeWindowNode, { TimeWindowNodeData } from "@/components/topology/TimeWindowNode";
 import ThresholdNode, { ThresholdNodeData } from "@/components/topology/ThresholdNode";
+
 import DeviceDetailsNode, { DeviceDetailsNodeData } from "@/components/topology/DeviceDetailsNode";
+import StatisticsNode, { StatisticsNodeData } from "@/components/topology/StatisticsNode";
 import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
 import { useGroup } from "@/context/GroupContext";
@@ -59,7 +61,9 @@ const nodeTypes = {
     'traffic-trigger': TrafficTriggerNode,
     'time-window': TimeWindowNode,
     'threshold': ThresholdNode,
+
     'details': DeviceDetailsNode,
+    'statistics': StatisticsNode,
 };
 
 function TopologyEditor() {
@@ -359,6 +363,22 @@ function TopologyEditor() {
                                         ip: update.ip || currentData.ip,
                                         diskPartitions: update.diskPartitions,
                                         os: update.os || currentData.os
+                                    }
+                                };
+                                nodesChanged = true;
+                            }
+                        }
+
+
+                        // Actualizar Statistics Nodes
+                        if (node.type === "statistics") {
+                            const data = node.data as StatisticsNodeData;
+                            if (data.deviceId && stats[data.deviceId]) {
+                                nextNodes[index] = {
+                                    ...node,
+                                    data: {
+                                        ...data,
+                                        stats: stats[data.deviceId]
                                     }
                                 };
                                 nodesChanged = true;

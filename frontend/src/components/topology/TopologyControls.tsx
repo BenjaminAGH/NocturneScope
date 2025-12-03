@@ -522,6 +522,40 @@ export default function TopologyControls({
                                 </div>
                             )}
 
+                            {/* Statistics Node Configuration */}
+                            {selectedNode.type === 'statistics' && (
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="text-xs text-muted-foreground">Dispositivo Monitorizado</label>
+                                        <select
+                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                            value={(selectedNode.data as any).deviceId || ""}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { deviceId: e.target.value })}
+                                        >
+                                            <option value="">Seleccionar dispositivo...</option>
+                                            {devices.map(dev => (
+                                                <option key={dev} value={dev}>{dev}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-muted-foreground">Tipo de Métrica</label>
+                                        <select
+                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
+                                            value={(selectedNode.data as any).metricType || ""}
+                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { metricType: e.target.value })}
+                                        >
+                                            <option value="">Seleccionar métrica...</option>
+                                            <option value="cpu">CPU</option>
+                                            <option value="ram">RAM</option>
+                                            <option value="disk">Disco</option>
+                                            <option value="network">Red</option>
+                                            <option value="temp">Temperatura</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Monitoring Node Config */}
                             {selectedNode.type === 'monitoring' && (
                                 <>
