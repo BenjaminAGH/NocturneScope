@@ -396,27 +396,12 @@ function DashboardContent() {
             </div>
             <span className="text-xl font-bold">{last?.disk?.toFixed(1) || "0"}%</span>
           </div>
-          <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
-            <div
-              className="bg-emerald-500 h-full transition-all duration-500"
-              style={{ width: `${Math.min(last?.disk || 0, 100)}%` }}
-            />
-          </div>
-          <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-            <span>Usado: {last?.disk_used ? formatBytes(last.disk_used) : "0 B"}</span>
-            <span>Total: {last?.disk_total ? formatBytes(last.disk_total) : "0 B"}</span>
-          </div>
-
           {/* Disk Partitions Grid */}
           {(() => {
             if (!last) return null;
             const partitions = Object.keys(last)
               .filter(k => k.startsWith('disk_usage_'))
               .map(k => {
-                const mount = k.replace('disk_usage_', '').replace('_root', '/').replace(/_/g, '/'); // Simple reverse mapping
-                // Note: Reverse mapping might be imperfect if paths had underscores.
-                // Better to just show the sanitized name or try to reconstruct.
-                // For now, let's just show the suffix.
                 const displayMount = k.replace('disk_usage_', '').replace('_root', '/');
                 return {
                   id: k,
@@ -428,32 +413,64 @@ function DashboardContent() {
               })
               .sort((a, b) => a.mount.localeCompare(b.mount));
 
-            if (partitions.length === 0) return null;
+            // Calculate total disk size from partitions for the bar
+            const totalDiskSize = partitions.reduce((acc, p) => acc + (p.total || 0), 0);
+
+            // Colors for partitions
+            const colors = [
+              "bg-emerald-500",
+              "bg-blue-500",
+              "bg-purple-500",
+              "bg-orange-500",
+              "bg-pink-500",
+              "bg-cyan-500",
+            ];
 
             return (
-              <div className="mt-3 space-y-1 border-t border-border/50 pt-2">
-                <div className="text-[10px] text-muted-foreground uppercase">Particiones ({partitions.length})</div>
-                <div className="grid grid-cols-1 gap-3">
-                  {partitions.map((p) => (
-                    <div key={p.id} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-mono text-[10px] truncate max-w-[100px]" title={p.mount}>{p.mount}</span>
-                        <span className="text-[10px] font-mono">{p.usage?.toFixed(0)}%</span>
-                      </div>
-                      <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
-                        <div
-                          className={`h-full ${p.usage > 90 ? 'bg-red-500' : 'bg-emerald-500'}`}
-                          style={{ width: `${Math.min(p.usage || 0, 100)}%` }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
-                        <span>{formatBytes(p.used)}</span>
-                        <span>{formatBytes(p.total)}</span>
-                      </div>
-                    </div>
-                  ))}
+              <>
+                <div className="w-full bg-muted/30 rounded-full h-4 overflow-hidden flex mt-2 ring-1 ring-border/20">
+                  {partitions.map((p, i) => {
+                    // Calculate width relative to TOTAL disk size
+                    const width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
+                    return (
+                      <div
+                        key={p.id}
+                        className={`${colors[i % colors.length]} h-full transition-all duration-500 hover:opacity-80`}
+                        style={{ width: `${width}%` }}
+                        title={`${p.mount}: ${formatBytes(p.used)} (${p.usage?.toFixed(1)}%)`}
+                      />
+                    );
+                  })}
+                  {/* The remaining space is automatically "free" because the container is bg-muted/30 (gray) */}
                 </div>
-              </div>
+
+                <div className="mt-2 text-xs text-muted-foreground flex justify-between">
+                  <span>Usado: {last?.disk_used ? formatBytes(last.disk_used) : "0 B"}</span>
+                  <span>Total: {last?.disk_total ? formatBytes(last.disk_total) : "0 B"}</span>
+                </div>
+
+                {partitions.length > 0 && (
+                  <div className="mt-4 space-y-2 border-t border-border/50 pt-3">
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Detalle de Particiones</div>
+                    <div className="grid grid-cols-1 gap-3">
+                      {partitions.map((p, i) => (
+                        <div key={p.id} className="flex items-center justify-between text-xs group">
+                          <div className="flex items-center gap-2 overflow-hidden">
+                            <div className={`w-2 h-2 rounded-full ${colors[i % colors.length]}`} />
+                            <span className="font-mono text-[11px] truncate" title={p.mount}>{p.mount}</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-muted-foreground">
+                            <span className="font-mono text-[10px]">{formatBytes(p.used)} / {formatBytes(p.total)}</span>
+                            <span className={`font-mono text-[10px] w-10 text-right ${p.usage > 90 ? 'text-red-500 font-bold' : ''}`}>
+                              {p.usage?.toFixed(0)}%
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             );
           })()}
         </div>
