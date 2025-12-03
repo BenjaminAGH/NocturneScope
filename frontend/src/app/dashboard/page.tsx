@@ -388,7 +388,7 @@ function DashboardContent() {
         </div>
 
         {/* Disk Card - Overview */}
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between h-52">
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <CircleStackIcon className="w-5 h-5 text-emerald-500" />
@@ -442,24 +442,26 @@ function DashboardContent() {
 
             return (
               <div className="flex flex-col justify-end flex-1">
-                <div className="w-full bg-muted/30 rounded-full h-4 overflow-hidden flex ring-1 ring-border/20 relative group cursor-help">
-                  {partitions.map((p, i) => {
-                    // Calculate width relative to TOTAL disk size
-                    let width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
-                    // Ensure minimum width for visibility if used > 0
-                    if (p.used > 0 && width < 2) width = 2;
+                <div className="relative group w-full mt-2">
+                  <div className="w-full bg-muted/30 rounded-full h-4 overflow-hidden flex ring-1 ring-border/20">
+                    {partitions.map((p, i) => {
+                      // Calculate width relative to TOTAL disk size
+                      let width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
+                      // Ensure minimum width for visibility if used > 0
+                      if (p.used > 0 && width < 2) width = 2;
 
-                    return (
-                      <div
-                        key={p.id}
-                        className={`${colors[i % colors.length]} h-full transition-all duration-500 hover:opacity-80`}
-                        style={{ width: `${width}%` }}
-                      />
-                    );
-                  })}
+                      return (
+                        <div
+                          key={p.id}
+                          className={`${colors[i % colors.length]} h-full transition-all duration-500 hover:opacity-80`}
+                          style={{ width: `${width}%` }}
+                        />
+                      );
+                    })}
+                  </div>
 
-                  {/* Tooltip for all partitions */}
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 bg-popover text-popover-foreground text-xs rounded-md border border-border shadow-md p-2 z-50">
+                  {/* Tooltip for all partitions - Moved outside overflow-hidden */}
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 bg-popover text-popover-foreground text-xs rounded-md border border-border shadow-md p-2 z-50 pointer-events-none">
                     <div className="font-medium mb-1 border-b border-border/50 pb-1">Detalle de Particiones</div>
                     <div className="space-y-1">
                       {partitions.map((p, i) => (
@@ -484,7 +486,7 @@ function DashboardContent() {
           })()}
         </div>
 
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between h-52">
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-2">
             <FireIcon className="w-5 h-5 text-red-500" />
             <span className="text-sm font-medium text-muted-foreground">Temperatura</span>
