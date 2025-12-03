@@ -17,7 +17,7 @@ import {
   getLastStats,
   getTimeseries,
 } from "@/lib/api/api";
-import { formatCL, formatTickCL } from "@/lib/time";
+import { formatCL, formatTickCL, formatDuration } from "@/lib/time";
 import LogViewer from "@/components/LogViewer";
 import NetworkTrafficLog from "@/components/dashboard/NetworkTrafficLog";
 import {
@@ -42,12 +42,10 @@ const FIELD_OPTIONS = [
   { v: "net_rx", l: "Net RX (B/s)" },
   { v: "net_tx", l: "Net TX (B/s)" },
   { v: "temp", l: "Temp (°C)" },
-  { v: "uptime", l: "Uptime (s)" },
+  { v: "temp", l: "Temp (°C)" },
 ];
 
 const RANGE_OPTIONS = ["30m", "1h", "6h", "24h", "7d"];
-const INTERVAL_OPTIONS = ["1m", "5m", "15m", "1h"];
-const AGG_OPTIONS = ["mean", "min", "max", "last"];
 
 import { useGroup } from "@/context/GroupContext";
 
@@ -61,8 +59,6 @@ function DashboardContent() {
   const [device, setDevice] = useState<string>("");
   const [field, setField] = useState<string>("cpu");
   const [range, setRange] = useState<string>("1h");
-  const [interval, setInterval] = useState<string>("1m");
-  const [agg, setAgg] = useState<string>("mean");
 
   const [points, setPoints] = useState<Point[]>([]);
   const [last, setLast] = useState<Record<string, any> | null>(null);
@@ -121,7 +117,7 @@ function DashboardContent() {
       try {
         const [lastStats, ts] = await Promise.all([
           getLastStats(jwt, device),
-          getTimeseries(jwt, { device, field, range, agg, interval }),
+          getTimeseries(jwt, { device, field, range, agg: "mean", interval: "1m" }),
         ]);
         setLast(lastStats);
         const sortedPoints = (ts.points || []).sort((a: Point, b: Point) =>
@@ -136,14 +132,15 @@ function DashboardContent() {
     };
 
     fetchMetrics();
+    fetchMetrics();
     const intervalId = window.setInterval(fetchMetrics, 5000);
     return () => window.clearInterval(intervalId);
-  }, [jwt, device, field, range, agg, interval]);
+  }, [jwt, device, field, range]);
 
   const subtitle = useMemo(() => {
     const f = FIELD_OPTIONS.find(x => x.v === field)?.l ?? field;
-    return `${device ? device : "—"} • ${f} • ${range} • ${agg.toUpperCase()}`;
-  }, [device, field, range, agg]);
+    return `${device ? device : "—"} • ${f} • ${range}`;
+  }, [device, field, range]);
 
   // Helper for CPU Cores
   const getCpuCores = () => {
@@ -233,36 +230,6 @@ function DashboardContent() {
               ))}
             </select>
           </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Intervalo</label>
-            <select
-              className="w-full bg-background border rounded px-3 py-2 text-sm"
-              value={interval}
-              onChange={(e) => setInterval(e.target.value)}
-            >
-              {INTERVAL_OPTIONS.map((i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Agregación</label>
-            <select
-              className="w-full bg-background border rounded px-3 py-2 text-sm"
-              value={agg}
-              onChange={(e) => setAgg(e.target.value)}
-            >
-              {AGG_OPTIONS.map((a) => (
-                <option key={a} value={a}>
-                  {a.toUpperCase()}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
 
@@ -296,6 +263,12 @@ function DashboardContent() {
             <div className="text-xs text-muted-foreground truncate">
               {last?.os || last?.os_name || last?.platform || "Sistema Desconocido"} {last?.os_version || ""}
             </div>
+            {last?.uptime && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <ClockIcon className="w-3 h-3" />
+                <span>Uptime: {formatDuration(last.uptime)}</span>
+              </div>
+            )}
           </div>
         </div>
 

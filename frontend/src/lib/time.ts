@@ -21,3 +21,19 @@ export function formatTickCL(iso: string | number | Date) {
     minute: "2-digit",
   }).format(d);
 }
+
+export function formatDuration(seconds: number): string {
+  if (!seconds || seconds < 0) return "0s";
+
+  const days = Math.floor(seconds / (3600 * 24));
+  const hours = Math.floor((seconds % (3600 * 24)) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (parts.length === 0) return "< 1m";
+
+  return parts.join(" ");
+}

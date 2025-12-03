@@ -18,7 +18,6 @@ interface TrafficLog {
     destination_port: number;
     protocol: string;
     connection_state: string;
-    threat_level: string;
     timestamp: string;
 }
 
@@ -65,7 +64,7 @@ function TrafficNode({ id, data, selected }: NodeProps) {
             const timeB = new Date(b.timestamp).getTime();
             if (timeA !== timeB) return timeB - timeA;
 
-            // 2. Threat Score
+            // 2. State Score
             const scoreA = getSortScore(a);
             const scoreB = getSortScore(b);
             return scoreB - scoreA;
@@ -74,12 +73,6 @@ function TrafficNode({ id, data, selected }: NodeProps) {
 
     const getSortScore = (log: TrafficLog) => {
         let score = 0;
-        // Threat
-        switch (log.threat_level?.toUpperCase()) {
-            case "CRITICAL": score += 100; break;
-            case "HIGH": score += 90; break;
-            case "MEDIUM": score += 10; break;
-        }
         // State
         if (log.connection_state === "ESTABLISHED") score += 50;
         else if (log.connection_state?.includes("SYN")) score += 40;
@@ -87,14 +80,8 @@ function TrafficNode({ id, data, selected }: NodeProps) {
         return score;
     };
 
-    const getRowColor = (level: string, index: number) => {
-        const base = index % 2 === 0 ? "bg-background" : "bg-muted/20";
-        switch (level?.toUpperCase()) {
-            case "CRITICAL": return "bg-red-900/20 text-red-200";
-            case "HIGH": return "bg-red-900/10 text-red-300";
-            case "MEDIUM": return "bg-orange-900/10 text-orange-300";
-            default: return base;
-        }
+    const getRowColor = (index: number) => {
+        return index % 2 === 0 ? "bg-background" : "bg-muted/20";
     };
 
     const formatTime = (ts: string) => {
@@ -154,21 +141,18 @@ function TrafficNode({ id, data, selected }: NodeProps) {
                                 <th className="px-2 py-1 border-r border-border/50 w-28" title="Dirección IP de origen del paquete">Source</th>
                                 <th className="px-2 py-1 border-r border-border/50 w-16" title="Protocolo de transporte (TCP/UDP)">Proto</th>
                                 <th className="px-2 py-1 border-r border-border/50 w-16" title="Puerto de destino">Port</th>
-                                <th className="px-2 py-1" title="Información adicional (Estado, Nivel de Amenaza)">Info</th>
+                                <th className="px-2 py-1" title="Información adicional (Estado)">Info</th>
                             </tr>
                         </thead>
                         <tbody>
                             {logs.map((log, i) => (
-                                <tr key={log.id || i} className={`hover:bg-accent/50 cursor-pointer ${getRowColor(log.threat_level, i)}`}>
+                                <tr key={log.id || i} className={`hover:bg-accent/50 cursor-pointer ${getRowColor(i)}`}>
                                     <td className="px-2 py-0.5 border-r border-border/30 whitespace-nowrap text-muted-foreground">{formatTime(log.timestamp)}</td>
                                     <td className="px-2 py-0.5 border-r border-border/30 truncate max-w-[100px]">{log.source_ip}</td>
                                     <td className="px-2 py-0.5 border-r border-border/30 text-blue-400">{log.protocol}</td>
                                     <td className="px-2 py-0.5 border-r border-border/30">{log.destination_port}</td>
                                     <td className="px-2 py-0.5 truncate max-w-[150px]">
                                         <span className="opacity-80">{log.connection_state}</span>
-                                        {log.threat_level && log.threat_level !== "LOW" && (
-                                            <span className="ml-2 font-bold text-red-500">[{log.threat_level}]</span>
-                                        )}
                                     </td>
                                 </tr>
                             ))}

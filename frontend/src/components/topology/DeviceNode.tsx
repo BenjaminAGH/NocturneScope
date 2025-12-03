@@ -2,7 +2,8 @@
 
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { ComputerDesktopIcon, BellAlertIcon } from "@heroicons/react/24/outline";
+import { ComputerDesktopIcon, BellAlertIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { formatDuration } from "@/lib/time";
 
 export interface DeviceNodeData extends Record<string, unknown> {
     deviceName: string;
@@ -12,6 +13,7 @@ export interface DeviceNodeData extends Record<string, unknown> {
     notifications?: number;
     os?: string;
     color?: string;
+    uptime?: number;
 }
 
 function getOSIcon(os: string) {
@@ -50,6 +52,7 @@ function DeviceNode({ data }: NodeProps) {
     const notifications = typedData.notifications || 0;
     const os = typedData.os || "";
     const color = typedData.color || "#c4a7e7"; // Default Rose Pine Iris
+    const uptime = typedData.uptime || 0;
 
     const statusColors = {
         online: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]",
@@ -128,6 +131,14 @@ function DeviceNode({ data }: NodeProps) {
                         <span className="text-[10px] text-muted-foreground font-mono tracking-wide">{ip}</span>
                     </div>
                 </div>
+
+                {/* Uptime */}
+                {uptime > 0 && (
+                    <div className="flex items-center gap-1.5 px-2 py-1 bg-black/20 rounded-md">
+                        <ClockIcon className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-[10px] font-mono text-muted-foreground/90">{formatDuration(uptime)}</span>
+                    </div>
+                )}
 
                 {/* Notificaciones */}
                 {notifications > 0 && (

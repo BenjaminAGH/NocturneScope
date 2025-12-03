@@ -113,22 +113,19 @@ export default function NetworkTrafficLog({ device }: NetworkTrafficLogProps) {
                             <th className="py-2 px-2 cursor-pointer hover:text-foreground" onClick={() => handleSort("connection_state")}>
                                 Estado <SortIcon column="connection_state" />
                             </th>
-                            <th className="py-2 px-2 cursor-pointer hover:text-foreground" onClick={() => handleSort("threat_level")}>
-                                Amenaza <SortIcon column="threat_level" />
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading && logs.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="py-4 text-center text-muted-foreground">
+                                <td colSpan={5} className="py-4 text-center text-muted-foreground">
                                     Cargando...
                                 </td>
                             </tr>
                         )}
                         {!loading && logs.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="py-4 text-center text-muted-foreground">
+                                <td colSpan={5} className="py-4 text-center text-muted-foreground">
                                     Sin datos recientes
                                 </td>
                             </tr>
@@ -142,13 +139,6 @@ export default function NetworkTrafficLog({ device }: NetworkTrafficLogProps) {
                                 <td className="py-2 px-2">{log.source_ip}</td>
                                 <td className="py-2 px-2">{log.destination_port}</td>
                                 <td className="py-2 px-2">{log.connection_state}</td>
-                                <td className={`py-2 px-2 font-bold ${log.threat_level === "CRITICAL" ? "text-red-500" :
-                                    log.threat_level === "HIGH" ? "text-orange-500" :
-                                        log.threat_level === "MEDIUM" ? "text-yellow-500" :
-                                            "text-green-500"
-                                    }`}>
-                                    {log.threat_level}
-                                </td>
                             </tr>
                         ))}
                     </tbody>

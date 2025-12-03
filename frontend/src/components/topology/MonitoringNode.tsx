@@ -33,8 +33,6 @@ function MonitoringNode({ id, data, selected }: NodeProps) {
         connectedDevice,
         metric = "cpu",
         range = "1h",
-        interval = "1m",
-        agg = "mean"
     } = typedData;
 
     const [points, setPoints] = useState<{ t: string; v: number }[]>([]);
@@ -51,8 +49,8 @@ function MonitoringNode({ id, data, selected }: NodeProps) {
                     device: connectedDevice,
                     field: metric,
                     range,
-                    agg,
-                    interval,
+                    agg: "mean",
+                    interval: "1m",
                 });
                 setPoints(ts.points || []);
             } catch (e) {
@@ -63,7 +61,7 @@ function MonitoringNode({ id, data, selected }: NodeProps) {
         fetchData();
         const intervalId = setInterval(fetchData, 5000);
         return () => clearInterval(intervalId);
-    }, [jwt, connectedDevice, metric, range, interval, agg, id]);
+    }, [jwt, connectedDevice, metric, range, id]);
 
     const color = METRIC_COLORS[metric] || "#8884d8";
     const gradientId = `fill-${id}-${metric}`;
@@ -101,7 +99,7 @@ function MonitoringNode({ id, data, selected }: NodeProps) {
                         {metric}
                     </span>
                     <span className="text-xs font-mono bg-background px-2 py-0.5 rounded border text-muted-foreground">
-                        {agg} • {range}
+                        {range}
                     </span>
                 </div>
             </div>
