@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon, ComputerDesktopIcon, PresentationChartLineIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 import DeviceDetails from "./DeviceDetails";
@@ -29,6 +29,7 @@ interface TopologyControlsProps {
     onAddTimeWindowNode: () => void;
     onAddThresholdNode: () => void;
     onAddDetailsNode: () => void;
+    onAddStatisticsNode: () => void;
     selectedNode: Node<any> | undefined;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
@@ -86,6 +87,7 @@ export default function TopologyControls({
     onAddTimeWindowNode,
     onAddThresholdNode,
     onAddDetailsNode,
+    onAddStatisticsNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,
@@ -254,6 +256,19 @@ export default function TopologyControls({
                                     >
                                         <GlobeAltIcon className="w-6 h-6" />
                                         <span className="text-xs">Tráfico</span>
+                                    </button>
+                                    <button
+                                        onClick={onAddStatisticsNode}
+                                        draggable
+                                        onDragStart={(event) => {
+                                            event.dataTransfer.setData('application/reactflow', 'statistics');
+                                            event.dataTransfer.effectAllowed = 'move';
+                                        }}
+                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
+                                        title="Muestra una tarjeta de estadística específica (CPU, RAM, etc.) para un dispositivo."
+                                    >
+                                        <PresentationChartLineIcon className="w-6 h-6" />
+                                        <span className="text-xs">Estadística</span>
                                     </button>
                                 </>
                             )}
