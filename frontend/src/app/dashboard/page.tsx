@@ -326,7 +326,7 @@ function DashboardContent() {
             </div>
             <span className="text-xl font-bold">{last?.cpu?.toFixed(1) || "0"}%</span>
           </div>
-          <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-muted/30 rounded-full h-2 overflow-hidden">
             <div
               className="bg-purple-500 h-full transition-all duration-500"
               style={{ width: `${Math.min(last?.cpu || 0, 100)}%` }}
@@ -375,7 +375,7 @@ function DashboardContent() {
             </div>
             <span className="text-xl font-bold">{last?.ram?.toFixed(1) || "0"}%</span>
           </div>
-          <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-muted/30 rounded-full h-2 overflow-hidden">
             <div
               className="bg-orange-500 h-full transition-all duration-500"
               style={{ width: `${Math.min(last?.ram || 0, 100)}%` }}
@@ -390,11 +390,8 @@ function DashboardContent() {
         {/* Disk Card */}
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <CircleStackIcon className="w-5 h-5 text-emerald-500" />
-              <span className="text-sm font-medium text-muted-foreground">Almacenamiento</span>
-            </div>
-            <span className="text-xl font-bold">{last?.disk?.toFixed(1) || "0"}%</span>
+            <CircleStackIcon className="w-5 h-5 text-emerald-500" />
+            <span className="text-sm font-medium text-muted-foreground">Almacenamiento</span>
           </div>
           {/* Disk Partitions Grid */}
           {(() => {
@@ -475,7 +472,7 @@ function DashboardContent() {
           })()}
         </div>
 
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between h-fit">
           <div className="flex items-center gap-2 mb-2">
             <FireIcon className="w-5 h-5 text-red-500" />
             <span className="text-sm font-medium text-muted-foreground">Temperatura</span>

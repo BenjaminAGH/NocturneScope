@@ -100,7 +100,7 @@ function DeviceNode({ data }: NodeProps) {
                                         <span className="font-mono text-[10px] truncate max-w-[80px]" title={p.mount}>{p.mount}</span>
                                         <span className="text-[10px] font-mono">{p.usage?.toFixed(0)}%</span>
                                     </div>
-                                    <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                                    <div className="w-full bg-muted/30 rounded-full h-1.5 overflow-hidden">
                                         <div
                                             className={`h-full ${p.usage > 90 ? 'bg-red-500' : 'bg-emerald-500'}`}
                                             style={{ width: `${Math.min(p.usage || 0, 100)}%` }}
