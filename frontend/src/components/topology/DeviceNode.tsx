@@ -67,20 +67,12 @@ function DeviceNode({ data }: NodeProps) {
     };
 
     return (
-        <div
-            className="min-w-[220px] rounded-xl bg-card border-2 shadow-sm transition-all duration-300 hover:shadow-md relative overflow-hidden group"
-            style={{
-                borderColor: color
-            }}
-        >
-            {/* Top Border Accent */}
-            <div className="absolute top-0 left-0 right-0 h-1" style={{ background: color }} />
-
+        <div className="relative min-w-[220px] group">
             {/* Input */}
             <Handle
                 type="target"
                 position={Position.Top}
-                className="w-3 h-3 !bg-background !border-2 !border-primary"
+                className="w-3 h-3 !bg-background !border-2 !border-primary z-50"
             />
 
             {/* Outputs */}
@@ -88,65 +80,75 @@ function DeviceNode({ data }: NodeProps) {
                 type="source"
                 position={Position.Right}
                 id="s-right"
-                className="w-3 h-3 !bg-background !border-2 !border-primary"
+                className="w-3 h-3 !bg-background !border-2 !border-primary z-50"
             />
             <Handle
                 type="source"
                 position={Position.Bottom}
                 id="s-bottom"
-                className="w-3 h-3 !bg-background !border-2 !border-primary"
+                className="w-3 h-3 !bg-background !border-2 !border-primary z-50"
             />
             <Handle
                 type="source"
                 position={Position.Left}
                 id="s-left"
-                className="w-3 h-3 !bg-background !border-2 !border-primary"
+                className="w-3 h-3 !bg-background !border-2 !border-primary z-50"
             />
 
-            <div className="p-4 space-y-3 relative z-10">
-                {/* Header con icono y nombre */}
-                <div className="flex items-center gap-3">
-                    <div
-                        className="p-2 rounded-lg bg-white/5 border border-white/10 shadow-inner text-foreground"
-                        style={{ color: color }}
-                    >
-                        {getOSIcon(os)}
+            <div
+                className="rounded-xl bg-card border-2 shadow-sm transition-all duration-300 hover:shadow-md relative overflow-hidden"
+                style={{
+                    borderColor: color
+                }}
+            >
+                {/* Top Border Accent */}
+                <div className="absolute top-0 left-0 right-0 h-1" style={{ background: color }} />
+
+                <div className="p-4 space-y-3 relative z-10">
+                    {/* Header con icono y nombre */}
+                    <div className="flex items-center gap-3">
+                        <div
+                            className="p-2 rounded-lg bg-white/5 border border-white/10 shadow-inner text-foreground"
+                            style={{ color: color }}
+                        >
+                            {getOSIcon(os)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <div className="font-bold text-sm truncate text-foreground/90">{label}</div>
+                            <div className="text-[10px] text-muted-foreground font-mono truncate opacity-70">{typedData.deviceName}</div>
+                        </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                        <div className="font-bold text-sm truncate text-foreground/90">{label}</div>
-                        <div className="text-[10px] text-muted-foreground font-mono truncate opacity-70">{typedData.deviceName}</div>
+
+                    {/* Info Grid */}
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                        {/* Estado */}
+                        <div className="flex items-center gap-2 bg-black/20 rounded-md px-2 py-1.5">
+                            <div className={`w-2 h-2 rounded-full ${statusColors[status]} ${status === "online" ? "animate-pulse" : ""}`} />
+                            <span className="text-[10px] font-medium text-muted-foreground/90">{statusLabels[status]}</span>
+                        </div>
+
+                        {/* IP */}
+                        <div className="flex items-center justify-end px-2 py-1.5">
+                            <span className="text-[10px] text-muted-foreground font-mono tracking-wide">{ip}</span>
+                        </div>
                     </div>
+
+                    {/* Uptime */}
+                    {uptime > 0 && (
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-black/20 rounded-md">
+                            <ClockIcon className="w-3 h-3 text-muted-foreground" />
+                            <span className="text-[10px] font-mono text-muted-foreground/90">{formatDuration(uptime)}</span>
+                        </div>
+                    )}
+
+                    {/* Notificaciones */}
+                    {notifications > 0 && (
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-orange-500/10 border border-orange-500/20 text-orange-500 animate-in fade-in slide-in-from-bottom-1">
+                            <BellAlertIcon className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-medium">{notifications} {notifications === 1 ? "alerta" : "alertas"}</span>
+                        </div>
+                    )}
                 </div>
-
-                {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                    {/* Estado */}
-                    <div className="flex items-center gap-2 bg-black/20 rounded-md px-2 py-1.5">
-                        <div className={`w-2 h-2 rounded-full ${statusColors[status]} ${status === "online" ? "animate-pulse" : ""}`} />
-                        <span className="text-[10px] font-medium text-muted-foreground/90">{statusLabels[status]}</span>
-                    </div>
-
-                    {/* IP */}
-                    <div className="flex items-center justify-end px-2 py-1.5">
-                        <span className="text-[10px] text-muted-foreground font-mono tracking-wide">{ip}</span>
-                    </div>
-                </div>
-
-                {/* Uptime */}
-                {uptime > 0 && (
-                    <div className="flex items-center gap-1.5 px-2 py-1 bg-black/20 rounded-md">
-                        <ClockIcon className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-[10px] font-mono text-muted-foreground/90">{formatDuration(uptime)}</span>
-                    </div>
-                )}
-
-                {/* Notificaciones */}
-                {notifications > 0 && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-orange-500/10 border border-orange-500/20 text-orange-500 animate-in fade-in slide-in-from-bottom-1">
-                        <BellAlertIcon className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-medium">{notifications} {notifications === 1 ? "alerta" : "alertas"}</span>
-                    </div>
-                )}
             </div>
         </div>
     );

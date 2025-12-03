@@ -53,19 +53,6 @@ const RANGE_OPTIONS = [
     { value: "7d", label: "7 Días" },
 ];
 
-const INTERVAL_OPTIONS = [
-    { value: "1m", label: "1 Minuto" },
-    { value: "5m", label: "5 Minutos" },
-    { value: "15m", label: "15 Minutos" },
-    { value: "1h", label: "1 Hora" },
-];
-
-const AGG_OPTIONS = [
-    { value: "mean", label: "Promedio (Mean)" },
-    { value: "min", label: "Mínimo" },
-    { value: "max", label: "Máximo" },
-    { value: "last", label: "Último" },
-];
 
 export default function TopologyControls({
     devices,
@@ -600,31 +587,6 @@ export default function TopologyControls({
                                         </select>
                                     </div>
 
-                                    <div>
-                                        <label className="text-xs text-muted-foreground">Intervalo</label>
-                                        <select
-                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={(selectedNode.data as any).interval || '1m'}
-                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { interval: e.target.value })}
-                                        >
-                                            {INTERVAL_OPTIONS.map(opt => (
-                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="text-xs text-muted-foreground">Agregación</label>
-                                        <select
-                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={(selectedNode.data as any).agg || 'mean'}
-                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { agg: e.target.value })}
-                                        >
-                                            {AGG_OPTIONS.map(opt => (
-                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                            ))}
-                                        </select>
-                                    </div>
                                 </>
                             )}
 

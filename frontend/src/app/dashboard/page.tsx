@@ -260,15 +260,17 @@ function DashboardContent() {
           </div>
           <div className="mt-4 space-y-1">
             <div className="text-2xl font-bold truncate" title={device}>{device || "—"}</div>
-            <div className="text-xs text-muted-foreground truncate">
-              {last?.os || last?.os_name || last?.platform || "Sistema Desconocido"} {last?.os_version || ""}
-            </div>
-            {last?.uptime && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <ClockIcon className="w-3 h-3" />
-                <span>Uptime: {formatDuration(last.uptime)}</span>
+            <div className="flex items-center justify-between mt-1">
+              <div className="text-xs text-muted-foreground truncate max-w-[60%]">
+                {last?.os || last?.os_name || last?.platform || "Sistema Desconocido"} {last?.os_version || ""}
               </div>
-            )}
+              {last?.uptime && (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <ClockIcon className="w-3 h-3" />
+                  <span>{formatDuration(last.uptime)}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
