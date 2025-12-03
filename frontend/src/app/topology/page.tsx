@@ -26,12 +26,11 @@ import {
     saveTopology,
     getTopologies,
     getTopology,
+    updateTopology,
     type Topology,
     type TopologyData,
 } from "@/lib/api/topology";
 import MonitoringNode, { MonitoringNodeData } from "@/components/topology/MonitoringNode";
-import MetricNode, { MetricNodeData } from "@/components/topology/MetricNode";
-import DetailNode, { DetailNodeData } from "@/components/topology/DetailNode";
 import ActionNode, { ActionNodeData } from "@/components/topology/ActionNode";
 import EmailNode, { EmailNodeData } from "@/components/topology/EmailNode";
 import NotificationNode, { NotificationNodeData } from "@/components/topology/NotificationNode";
@@ -46,13 +45,12 @@ import { useNotification } from "@/context/NotificationContext";
 import { playSound, SoundType } from "@/lib/soundPlayer";
 import { useGroup } from "@/context/GroupContext";
 import { migrateTopology } from "@/lib/topologyMigration";
+import { CpuNode, RamNode, DiskNode, NetworkNode } from "@/components/topology/StatisticNodes";
 
 const nodeTypes = {
     device: DeviceNode,
     router: RouterNode,
     monitoring: MonitoringNode,
-    metric: MetricNode,
-    detail: DetailNode,
     action: ActionNode,
     email: EmailNode,
     notification: NotificationNode,
@@ -63,6 +61,10 @@ const nodeTypes = {
     'time-window': TimeWindowNode,
     'threshold': ThresholdNode,
     'details': DeviceDetailsNode,
+    cpu: CpuNode,
+    ram: RamNode,
+    disk: DiskNode,
+    network: NetworkNode,
 };
 
 function TopologyEditor() {
@@ -1046,7 +1048,19 @@ function TopologyEditor() {
         setNodes((nds) => [...nds, newNode]);
     }, [setNodes]);
 
-
+    const handleAddDetailsNode = useCallback(() => {
+        takeSnapshot();
+        const id = `details-${++nodeIdCounter.current}`;
+        const newNode: Node<DeviceDetailsNodeData> = {
+            id,
+            type: "details",
+            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+            data: {
+                jwt: jwt || undefined,
+            },
+        };
+        setNodes((nds) => [...nds, newNode]);
+    }, [jwt, setNodes]);
 
     // Check Traffic Triggers
     // Use a ref to access current nodes inside interval without resetting it
@@ -1248,37 +1262,7 @@ function TopologyEditor() {
             },
         };
         setNodes((nds) => [...nds, newNode]);
-    }, [setNodes, jwt]);
-
-    const handleAddMetricNode = useCallback(() => {
-        takeSnapshot();
-        const id = `metric-${++nodeIdCounter.current}`;
-        const newNode: Node<MetricNodeData> = {
-            id,
-            type: "metric",
-            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
-            data: {
-                jwt: jwt || undefined,
-                metric: 'cpu',
-            },
-        };
-        setNodes((nds) => [...nds, newNode]);
-    }, [setNodes, jwt]);
-
-    const handleAddDetailsNode = useCallback(() => {
-        takeSnapshot();
-        const id = `detail-${++nodeIdCounter.current}`;
-        const newNode: Node<DetailNodeData> = {
-            id,
-            type: "detail",
-            position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
-            data: {
-                jwt: jwt || undefined,
-                selectedMetrics: ['cpu', 'ram', 'disk'],
-            },
-        };
-        setNodes((nds) => [...nds, newNode]);
-    }, [setNodes, jwt]);
+    }, [jwt, setNodes]);
 
     const handleAddTrafficTriggerNode = useCallback(() => {
         const id = `tt-${++nodeIdCounter.current}`;
@@ -1731,6 +1715,19 @@ function TopologyEditor() {
         }
     }, [router]);
 
+    const onAddNode = useCallback((type: string) => {
+        const id = `${type}-${++nodeIdCounter.current}`;
+        const position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+
+        const newNode: Node = {
+            id,
+            type,
+            position,
+            data: { label: `${type.charAt(0).toUpperCase() + type.slice(1)} Node` },
+        };
+        setNodes((nds) => nds.concat(newNode));
+    }, [screenToFlowPosition, setNodes]);
+
     const handleRenameTopology = async (id: number, newName: string) => {
         const jwt = localStorage.getItem("jwt");
         if (!jwt) return;
@@ -1888,7 +1885,7 @@ function TopologyEditor() {
                     onAddTimeWindowNode={handleAddTimeWindowNode}
                     onAddThresholdNode={handleAddThresholdNode}
                     onAddDetailsNode={handleAddDetailsNode}
-                    onAddMetricNode={handleAddMetricNode}
+                    onAddNode={onAddNode}
                     selectedNode={selectedNode}
                     onUpdateNodeData={handleUpdateNodeData}
                     onDelete={handleDeleteTopology}

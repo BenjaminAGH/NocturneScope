@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon, ComputerDesktopIcon, PresentationChartLineIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 import DeviceDetails from "./DeviceDetails";
@@ -29,7 +29,7 @@ interface TopologyControlsProps {
     onAddTimeWindowNode: () => void;
     onAddThresholdNode: () => void;
     onAddDetailsNode: () => void;
-    onAddMetricNode: () => void;
+    onAddNode: (type: string) => void;
     selectedNode: Node<any> | undefined;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
@@ -87,7 +87,7 @@ export default function TopologyControls({
     onAddTimeWindowNode,
     onAddThresholdNode,
     onAddDetailsNode,
-    onAddMetricNode,
+    onAddNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,
@@ -226,10 +226,42 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Visualiza métricas en tiempo real (CPU, RAM, etc.) de un dispositivo conectado."
                                     >
-                                        <ChartBarIcon className="w-6 h-6" />
-                                        <span className="text-xs">Gráfico</span>
+                                        <button
+                                            className="flex flex-col items-center justify-center p-2 bg-card border border-border rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+                                            onClick={() => onAddNode('cpu')}
+                                        >
+                                            <ChartBarIcon className="w-6 h-6 mb-1" />
+                                            <span className="text-[10px]">CPU</span>
+                                        </button>
+                                        <button
+                                            className="flex flex-col items-center justify-center p-2 bg-card border border-border rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+                                            onClick={() => onAddNode('ram')}
+                                        >
+                                            <ChartBarIcon className="w-6 h-6 mb-1" />
+                                            <span className="text-[10px]">RAM</span>
+                                        </button>
+                                        <button
+                                            className="flex flex-col items-center justify-center p-2 bg-card border border-border rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+                                            onClick={() => onAddNode('disk')}
+                                        >
+                                            <ChartBarIcon className="w-6 h-6 mb-1" />
+                                            <span className="text-[10px]">Disk</span>
+                                        </button>
+                                        <button
+                                            className="flex flex-col items-center justify-center p-2 bg-card border border-border rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+                                            onClick={() => onAddNode('network')}
+                                        >
+                                            <ChartBarIcon className="w-6 h-6 mb-1" />
+                                            <span className="text-[10px]">Network</span>
+                                        </button>
+                                        <button
+                                            className="flex flex-col items-center justify-center p-2 bg-card border border-border rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+                                            onClick={() => onAddNode('monitoring')}
+                                        >
+                                            <ChartBarIcon className="w-6 h-6 mb-1" />
+                                            <span className="text-[10px]">Custom</span>
+                                        </button>
                                     </button>
                                     <button
                                         onClick={onAddDetailsNode}
@@ -581,63 +613,6 @@ export default function TopologyControls({
                                 </>
                             )}
 
-                            {/* Metric Node Configuration */}
-                            {selectedNode.type === 'metric' && (
-                                <div className="space-y-3">
-                                    <div>
-                                        <label className="text-xs text-muted-foreground">Métrica</label>
-                                        <select
-                                            className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                            value={(selectedNode.data as any).metric || 'cpu'}
-                                            onChange={(e) => onUpdateNodeData(selectedNode.id, { metric: e.target.value })}
-                                        >
-                                            <option value="cpu">CPU Usage</option>
-                                            <option value="ram">RAM Usage</option>
-                                            <option value="disk">Disk Usage</option>
-                                            <option value="net_rx">Network RX</option>
-                                            <option value="net_tx">Network TX</option>
-                                            <option value="temp">Temperature</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Detail Node Configuration */}
-                            {selectedNode.type === 'detail' && (
-                                <div className="space-y-3">
-                                    <label className="text-xs text-muted-foreground">Métricas Visibles</label>
-                                    <div className="space-y-1">
-                                        {[
-                                            { id: 'cpu', label: 'CPU Usage' },
-                                            { id: 'ram', label: 'RAM Usage' },
-                                            { id: 'disk', label: 'Disk Usage' },
-                                            { id: 'net_rx', label: 'Network RX' },
-                                            { id: 'net_tx', label: 'Network TX' },
-                                            { id: 'temp', label: 'Temperature' },
-                                        ].map((metric) => {
-                                            const selectedMetrics = (selectedNode.data as any).selectedMetrics || ['cpu', 'ram', 'disk'];
-                                            const isSelected = selectedMetrics.includes(metric.id);
-                                            return (
-                                                <label key={metric.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 p-1 rounded">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={isSelected}
-                                                        onChange={(e) => {
-                                                            const newMetrics = e.target.checked
-                                                                ? [...selectedMetrics, metric.id]
-                                                                : selectedMetrics.filter((m: string) => m !== metric.id);
-                                                            onUpdateNodeData(selectedNode.id, { selectedMetrics: newMetrics });
-                                                        }}
-                                                        className="rounded border-border bg-background"
-                                                    />
-                                                    <span>{metric.label}</span>
-                                                </label>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            )}
-
                             {/* Action Node Config */}
                             {selectedNode.type === 'action' && (
                                 <>
@@ -948,38 +923,6 @@ export default function TopologyControls({
                             <TrashIcon className="w-4 h-4" />
                         </button>
                     </div>
-                </div>
-
-                {/* Acciones */}
-                <div className="border-t border-border pt-4 space-y-2">
-                    <button
-                        onClick={onAddMonitoringNode}
-                        className="flex flex-col items-center justify-center p-2 rounded-lg border border-border bg-card hover:bg-accent hover:text-accent-foreground transition-colors"
-                        title="Añadir Gráfico"
-                    >
-                        <PresentationChartLineIcon className="w-6 h-6 mb-1" />
-                        <span className="text-[10px]">Gráfico</span>
-                    </button>
-                    <button
-                        onClick={onAddMetricNode}
-                        className="flex flex-col items-center justify-center p-2 rounded-lg border border-border bg-card hover:bg-accent hover:text-accent-foreground transition-colors"
-                        title="Añadir Métrica"
-                    >
-                        <div className="w-6 h-6 mb-1 flex items-center justify-center border-2 border-current rounded text-[10px] font-bold">12</div>
-                        <span className="text-[10px]">Métrica</span>
-                    </button>
-                    <button
-                        onClick={onAddDetailsNode}
-                        className="flex flex-col items-center justify-center p-2 rounded-lg border border-border bg-card hover:bg-accent hover:text-accent-foreground transition-colors"
-                        title="Añadir Detalles"
-                    >
-                        <div className="w-6 h-6 mb-1 flex flex-col gap-0.5 justify-center px-1">
-                            <div className="h-0.5 w-full bg-current rounded-full"></div>
-                            <div className="h-0.5 w-full bg-current rounded-full"></div>
-                            <div className="h-0.5 w-full bg-current rounded-full"></div>
-                        </div>
-                        <span className="text-[10px]">Detalles</span>
-                    </button>
                 </div>
 
                 {/* Acciones */}
