@@ -29,7 +29,6 @@ interface TopologyControlsProps {
     onAddTimeWindowNode: () => void;
     onAddThresholdNode: () => void;
     onAddDetailsNode: () => void;
-    onAddNode: (type: string) => void;
     selectedNode: Node<any> | undefined;
     onUpdateNodeData: (id: string, data: any) => void;
     onDelete: (id: number) => void;
@@ -87,7 +86,6 @@ export default function TopologyControls({
     onAddTimeWindowNode,
     onAddThresholdNode,
     onAddDetailsNode,
-    onAddNode,
     selectedNode,
     onUpdateNodeData,
     onDelete,
@@ -219,19 +217,6 @@ export default function TopologyControls({
                             {(activeCategory === 'all' || activeCategory === 'monitoring') && (
                                 <>
                                     <button
-                                        onClick={() => onAddNode('stat')}
-                                        draggable
-                                        onDragStart={(event) => {
-                                            event.dataTransfer.setData('application/reactflow', 'stat');
-                                            event.dataTransfer.effectAllowed = 'move';
-                                        }}
-                                        className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Muestra una tarjeta con el valor actual de una métrica (CPU, RAM, etc.) estilo dashboard."
-                                    >
-                                        <ChartBarIcon className="w-6 h-6" />
-                                        <span className="text-xs">Estadística</span>
-                                    </button>
-                                    <button
                                         onClick={onAddMonitoringNode}
                                         draggable
                                         onDragStart={(event) => {
@@ -239,10 +224,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Gráfico de línea temporal configurable para cualquier métrica."
+                                        title="Visualiza métricas en tiempo real (CPU, RAM, etc.) de un dispositivo conectado."
                                     >
                                         <ChartBarIcon className="w-6 h-6" />
-                                        <span className="text-xs">Custom</span>
+                                        <span className="text-xs">Gráfico</span>
                                     </button>
                                     <button
                                         onClick={onAddDetailsNode}
@@ -468,7 +453,6 @@ export default function TopologyControls({
                     <div className="space-y-2 border-t border-border pt-4 animate-in fade-in slide-in-from-right-4">
                         <label className="text-sm font-medium text-primary">
                             {selectedNode.type === 'monitoring' && "Configuración de Gráfico"}
-                            {selectedNode.type === 'stat' && "Configuración de Estadística"}
                             {selectedNode.type === 'action' && "Regla de Disparo"}
                             {selectedNode.type === 'email' && "Configuración de Email"}
                             {selectedNode.type === 'notification' && "Configuración de Notificación"}
@@ -535,22 +519,6 @@ export default function TopologyControls({
                                     {jwt && (
                                         <DeviceDetails deviceId={(selectedNode.data as any).deviceName || selectedNode.id} jwt={jwt} />
                                     )}
-                                </div>
-                            )}
-
-                            {/* Stat Node Config */}
-                            {selectedNode.type === 'stat' && (
-                                <div>
-                                    <label className="text-xs text-muted-foreground">Métrica</label>
-                                    <select
-                                        className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
-                                        value={selectedNode.data.metric || 'cpu'}
-                                        onChange={(e) => onUpdateNodeData(selectedNode.id, { metric: e.target.value, label: e.target.options[e.target.selectedIndex].text })}
-                                    >
-                                        {METRIC_OPTIONS.map(opt => (
-                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                        ))}
-                                    </select>
                                 </div>
                             )}
 
