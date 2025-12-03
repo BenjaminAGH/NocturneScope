@@ -1561,9 +1561,32 @@ function TopologyEditor() {
                 });
             }
 
+            // Propagate Statistics Node changes to connected Action Nodes
+            if (updatedNode && updatedNode.type === 'statistics') {
+                const connectedEdges = edges.filter(e => e.source === id);
+                console.log("Propagating stats change:", id, data, "Connected edges:", connectedEdges.length);
+
+                return updatedNodes.map(n => {
+                    const isConnected = connectedEdges.some(e => e.target === n.id);
+
+                    if (isConnected && n.type === 'action') {
+                        console.log("Updating action node:", n.id, "with metric:", (updatedNode.data as StatisticsNodeData).metricType);
+                        return {
+                            ...n,
+                            data: {
+                                ...n.data,
+                                connectedDevice: (updatedNode.data as StatisticsNodeData).deviceId,
+                                metric: (updatedNode.data as StatisticsNodeData).metricType
+                            }
+                        };
+                    }
+                    return n;
+                });
+            }
+
             return updatedNodes;
         });
-    }, [setNodes]);
+    }, [setNodes, edges]);
 
 
 
