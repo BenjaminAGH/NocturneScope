@@ -388,7 +388,7 @@ function DashboardContent() {
         </div>
 
         {/* Disk Card - Overview */}
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between h-52">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <CircleStackIcon className="w-5 h-5 text-emerald-500" />
@@ -441,8 +441,8 @@ function DashboardContent() {
             ];
 
             return (
-              <>
-                <div className="w-full bg-muted/30 rounded-full h-4 overflow-hidden flex mt-2 ring-1 ring-border/20">
+              <div className="flex flex-col justify-end flex-1">
+                <div className="w-full bg-muted/30 rounded-full h-4 overflow-hidden flex ring-1 ring-border/20">
                   {partitions.map((p, i) => {
                     // Calculate width relative to TOTAL disk size
                     const width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
@@ -457,85 +457,87 @@ function DashboardContent() {
                   })}
                 </div>
 
-                <div className="mt-2 text-xs text-muted-foreground flex justify-between">
+                <div className="mt-3 text-xs text-muted-foreground flex justify-between">
                   <span>Usado: {formatBytes(totalDiskUsed)}</span>
                   <span>Total: {formatBytes(totalDiskSize)}</span>
                 </div>
-              </>
-            );
-          })()}
-        </div>
-
-        {/* Partition Details Card */}
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col h-full overflow-y-auto max-h-[200px] scrollbar-thin scrollbar-thumb-border">
-          <div className="flex items-center gap-2 mb-3 sticky top-0 bg-card z-10 pb-2 border-b border-border/50">
-            <CircleStackIcon className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Detalle Particiones</span>
-          </div>
-          {(() => {
-            if (!last) return null;
-            const partitions = Object.keys(last)
-              .filter(k => k.startsWith('disk_usage_'))
-              .map(k => {
-                const displayMount = k.replace('disk_usage_', '').replace('_root', '/');
-                return {
-                  id: k,
-                  mount: displayMount,
-                  usage: last[k],
-                  total: last[k.replace('usage', 'total')],
-                  used: last[k.replace('usage', 'used')]
-                };
-              })
-              .sort((a, b) => a.mount.localeCompare(b.mount));
-
-            const colors = [
-              "bg-emerald-500",
-              "bg-blue-500",
-              "bg-purple-500",
-              "bg-orange-500",
-              "bg-pink-500",
-              "bg-cyan-500",
-            ];
-
-            return (
-              <div className="grid grid-cols-1 gap-3">
-                {partitions.map((p, i) => (
-                  <div key={p.id} className="flex items-center justify-between text-xs group">
-                    <div className="flex items-center gap-2 overflow-hidden">
-                      <div className={`w-2 h-2 rounded-full ${colors[i % colors.length]}`} />
-                      <span className="font-mono text-[11px] truncate max-w-[80px]" title={p.mount}>{p.mount}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <span className="font-mono text-[10px]">{formatBytes(p.used)} / {formatBytes(p.total)}</span>
-                    </div>
-                  </div>
-                ))}
               </div>
             );
           })()}
         </div>
 
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between h-fit">
+        {/* Partition Details Card */}
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col h-52">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/50 shrink-0">
+            <CircleStackIcon className="w-4 h-4 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Detalle Particiones</span>
+          </div>
+          <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-border pr-2 grow">
+            {(() => {
+              if (!last) return null;
+              const partitions = Object.keys(last)
+                .filter(k => k.startsWith('disk_usage_'))
+                .map(k => {
+                  const displayMount = k.replace('disk_usage_', '').replace('_root', '/');
+                  return {
+                    id: k,
+                    mount: displayMount,
+                    usage: last[k],
+                    total: last[k.replace('usage', 'total')],
+                    used: last[k.replace('usage', 'used')]
+                  };
+                })
+                .sort((a, b) => a.mount.localeCompare(b.mount));
+
+              const colors = [
+                "bg-emerald-500",
+                "bg-blue-500",
+                "bg-purple-500",
+                "bg-orange-500",
+                "bg-pink-500",
+                "bg-cyan-500",
+              ];
+
+              return (
+                <div className="grid grid-cols-1 gap-3">
+                  {partitions.map((p, i) => (
+                    <div key={p.id} className="flex items-center justify-between text-xs group">
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <div className={`w-2 h-2 rounded-full ${colors[i % colors.length]}`} />
+                        <span className="font-mono text-[11px] truncate max-w-[80px]" title={p.mount}>{p.mount}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <span className="font-mono text-[10px]">{formatBytes(p.used)} / {formatBytes(p.total)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between h-52">
           <div className="flex items-center gap-2 mb-2">
             <FireIcon className="w-5 h-5 text-red-500" />
             <span className="text-sm font-medium text-muted-foreground">Temperatura</span>
           </div>
           <div className="flex items-end justify-between">
             <div>
-              <div className="text-2xl font-bold">{last?.temp?.toFixed(1) || "—"}°C</div>
-              <div className="text-xs text-muted-foreground">Core Temp</div>
+              <div className="text-4xl font-bold">{last?.temp?.toFixed(1) || "—"}°C</div>
+              <div className="text-xs text-muted-foreground mt-1">Core Temp</div>
             </div>
           </div>
         </div>
 
         {/* Network Traffic */}
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50">
-          <div className="flex items-center gap-2 mb-4">
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 h-52 flex flex-col">
+          <div className="flex items-center gap-2 mb-3 shrink-0">
             <SignalIcon className="w-5 h-5 text-indigo-500" />
             <span className="text-sm font-medium text-muted-foreground">Tráfico</span>
           </div>
-          <div className="flex flex-col gap-3">
-            <div className="relative overflow-hidden rounded-lg border border-blue-500/20 bg-blue-500/10 p-3 flex items-center gap-3">
+          <div className="flex flex-col gap-2 grow justify-center">
+            <div className="relative overflow-hidden rounded-lg border border-blue-500/20 bg-blue-500/10 p-2.5 flex items-center gap-3">
               <div className="p-1.5 bg-blue-500/20 rounded-full">
                 <ArrowDownIcon className="w-4 h-4 text-blue-500" />
               </div>
@@ -547,7 +549,7 @@ function DashboardContent() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-3 flex items-center gap-3">
+            <div className="relative overflow-hidden rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-2.5 flex items-center gap-3">
               <div className="p-1.5 bg-indigo-500/20 rounded-full">
                 <ArrowUpIcon className="w-4 h-4 text-indigo-500" />
               </div>
