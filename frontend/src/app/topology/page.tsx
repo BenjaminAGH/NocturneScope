@@ -610,8 +610,12 @@ function TopologyEditor() {
                     nextNodes.forEach((node, index) => {
                         if (node.type === 'time-window') {
                             const data = node.data as TimeWindowNodeData;
+
+                            // Usar hora de Chile explícitamente
                             const now = new Date();
-                            const currentTime = now.getHours() * 60 + now.getMinutes();
+                            const chileTimeStr = now.toLocaleString("en-US", { timeZone: "America/Santiago" });
+                            const chileDate = new Date(chileTimeStr);
+                            const currentTime = chileDate.getHours() * 60 + chileDate.getMinutes();
 
                             const [startH, startM] = (data.startTime || "00:00").split(':').map(Number);
                             const [endH, endM] = (data.endTime || "23:59").split(':').map(Number);
@@ -630,9 +634,29 @@ function TopologyEditor() {
                             // Check input connection (if any)
                             const incomingEdges = edgesRef.current.filter(e => e.target === node.id);
                             if (incomingEdges.length > 0) {
-                                const isInputActive = incomingEdges.some(e =>
-                                    activeActionIds.has(e.source) || activeDelayIds.has(e.source)
-                                );
+                                const isInputActive = incomingEdges.some(e => {
+                                    // 1. Si viene de un nodo que emite señal (Action, Delay), verificar si está activo
+                                    if (activeActionIds.has(e.source) || activeDelayIds.has(e.source)) {
+                                        return true;
+                                    }
+
+                                    // 2. Si viene de un nodo de datos (Device, Statistics, etc.), considerar siempre activo (señal presente)
+                                    const sourceNode = nextNodes.find(n => n.id === e.source);
+                                    if (sourceNode && ['device', 'statistics', 'router', 'monitoring', 'details'].includes(sourceNode.type || '')) {
+                                        return true;
+                                    }
+
+                                    // 3. Si viene de otro TimeWindow (cascada)
+                                    // Nota: Esto asume que el TimeWindow anterior ya fue procesado si está antes en el array, 
+                                    // pero como activeTimeWindowIds se llena en este loop, podría fallar si el orden es inverso.
+                                    // Para robustez, idealmente deberíamos hacer múltiples pases o ordenamiento topológico,
+                                    // pero por ahora asumimos que si está en el Set es válido.
+                                    if (activeTimeWindowIds.has(e.source)) {
+                                        return true;
+                                    }
+
+                                    return false;
+                                });
                                 isActive = isActive && isInputActive;
                             }
 
