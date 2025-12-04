@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getLastStats } from "@/lib/api/api";
 import {
     ComputerDesktopIcon,
@@ -20,6 +20,10 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Refs to hold last non-zero values to avoid flickering
+    const lastNetRx = useRef(0);
+    const lastNetTx = useRef(0);
 
     useEffect(() => {
         let isMounted = true;
@@ -103,6 +107,18 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
         return cores;
     };
     const cpuCores = getCpuCores();
+
+    // Logic to persist last non-zero network values (User Request)
+    if (!isOnline) {
+        lastNetRx.current = 0;
+        lastNetTx.current = 0;
+    } else {
+        if (stats.net_rx > 0) lastNetRx.current = stats.net_rx;
+        if (stats.net_tx > 0) lastNetTx.current = stats.net_tx;
+    }
+
+    const displayNetRx = (isOnline && stats.net_rx > 0) ? stats.net_rx : lastNetRx.current;
+    const displayNetTx = (isOnline && stats.net_tx > 0) ? stats.net_tx : lastNetTx.current;
 
     return (
         <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
@@ -240,11 +256,11 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                 <div className="grid grid-cols-2 gap-2 pt-1">
                     <div className="p-1.5 bg-muted/20 rounded border border-border text-center">
                         <div className="text-[10px] text-muted-foreground">Net RX</div>
-                        <div className="text-xs font-mono">{formatBytes(stats.net_rx || 0)}/s</div>
+                        <div className="text-xs font-mono">{formatBytes(displayNetRx)}/s</div>
                     </div>
                     <div className="p-1.5 bg-muted/20 rounded border border-border text-center">
                         <div className="text-[10px] text-muted-foreground">Net TX</div>
-                        <div className="text-xs font-mono">{formatBytes(stats.net_tx || 0)}/s</div>
+                        <div className="text-xs font-mono">{formatBytes(displayNetTx)}/s</div>
                     </div>
                 </div>
             </div>

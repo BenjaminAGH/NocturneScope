@@ -912,8 +912,23 @@ function TopologyEditor() {
                 return node;
             }));
         },
-        [setEdges, setNodes]
+        [setEdges, setNodes, takeSnapshot]
     );
+
+    const onNodesDelete = useCallback(
+        (deleted: Node[]) => {
+            takeSnapshot();
+        },
+        [takeSnapshot]
+    );
+
+    const onNodeDragStart = useCallback(() => {
+        takeSnapshot();
+    }, [takeSnapshot]);
+
+    const onSelectionDragStart = useCallback(() => {
+        takeSnapshot();
+    }, [takeSnapshot]);
 
     const handleAddDevice = useCallback((deviceName: string) => {
         takeSnapshot();
@@ -1979,6 +1994,9 @@ function TopologyEditor() {
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
                     onEdgesDelete={onEdgesDelete}
+                    onNodesDelete={onNodesDelete}
+                    onNodeDragStart={onNodeDragStart}
+                    onSelectionDragStart={onSelectionDragStart}
                     onNodeClick={(_, node) => setSelectedNodeId(node.id)}
                     onPaneClick={() => setSelectedNodeId(null)}
                     nodeTypes={nodeTypes}
