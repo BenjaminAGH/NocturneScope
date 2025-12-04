@@ -29,15 +29,16 @@ func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 	}
 
 	// Convert to uint (handles both uint and float64 from JWT claims)
-	var userID uint
-	switch v := userIDAny.(type) {
-	case uint:
-		userID = v
-	case float64:
-		userID = uint(v)
-	default:
-		return c.Status(401).JSON(fiber.Map{"error": "invalid user_id type"})
-	}
+	// Convert to uint (handles both uint and float64 from JWT claims)
+	// var userID uint
+	// switch v := userIDAny.(type) {
+	// case uint:
+	// 	userID = v
+	// case float64:
+	// 	userID = uint(v)
+	// default:
+	// 	return c.Status(401).JSON(fiber.Map{"error": "invalid user_id type"})
+	// }
 
 	// Check for group_id query param
 	groupID := c.QueryInt("group_id", 0)
@@ -52,8 +53,9 @@ func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 		// A more robust check would be to verify group ownership first.
 		devices, err = h.tokenRepo.GetDeviceNamesByGroup(uint(groupID))
 	} else {
-		// Get all devices for user (legacy behavior or "All Devices" view)
-		devices, err = h.tokenRepo.GetDeviceNamesByUser(userID)
+		// Get all devices from InfluxDB (active devices)
+		// This allows seeing devices that don't have a token yet
+		devices, err = h.svc.ListDevices(c.Context())
 	}
 
 	if err != nil {
