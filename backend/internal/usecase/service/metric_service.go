@@ -12,20 +12,27 @@ import (
 )
 
 type MetricService struct {
-	writer       *timeseries.InfluxWriter
-	alertService domain.AlertService
+	writer        *timeseries.InfluxWriter
+	alertService  domain.AlertService
+	deviceService *DeviceService
 }
 
-func NewMetricService(writer *timeseries.InfluxWriter, alertService domain.AlertService) *MetricService {
+func NewMetricService(writer *timeseries.InfluxWriter, alertService domain.AlertService, deviceService *DeviceService) *MetricService {
 	return &MetricService{
-		writer:       writer,
-		alertService: alertService,
+		writer:        writer,
+		alertService:  alertService,
+		deviceService: deviceService,
 	}
 }
 
 func (s *MetricService) Store(m domain.Metric) error {
 	if s.alertService != nil {
 		go s.alertService.Evaluate(m)
+	}
+
+	if s.deviceService != nil && m.DeviceName != "" {
+		// Auto-register device asynchronously to avoid blocking
+		go s.deviceService.Register(m.DeviceName)
 	}
 
 	if s.writer == nil {

@@ -22,6 +22,7 @@ func Register(
 	topologyService *service.TopologyService,
 	alertService domain.AlertService,
 	networkTrafficService *service.NetworkTrafficService,
+	deviceService *service.DeviceService,
 ) {
 	api := app.Group("/api")
 
@@ -39,7 +40,7 @@ func Register(
 	authHandler := handlers.NewAuthHandler(authService, userService)
 	protected.Post("/auth/logout", authHandler.Logout)
 
-	RegisterMetricQueryRoutes(protected, metricService, apiTokenRepo)
+	RegisterMetricQueryRoutes(protected, metricService, apiTokenRepo, deviceService)
 	RegisterNetworkTrafficUserRoutes(protected, networkTrafficService)
 
 	// api tokens del usuario

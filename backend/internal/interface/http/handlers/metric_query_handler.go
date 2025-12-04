@@ -10,14 +10,16 @@ import (
 )
 
 type MetricQueryHandler struct {
-	svc       *service.MetricService
-	tokenRepo domain.APITokenRepository
+	svc           *service.MetricService
+	tokenRepo     domain.APITokenRepository
+	deviceService *service.DeviceService
 }
 
-func NewMetricQueryHandler(s *service.MetricService, tokenRepo domain.APITokenRepository) *MetricQueryHandler {
+func NewMetricQueryHandler(s *service.MetricService, tokenRepo domain.APITokenRepository, deviceService *service.DeviceService) *MetricQueryHandler {
 	return &MetricQueryHandler{
-		svc:       s,
-		tokenRepo: tokenRepo,
+		svc:           s,
+		tokenRepo:     tokenRepo,
+		deviceService: deviceService,
 	}
 }
 
@@ -27,18 +29,6 @@ func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 	if userIDAny == nil {
 		return c.Status(401).JSON(fiber.Map{"error": "unauthorized"})
 	}
-
-	// Convert to uint (handles both uint and float64 from JWT claims)
-	// Convert to uint (handles both uint and float64 from JWT claims)
-	// var userID uint
-	// switch v := userIDAny.(type) {
-	// case uint:
-	// 	userID = v
-	// case float64:
-	// 	userID = uint(v)
-	// default:
-	// 	return c.Status(401).JSON(fiber.Map{"error": "invalid user_id type"})
-	// }
 
 	// Check for group_id query param
 	groupID := c.QueryInt("group_id", 0)
@@ -53,9 +43,17 @@ func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 		// A more robust check would be to verify group ownership first.
 		devices, err = h.tokenRepo.GetDeviceNamesByGroup(uint(groupID))
 	} else {
-		// Get all devices from InfluxDB (active devices)
-		// This allows seeing devices that don't have a token yet
-		devices, err = h.svc.ListDevices(c.Context())
+		// Get all devices from DeviceService (PostgreSQL)
+		// This ensures we list devices that have been seen, and respects deletions.
+		// We map domain.Device to string names for compatibility.
+		devs, e := h.deviceService.List()
+		if e != nil {
+			err = e
+		} else {
+			for _, d := range devs {
+				devices = append(devices, d.Name)
+			}
+		}
 	}
 
 	if err != nil {
@@ -63,6 +61,19 @@ func (h *MetricQueryHandler) Devices(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(devices)
+}
+
+func (h *MetricQueryHandler) DeleteDevice(c *fiber.Ctx) error {
+	name := c.Params("name")
+	if name == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "name required"})
+	}
+
+	if err := h.deviceService.Delete(name); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.SendStatus(204)
 }
 
 func (h *MetricQueryHandler) Last(c *fiber.Ctx) error {

@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createAPIToken, getAPITokens, deleteAPIToken, APIToken } from "@/lib/api/tokens";
-import { getDevices } from "@/lib/api/api";
-import { InformationCircleIcon, CheckCircleIcon, ClipboardDocumentIcon } from "@heroicons/react/24/outline";
+import { createApiToken, listApiTokens, deleteApiToken, getDevices, deleteDevice, getGroups, APIToken } from "@/lib/api/api";
+import { InformationCircleIcon, CheckCircleIcon, ClipboardDocumentIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { useGroup, DeviceGroup } from "@/context/GroupContext";
 
 export default function TokensPage() {
     const router = useRouter();
-    const { groups, refreshGroups } = useGroup();
+    const { groups: contextGroups, refreshGroups } = useGroup(); // Renamed to avoid conflict with local state
     const [jwt, setJwt] = useState<string | null>(null);
     const [tokens, setTokens] = useState<APIToken[]>([]);
     const [devices, setDevices] = useState<string[]>([]);
+    const [groups, setGroups] = useState<DeviceGroup[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const { notify } = useNotification();
@@ -44,12 +44,14 @@ export default function TokensPage() {
             setLoading(true);
             setError("");
             try {
-                const [tokensData, devicesData] = await Promise.all([
-                    getAPITokens(jwt),
+                const [tokensData, devicesData, groupsData] = await Promise.all([
+                    listApiTokens(jwt),
                     getDevices(jwt),
+                    getGroups(jwt),
                 ]);
                 setTokens(tokensData || []);
                 setDevices(devicesData || []);
+                setGroups(groupsData || []);
             } catch (e: any) {
                 setError(e?.message || "Error loading data");
             } finally {
@@ -66,14 +68,14 @@ export default function TokensPage() {
         setLoading(true);
         setError("");
         try {
-            const result = await createAPIToken(jwt, newTokenName.trim(), selectedDevice, Number(selectedGroupId));
+            const result = await createApiToken(jwt, newTokenName.trim(), selectedDevice, Number(selectedGroupId));
             setCreatedToken(result.token);
             setNewTokenName("");
             setSelectedDevice("");
             setSelectedGroupId("");
 
             // Reload tokens
-            const tokensData = await getAPITokens(jwt);
+            const tokensData = await listApiTokens(jwt);
             setTokens(tokensData || []);
             notify("Token creado exitosamente", "success");
         } catch (e: any) {
@@ -90,10 +92,10 @@ export default function TokensPage() {
         setLoading(true);
         setError("");
         try {
-            await deleteAPIToken(jwt, tokenId);
+            await deleteApiToken(jwt, tokenId);
 
             // Reload tokens
-            const tokensData = await getAPITokens(jwt);
+            const tokensData = await listApiTokens(jwt);
             setTokens(tokensData || []);
         } catch (e: any) {
             setError(e?.message || "Error deleting token");
@@ -113,6 +115,19 @@ export default function TokensPage() {
         setNewTokenName("");
         setSelectedDevice("");
         setSelectedGroupId("");
+    };
+
+    const handleDeleteDevice = async (name: string) => {
+        if (!confirm(`¿Estás seguro de eliminar el dispositivo "${name}" ? Si vuelve a enviar datos, aparecerá de nuevo.`)) return;
+        try {
+            const jwt = localStorage.getItem("jwt");
+            if (!jwt) return;
+            await deleteDevice(jwt, name);
+            setDevices(devices.filter((d) => d !== name));
+        } catch (e) {
+            console.error(e);
+            alert("Error al eliminar dispositivo");
+        }
     };
 
     return (
@@ -176,7 +191,7 @@ export default function TokensPage() {
                                         </td>
                                         <td className="px-4 py-3 text-sm">
                                             <div className="flex items-center gap-2">
-                                                <div className={`w-2 h-2 rounded-full ${token.Status === 'online' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                                                <div className={`w - 2 h - 2 rounded - full ${token.Status === 'online' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'} `} />
                                                 <span className="text-xs text-muted-foreground capitalize">{token.Status === 'online' ? 'Activo' : 'Inactivo'}</span>
                                             </div>
                                         </td>
@@ -193,7 +208,7 @@ export default function TokensPage() {
                                         </td>
                                         <td className="px-4 py-3 text-sm text-muted-foreground">
                                             {/* We would need to fetch group info or include it in token response to show name here */}
-                                            {token.GroupID ? `Grupo #${token.GroupID}` : "Sin grupo"}
+                                            {token.GroupID ? `Grupo #${token.GroupID} ` : "Sin grupo"}
                                         </td>
                                         <td className="px-4 py-3 text-sm text-muted-foreground">
                                             {new Date(token.CreatedAt).toLocaleDateString('es-CL', {
@@ -341,6 +356,71 @@ export default function TokensPage() {
                     </div>
                 </div>
             )}
+
+            {/* Dispositivos Detectados */}
+            <div className="mt-12">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-xl font-semibold text-white">Dispositivos Detectados</h2>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            Equipos que han enviado métricas recientemente. Crea un token para gestionarlos.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-card/50 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="border-b border-white/10 bg-white/5">
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        Nombre del Dispositivo
+                                    </th>
+                                    <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/10">
+                                {devices.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={2} className="px-4 py-8 text-center text-muted-foreground">
+                                            No se han detectado dispositivos aún.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    devices.map((device) => {
+                                        const hasToken = tokens.some(t => t.DeviceName === device);
+                                        return (
+                                            <tr key={device} className="hover:bg-white/5 transition-colors">
+                                                <td className="px-4 py-3 text-sm font-medium text-white">
+                                                    <div className="flex items-center gap-2">
+                                                        {device}
+                                                        {hasToken && (
+                                                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs border border-emerald-500/20">
+                                                                Gestionado
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-right">
+                                                    <button
+                                                        onClick={() => handleDeleteDevice(device)}
+                                                        className="p-2 hover:bg-red-500/10 text-muted-foreground hover:text-red-500 rounded-lg transition-colors"
+                                                        title="Eliminar dispositivo"
+                                                    >
+                                                        <TrashIcon className="w-4 h-4" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

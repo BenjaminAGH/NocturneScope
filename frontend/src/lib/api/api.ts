@@ -143,6 +143,16 @@ export async function getUserProfile(jwt: string) {
   return apiFetch(`${BASE}/users/me`, { cache: "no-store" }, jwt);
 }
 
+export interface APIToken {
+  ID: number;
+  Name: string;
+  TokenHash: string;
+  DeviceName: string;
+  GroupID?: number;
+  CreatedAt: string;
+  Status: string;
+}
+
 export async function listApiTokens(jwt: string) {
   return apiFetch(`${BASE}/api-tokens`, { cache: "no-store" }, jwt);
 }
@@ -174,6 +184,12 @@ export async function deleteApiToken(jwt: string, id: number) {
   }
   if (res.status === 204) return true;
   return handle(res);
+}
+
+export async function deleteDevice(jwt: string, name: string) {
+  return apiFetch(`${BASE}/metrics/devices/${encodeURIComponent(name)}`, {
+    method: "DELETE",
+  }, jwt);
 }
 
 export async function getDevices(jwt: string, groupId?: number) {

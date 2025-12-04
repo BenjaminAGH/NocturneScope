@@ -30,9 +30,10 @@ func main() {
 	apiTokenRepo := repository.NewAPITokenGormRepository(db)
 	topologyRepo := repository.NewTopologyGormRepository(db)
 	deviceGroupRepo := repository.NewDeviceGroupGormRepository(db)
+	deviceRepo := repository.NewDeviceGormRepository(db)
 
 	// AutoMigrate
-	if err := db.AutoMigrate(&persistence.DeviceGroupModel{}, &persistence.APITokenModel{}, &persistence.NetworkTrafficModel{}); err != nil {
+	if err := db.AutoMigrate(&persistence.DeviceGroupModel{}, &persistence.APITokenModel{}, &persistence.NetworkTrafficModel{}, &persistence.DeviceModel{}); err != nil {
 		log.Printf("Warning: AutoMigrate failed: %v", err)
 	}
 
@@ -41,6 +42,7 @@ func main() {
 	deviceGroupService := service.NewDeviceGroupService(deviceGroupRepo)
 	networkTrafficRepo := repository.NewNetworkTrafficGormRepository(db)
 	networkTrafficService := service.NewNetworkTrafficService(networkTrafficRepo)
+	deviceService := service.NewDeviceService(deviceRepo)
 
 	// Ensure devadmin user exists (if env vars are set)
 	bootstrap.EnsureDevAdmin(userRepo)
@@ -50,7 +52,7 @@ func main() {
 	authService := service.NewAuthService(userRepo, jwtService, sessionStore)
 
 	alertService := service.NewAlertService()
-	metricService := service.NewMetricService(influxWriter, alertService)
+	metricService := service.NewMetricService(influxWriter, alertService, deviceService)
 	apiTokenService := service.NewTokenService(apiTokenRepo)
 	topologyService := service.NewTopologyService(topologyRepo, alertService)
 
@@ -80,7 +82,7 @@ func main() {
 		fmt.Printf("Error loading alert rules: %v\n", err)
 	}
 
-	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, apiTokenRepo, deviceGroupService, topologyService, alertService, networkTrafficService)
+	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, apiTokenRepo, deviceGroupService, topologyService, alertService, networkTrafficService, deviceService)
 
 	log.Fatal(app.Listen(":3000"))
 }
