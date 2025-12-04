@@ -181,9 +181,15 @@ export default function TokensPage() {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-sm">
-                                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
-                                                {token.DeviceName}
-                                            </span>
+                                            {token.DeviceName ? (
+                                                <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">
+                                                    {token.DeviceName}
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted text-muted-foreground rounded-md font-medium text-xs">
+                                                    Sin Asignar
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-4 py-3 text-sm text-muted-foreground">
                                             {/* We would need to fetch group info or include it in token response to show name here */}

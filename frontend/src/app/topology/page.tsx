@@ -679,8 +679,8 @@ function TopologyEditor() {
                                 lastReset = Date.now();
                             }
 
-                            // Count only on rising edge (0 -> 1)
-                            if (isInputActive && !wasInputActive) {
+                            // Count on every active cycle (Level Trigger)
+                            if (isInputActive) {
                                 newCount++;
                             }
 
@@ -887,7 +887,8 @@ function TopologyEditor() {
 
                     if (node.type === 'monitoring' || node.type === 'action' || node.type === 'traffic' || node.type === 'traffic-trigger' || node.type === 'details') {
                         // If the edge was connected to this node
-                        if (deletedEdge.target === node.id || deletedEdge.source === node.id) {
+                        // Only clear if the deleted edge was the INPUT (target is this node)
+                        if (deletedEdge.target === node.id) {
                             // Ideally we check if the other node was indeed a device, but clearing it is safer to avoid stale data.
                             // If the user deleted the edge, they likely want to disconnect it.
                             const { connectedDevice, ...restData } = node.data as any;
