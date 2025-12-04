@@ -41,7 +41,7 @@ func (s *TokenService) Validate(raw string) (*domain.APIToken, error) {
 }
 
 func (s *TokenService) ListByUser(userID uint) ([]domain.APIToken, error) {
-	return s.repo.FindAllVisible(userID)
+	return s.repo.FindByUser(userID)
 }
 
 func (s *TokenService) Revoke(id uint, userID uint) error {

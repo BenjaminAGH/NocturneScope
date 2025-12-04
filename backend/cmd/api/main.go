@@ -39,7 +39,7 @@ func main() {
 
 	// servicios
 	userService := service.NewUserService(userRepo)
-	deviceGroupService := service.NewDeviceGroupService(deviceGroupRepo)
+	deviceGroupService := service.NewDeviceGroupService(deviceGroupRepo, apiTokenRepo)
 	networkTrafficRepo := repository.NewNetworkTrafficGormRepository(db)
 	networkTrafficService := service.NewNetworkTrafficService(networkTrafficRepo)
 	deviceService := service.NewDeviceService(deviceRepo)

@@ -21,5 +21,5 @@ type APITokenRepository interface {
 	GetDeviceNamesByUser(userID uint) ([]string, error)
 	GetDeviceNamesByGroup(groupID uint) ([]string, error)
 	UpdateDeviceName(id uint, name string) error
-	FindAllVisible(userID uint) ([]APIToken, error)
+	RevokeByGroup(groupID uint) error
 }

@@ -5,11 +5,12 @@ import (
 )
 
 type DeviceGroupService struct {
-	repo domain.DeviceGroupRepository
+	repo      domain.DeviceGroupRepository
+	tokenRepo domain.APITokenRepository
 }
 
-func NewDeviceGroupService(repo domain.DeviceGroupRepository) *DeviceGroupService {
-	return &DeviceGroupService{repo: repo}
+func NewDeviceGroupService(repo domain.DeviceGroupRepository, tokenRepo domain.APITokenRepository) *DeviceGroupService {
+	return &DeviceGroupService{repo: repo, tokenRepo: tokenRepo}
 }
 
 func (s *DeviceGroupService) Create(userID uint, name, description string) (*domain.DeviceGroup, error) {
@@ -43,5 +44,9 @@ func (s *DeviceGroupService) Update(id uint, userID uint, name, description stri
 }
 
 func (s *DeviceGroupService) Delete(id uint, userID uint) error {
+	// First revoke all tokens associated with this group
+	if err := s.tokenRepo.RevokeByGroup(id); err != nil {
+		return err
+	}
 	return s.repo.Delete(id, userID)
 }

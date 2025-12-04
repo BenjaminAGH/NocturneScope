@@ -49,21 +49,6 @@ func (r *APITokenGormRepository) FindByUser(userID uint) ([]domain.APIToken, err
 	return res, nil
 }
 
-func (r *APITokenGormRepository) FindAllVisible(userID uint) ([]domain.APIToken, error) {
-	var models []persistence.APITokenModel
-	// Find tokens owned by user OR belonging to groups owned by user
-	err := r.db.Where("(user_id = ? OR group_id IN (SELECT id FROM device_groups WHERE user_id = ?)) AND revoked_at IS NULL", userID, userID).
-		Find(&models).Error
-	if err != nil {
-		return nil, err
-	}
-	res := make([]domain.APIToken, 0, len(models))
-	for _, m := range models {
-		res = append(res, m.ToDomain())
-	}
-	return res, nil
-}
-
 func (r *APITokenGormRepository) Revoke(id uint, userID uint) error {
 	return r.db.Model(&persistence.APITokenModel{}).
 		Where("id = ? AND user_id = ? AND revoked_at IS NULL", id, userID).
@@ -95,4 +80,11 @@ func (r *APITokenGormRepository) GetDeviceNamesByGroup(groupID uint) ([]string, 
 
 func (r *APITokenGormRepository) UpdateDeviceName(id uint, name string) error {
 	return r.db.Model(&persistence.APITokenModel{}).Where("id = ?", id).Update("device_name", name).Error
+}
+
+func (r *APITokenGormRepository) RevokeByGroup(groupID uint) error {
+	return r.db.Model(&persistence.APITokenModel{}).
+		Where("group_id = ? AND revoked_at IS NULL", groupID).
+		Update("revoked_at", time.Now()).
+		Error
 }
