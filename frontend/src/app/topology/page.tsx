@@ -666,8 +666,7 @@ function TopologyEditor() {
                             // but since this runs every 5s, we might miss quick toggles.
                             // However, for "Action" nodes which stay active, we should only count the transition.
 
-                            // IMPROVED LOGIC:
-                            // We will use a `lastInputState` in data to detect 0->1 transition.
+                            // IMPROVED LOGIC: Pure counter with time window reset
                             const wasInputActive = (data as any).lastInputState || false;
 
                             let newCount = data.currentCount || 0;
@@ -680,6 +679,7 @@ function TopologyEditor() {
                                 lastReset = Date.now();
                             }
 
+                            // Count only on rising edge (0 -> 1)
                             if (isInputActive && !wasInputActive) {
                                 newCount++;
                             }
@@ -937,6 +937,17 @@ function TopologyEditor() {
             // Lógica para conectar nodos de monitoreo a dispositivos
             const { source, target } = params;
             if (!source || !target) return;
+
+            // Validation: Threshold Node only accepts triggers
+            const targetNode = nodes.find(n => n.id === target);
+            const sourceNode = nodes.find(n => n.id === source);
+            if (targetNode?.type === 'threshold') {
+                const allowedTypes = ['action', 'time-window', 'traffic-trigger', 'delay'];
+                if (!sourceNode || !allowedTypes.includes(sourceNode.type || '')) {
+                    // Invalid connection for threshold node
+                    return;
+                }
+            }
 
             setNodes((nds) => nds.map((node) => {
                 // Case 1: Target is Monitoring, Action, Traffic, Traffic Trigger, or Details
