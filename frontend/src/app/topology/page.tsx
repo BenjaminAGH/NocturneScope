@@ -687,7 +687,12 @@ function TopologyEditor() {
                             const threshold = data.threshold || 3;
                             const isActive = newCount >= threshold;
 
-                            if (isActive) activeThresholdIds.add(node.id);
+                            if (isActive) {
+                                activeThresholdIds.add(node.id);
+                                // Reset counter immediately after reaching threshold
+                                newCount = 0;
+                                lastReset = Date.now();
+                            }
 
                             if (
                                 data.isActive !== isActive ||
@@ -946,6 +951,14 @@ function TopologyEditor() {
                 const allowedTypes = ['action', 'time-window', 'traffic-trigger', 'delay'];
                 if (!sourceNode || !allowedTypes.includes(sourceNode.type || '')) {
                     // Invalid connection for threshold node
+                    return;
+                }
+            }
+
+            // Validation: Action Node only accepts triggers and logic (as output)
+            if (sourceNode?.type === 'action') {
+                const allowedTypes = ['threshold', 'time-window', 'delay', 'email', 'notification', 'sound'];
+                if (!targetNode || !allowedTypes.includes(targetNode.type || '')) {
                     return;
                 }
             }
