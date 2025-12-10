@@ -30,7 +30,8 @@ import {
   CircleStackIcon,
   FireIcon,
   ArrowDownIcon,
-  ArrowUpIcon
+  ArrowUpIcon,
+  ChevronDownIcon
 } from "@heroicons/react/24/outline";
 
 type Point = { t: string; v: number };
@@ -52,6 +53,7 @@ function DashboardContent() {
   const [device, setDevice] = useState<string>("");
   const [field, setField] = useState<string>("cpu");
   const [range, setRange] = useState<string>("1h");
+  const [showDeviceList, setShowDeviceList] = useState(false);
 
   const FIELD_OPTIONS = useMemo(() => [
     { v: "cpu", l: t('cpu') },
@@ -206,53 +208,7 @@ function DashboardContent() {
         </p>
       </header>
 
-      {/* Device Selection List */}
-      <div className="space-y-2">
-        <h2 className="text-sm font-medium text-muted-foreground ml-1">{t('devices')}</h2>
-        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-          {loadingDevices && devices.length === 0 ? (
-            <div className="text-sm text-muted-foreground p-2">{t('loading')}</div>
-          ) : null}
-          {!loadingDevices && devices.length === 0 ? (
-            <div className="text-sm text-muted-foreground p-2">{t('noDevices')}</div>
-          ) : null}
-          {devices.map(devName => {
-            const stat = allStats[devName];
-            const isSelected = device === devName;
-            const isOnline = stat && ((Date.now() / 1000) - (stat.timestamp ? new Date(stat.timestamp).getTime() / 1000 : 0) < 300);
 
-            return (
-              <div
-                key={devName}
-                onClick={() => setDevice(devName)}
-                className={`
-                            min-w-[240px] p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md
-                            flex flex-col justify-between h-[100px] shrink-0
-                            ${isSelected ? 'bg-primary/5 border-primary ring-1 ring-primary' : 'bg-card border-border hover:bg-muted/50'}
-                        `}
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-2">
-                    <ComputerDesktopIcon className={`w-5 h-5 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
-                    <span className={`font-bold truncate max-w-[140px] text-sm ${isSelected ? 'text-primary' : 'text-card-foreground'}`}>
-                      {devName}
-                    </span>
-                  </div>
-                  <div className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`} />
-                </div>
-                <div className="flex justify-between items-end text-xs text-muted-foreground">
-                  <span className="truncate max-w-[130px]">
-                    {stat?.os || stat?.platform || t('systemUnknown')}
-                  </span>
-                  <span className="font-mono">
-                    {stat?.ip || "—"}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Errores */}
       {err ? (
@@ -264,11 +220,15 @@ function DashboardContent() {
       {/* Últimos valores */}
       <section className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {/* Status Card */}
-        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
-          <div className="flex items-center justify-between">
+        <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between relative">
+          <div
+            className="flex items-center justify-between cursor-pointer group select-none"
+            onClick={() => setShowDeviceList(!showDeviceList)}
+          >
             <div className="flex items-center gap-2">
               <ComputerDesktopIcon className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium text-muted-foreground">{t('status')}</span>
+              <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">{t('status')}</span>
+              <ChevronDownIcon className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${showDeviceList ? "rotate-180" : ""}`} />
             </div>
             {last && (
               <div className="flex items-center gap-1.5">
@@ -279,6 +239,35 @@ function DashboardContent() {
               </div>
             )}
           </div>
+
+          {showDeviceList && (
+            <div className="absolute top-12 left-0 w-full px-4 z-50">
+              <div className="bg-popover border border-border rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100 ring-1 ring-black/5">
+                <div className="max-h-[240px] overflow-y-auto p-1">
+                  {devices.map(d => {
+                    const stat = allStats[d];
+                    const isOnline = stat && ((Date.now() / 1000) - (stat.timestamp ? new Date(stat.timestamp).getTime() / 1000 : 0) < 300);
+                    const isSelected = device === d;
+                    return (
+                      <div
+                        key={d}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDevice(d);
+                          setShowDeviceList(false);
+                        }}
+                        className={`flex items-center justify-between px-3 py-2 rounded-md text-sm cursor-pointer transition-colors ${isSelected ? 'bg-primary/10 text-primary' : 'hover:bg-muted'}`}
+                      >
+                        <span className="font-medium truncate">{d}</span>
+                        <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mt-4 space-y-1">
             <div className="text-2xl font-bold truncate" title={device}>{device || "—"}</div>
             <div className="flex items-center justify-between mt-1">
