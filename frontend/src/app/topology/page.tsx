@@ -77,6 +77,7 @@ function TopologyEditor() {
     const [topologies, setTopologies] = useState<Topology[]>([]);
     const [selectedTopology, setSelectedTopology] = useState<number | null>(null);
     const [currentTopologyName, setCurrentTopologyName] = useState("");
+    const [loadedGroupId, setLoadedGroupId] = useState<number | null>(null);
 
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -87,8 +88,15 @@ function TopologyEditor() {
         edgesRef.current = edges;
     }, [edges]);
 
-    // Persist draft to localStorage
+    // Persist draft to localStorage (Group Specific)
     useEffect(() => {
+        if (!selectedGroup) return;
+
+        // Guard: Only save if we are sure we are working on the loaded group's topology
+        // This prevents overwriting the new group's draft with the old group's state 
+        // effectively during the transition render cycle.
+        if (loadedGroupId !== selectedGroup.ID) return;
+
         if (nodes.length > 0 || edges.length > 0) {
             const draft = {
                 nodes,
@@ -97,9 +105,9 @@ function TopologyEditor() {
                 currentTopologyName,
                 timestamp: Date.now()
             };
-            sessionStorage.setItem("topology_draft", JSON.stringify(draft));
+            sessionStorage.setItem(`topology_draft_${selectedGroup.ID}`, JSON.stringify(draft));
         }
-    }, [nodes, edges, selectedTopology, currentTopologyName]);
+    }, [nodes, edges, selectedTopology, currentTopologyName, selectedGroup, loadedGroupId]);
 
     const [autoDetectGateways, setAutoDetectGateways] = useState(true);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -1720,24 +1728,8 @@ function TopologyEditor() {
                 const topos = await getTopologies(jwt);
                 setTopologies(topos);
 
-                // 2. Check for local draft first
-                const draftJson = sessionStorage.getItem("topology_draft");
-                if (draftJson) {
-                    try {
-                        const draft = JSON.parse(draftJson);
-                        // Optional: Check if draft is too old? For now, just load it.
-                        if (draft.nodes && draft.edges) {
-                            setNodes(draft.nodes);
-                            setEdges(draft.edges);
-                            setSelectedTopology(draft.selectedTopology);
-                            setCurrentTopologyName(draft.currentTopologyName || "");
-                            notify("Borrador local restaurado", "info");
-                            return; // Skip loading from backend if draft exists
-                        }
-                    } catch (e) {
-                        console.error("Error parsing local draft:", e);
-                    }
-                }
+                // 2. Draft loading moved to group-specific effect
+                // (Legacy generic draft loading removed)
 
                 // 3. Obtener usuario para ver última topología activa (fallback)
                 const { getUser } = await import("@/lib/api/api");
@@ -1757,6 +1749,51 @@ function TopologyEditor() {
 
         init();
     }, [router, loadTopology, setTopologies, notify]);
+
+
+    // Load Topology State on Group Change
+    useEffect(() => {
+        if (!jwt || !initialized || !selectedGroup) return;
+
+        // If we are already loaded for this group, do nothing
+        if (loadedGroupId === selectedGroup.ID) return;
+
+        console.log(`Switching topology context to Group ${selectedGroup.ID}`);
+
+        // 1. Try to load local draft for this group
+        const draftKey = `topology_draft_${selectedGroup.ID}`;
+        const draftJson = sessionStorage.getItem(draftKey);
+
+        if (draftJson) {
+            try {
+                const draft = JSON.parse(draftJson);
+                if (draft.nodes && draft.edges) {
+                    setNodes(draft.nodes);
+                    setEdges(draft.edges);
+                    setSelectedTopology(draft.selectedTopology);
+                    setCurrentTopologyName(draft.currentTopologyName || "");
+                    setLoadedGroupId(selectedGroup.ID);
+                    // notify(`Restored draft for group ${selectedGroup.Name}`, "info");
+                    return;
+                }
+            } catch (e) {
+                console.error("Error parsing local draft for group:", selectedGroup.ID, e);
+            }
+        }
+
+        // 2. If no draft, clear state (or load default, but for now clear)
+        // Ideally we might want to load the "Last Active Topology" for this group from backend if persisted per group
+        // But the current backend user.LastTopologyID is global (or at least singular).
+        // Let's assume we clear it if no draft found, effectively giving a blank canvas or forcing user to load.
+        // Or we could retain strict separation.
+
+        setNodes([]);
+        setEdges([]);
+        setSelectedTopology(null);
+        setCurrentTopologyName("");
+        setLoadedGroupId(selectedGroup.ID);
+
+    }, [selectedGroup, initialized, jwt, loadedGroupId, setNodes, setEdges, notify]);
 
     const handleSave = useCallback(
         async (name: string, silent: boolean = false) => {
