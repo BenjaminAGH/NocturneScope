@@ -7,6 +7,7 @@ import { InformationCircleIcon, CheckCircleIcon, ClipboardDocumentIcon, TrashIco
 import { useNotification } from "@/context/NotificationContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useGroup, DeviceGroup } from "@/context/GroupContext";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
 export default function TokensPage() {
     const router = useRouter();
@@ -26,6 +27,20 @@ export default function TokensPage() {
     const [selectedDevice, setSelectedDevice] = useState("");
     const [selectedGroupId, setSelectedGroupId] = useState<number | "">("");
     const [createdToken, setCreatedToken] = useState<string | null>(null);
+
+    // Confirmation Modal state
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        isDangerous?: boolean;
+    }>({
+        isOpen: false,
+        title: "",
+        message: "",
+        onConfirm: () => { },
+    });
 
     // Authentication check
     useEffect(() => {
@@ -89,7 +104,17 @@ export default function TokensPage() {
     };
 
     const handleDeleteToken = async (tokenId: number) => {
-        if (!jwt || !confirm(t('confirmDeleteToken'))) return;
+        setConfirmModal({
+            isOpen: true,
+            title: t('deleteTopologyTitle'), // Or similar generic title like "Eliminar Token"
+            message: t('confirmDeleteToken'),
+            isDangerous: true,
+            onConfirm: () => executeDeleteToken(tokenId),
+        });
+    };
+
+    const executeDeleteToken = async (tokenId: number) => {
+        if (!jwt) return;
 
         setLoading(true);
         setError("");
@@ -108,7 +133,7 @@ export default function TokensPage() {
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
-        alert("Token copiado al portapapeles");
+        notify(t('copySuccess'), "success");
     };
 
     const closeCreateModal = () => {
@@ -120,15 +145,25 @@ export default function TokensPage() {
     };
 
     const handleDeleteDevice = async (name: string) => {
-        if (!confirm(`¿Estás seguro de eliminar el dispositivo "${name}" ? Si vuelve a enviar datos, aparecerá de nuevo.`)) return;
+        setConfirmModal({
+            isOpen: true,
+            title: t('delete') + " " + t('device'),
+            message: `${t('confirmDeleteDevice')} "${name}"?`,
+            isDangerous: true,
+            onConfirm: () => executeDeleteDevice(name),
+        });
+    };
+
+    const executeDeleteDevice = async (name: string) => {
         try {
             const jwt = localStorage.getItem("jwt");
             if (!jwt) return;
             await deleteDevice(jwt, name);
             setDevices(devices.filter((d) => d !== name));
+            notify(t('groupDeleted').replace('Grupo', 'Dispositivo'), "success"); // Recycling translation vaguely or adding new one would be better, but sticking to existing keys for now effectively
         } catch (e) {
             console.error(e);
-            alert("Error al eliminar dispositivo");
+            notify("Error al eliminar dispositivo", "error");
         }
     };
 
@@ -423,6 +458,18 @@ export default function TokensPage() {
                     </div>
                 </div>
             </div>
-        </div>
+
+
+            <ConfirmationModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                isDangerous={confirmModal.isDangerous}
+                confirmText={t('confirm')}
+                cancelText={t('cancel')}
+            />
+        </div >
     );
 }
