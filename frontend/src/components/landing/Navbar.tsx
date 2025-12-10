@@ -203,6 +203,14 @@ export const Navbar = () => {
                       ))
                     )}
                   </div>
+                  <div className="p-2 border-t border-border/50 bg-muted/30 rounded-b-xl">
+                    <Link
+                      href="/dashboard/notifications"
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2 text-xs font-medium text-primary hover:bg-background rounded-lg transition-colors"
+                    >
+                      {t('viewHistory') || 'View History'}
+                    </Link>
+                  </div>
                 </Menu.Items>
               </Transition>
             </Menu>
