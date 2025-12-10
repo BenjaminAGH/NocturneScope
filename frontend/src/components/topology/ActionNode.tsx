@@ -3,6 +3,7 @@
 import { memo, useState, useEffect } from "react";
 import { Handle, Position, NodeProps, useReactFlow } from "@xyflow/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface ActionNodeData extends Record<string, unknown> {
     metric?: string;
@@ -28,6 +29,7 @@ const OPERATORS = [
 ];
 
 function ActionNode({ id, data, selected }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as ActionNodeData;
     const { connectedDevice, metric = "cpu", operator = ">=", threshold = 70, isActive } = typedData;
 
@@ -56,7 +58,7 @@ function ActionNode({ id, data, selected }: NodeProps) {
             <div className={`px-3 py-2 flex justify-between items-center ${isActive ? "bg-yellow-500/10" : "bg-muted/50"}`}>
                 <div className="flex items-center gap-2">
                     <BoltIcon className={`w-5 h-5 ${isActive ? "text-yellow-500 animate-pulse" : "text-muted-foreground"}`} />
-                    <span className="font-medium text-sm">Trigger Rule</span>
+                    <span className="font-medium text-sm">{t('triggerRuleTitle')}</span>
                 </div>
             </div>
 
@@ -68,7 +70,7 @@ function ActionNode({ id, data, selected }: NodeProps) {
                     </div>
                 ) : (
                     <div className="text-xs text-muted-foreground italic">
-                        No device connected
+                        {t('noDeviceConnected')}
                     </div>
                 )}
 

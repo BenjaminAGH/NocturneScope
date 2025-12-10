@@ -2,8 +2,10 @@ import React from "react";
 import { Container } from "@/components/landing/Container";
 import { ScrollAnimation } from "@/components/landing/ScrollAnimation";
 import { PlayIcon } from "@heroicons/react/24/solid";
+import { useLanguage } from "@/context/LanguageContext";
 
 export const VideoSection = () => {
+    const { t } = useLanguage();
     return (
         <Container id="video" className="min-h-[60vh] flex flex-col justify-center scroll-mt-24 py-24">
             <ScrollAnimation animation="zoom-in">
@@ -19,7 +21,7 @@ export const VideoSection = () => {
                     {/* Overlay Text */}
                     <div className="absolute bottom-8 left-0 right-0 text-center">
                         <p className="text-lg font-medium text-muted-foreground">
-                            Video demostrativo próximamente
+                            {t('videoComingSoon')}
                         </p>
                     </div>
                 </div>

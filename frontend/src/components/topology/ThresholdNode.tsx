@@ -2,7 +2,9 @@
 
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
+import { Handle, Position, NodeProps } from "@xyflow/react";
 import { HashtagIcon } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface ThresholdNodeData extends Record<string, unknown> {
     threshold?: number;
@@ -12,6 +14,7 @@ export interface ThresholdNodeData extends Record<string, unknown> {
 }
 
 function ThresholdNode({ id, data, selected }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as ThresholdNodeData;
     const { threshold = 3, timeWindow = 60, currentCount = 0, isActive } = typedData;
 
@@ -43,14 +46,14 @@ function ThresholdNode({ id, data, selected }: NodeProps) {
             <div className={`px-3 py-2 flex justify-between items-center ${isActive ? "bg-red-500/10" : "bg-muted/50"}`}>
                 <div className="flex items-center gap-2">
                     <HashtagIcon className={`w-5 h-5 ${isActive ? "text-red-500 animate-pulse" : "text-muted-foreground"}`} />
-                    <span className="font-medium text-sm">Threshold</span>
+                    <span className="font-medium text-sm">{t('thresholdNode')}</span>
                 </div>
             </div>
 
             {/* Content */}
             <div className="p-3 space-y-3 bg-card">
                 <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Count:</span>
+                    <span className="text-muted-foreground">{t('countLabel')}:</span>
                     <span className="font-mono font-bold">{currentCount} / {threshold}</span>
                 </div>
 
@@ -63,7 +66,7 @@ function ThresholdNode({ id, data, selected }: NodeProps) {
                 </div>
 
                 <div className="text-[10px] text-muted-foreground text-center">
-                    Reset in {timeWindow}s window
+                    {t('resetWindow')} {timeWindow}s
                 </div>
             </div>
         </div>

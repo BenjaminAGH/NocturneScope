@@ -10,6 +10,7 @@ import {
     ClockIcon,
     GlobeAltIcon
 } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface DeviceDetailsProps {
     deviceId: string;
@@ -17,6 +18,7 @@ interface DeviceDetailsProps {
 }
 
 export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
+    const { t } = useLanguage();
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -41,7 +43,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
             } catch (err: any) {
                 console.error("Error fetching device stats:", err);
                 if (isMounted) {
-                    setError("Error al cargar datos del dispositivo");
+                    setError(t('errorDetails'));
                 }
             } finally {
                 if (isMounted) {
@@ -64,7 +66,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
     if (!deviceId) return null;
 
     if (loading && !stats) {
-        return <div className="p-4 text-center text-sm text-muted-foreground">Cargando detalles...</div>;
+        return <div className="p-4 text-center text-sm text-muted-foreground">{t('loadingDetails')}</div>;
     }
 
     if (error) {
@@ -72,7 +74,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
     }
 
     if (!stats) {
-        return <div className="p-4 text-center text-sm text-muted-foreground">No hay datos disponibles</div>;
+        return <div className="p-4 text-center text-sm text-muted-foreground">{t('noDataAvailable')}</div>;
     }
 
     // Calculate status based on timestamp
@@ -81,7 +83,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
     const isOnline = (now - lastSeen) < 300; // 5 minutes
 
     const formatTime = (isoString: string) => {
-        if (!isoString) return "Nunca";
+        if (!isoString) return t('never');
         return new Date(isoString).toLocaleString('es-CL');
     };
 
@@ -130,11 +132,11 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
             <div className="grid grid-cols-2 gap-3">
                 {/* Status */}
                 <div className="col-span-2 flex items-center justify-between p-2 bg-muted/30 rounded border border-border">
-                    <span className="text-xs text-muted-foreground">Estado</span>
+                    <span className="text-xs text-muted-foreground">{t('status')}</span>
                     <div className="flex items-center gap-1.5">
                         <div className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
                         <span className={`text-xs font-medium ${isOnline ? "text-green-600" : "text-red-600"}`}>
-                            {isOnline ? "Online" : "Offline"}
+                            {isOnline ? t('online') : t('offline')}
                         </span>
                     </div>
                 </div>
@@ -143,7 +145,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                 <div className="p-2 bg-muted/30 rounded border border-border space-y-1">
                     <div className="flex items-center gap-1 text-muted-foreground">
                         <GlobeAltIcon className="w-3 h-3" />
-                        <span className="text-[10px] uppercase">IP Address</span>
+                        <span className="text-[10px] uppercase">{t('ipAddr')}</span>
                     </div>
                     <div className="text-xs font-mono truncate" title={stats.ip}>
                         {stats.ip || "—"}
@@ -154,7 +156,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                 <div className="p-2 bg-muted/30 rounded border border-border space-y-1">
                     <div className="flex items-center gap-1 text-muted-foreground">
                         <ServerIcon className="w-3 h-3" />
-                        <span className="text-[10px] uppercase">Gateway</span>
+                        <span className="text-[10px] uppercase">{t('gateway')}</span>
                     </div>
                     <div className="text-xs font-mono truncate" title={stats.gateway}>
                         {stats.gateway || "—"}
@@ -165,10 +167,10 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                 <div className="col-span-2 p-2 bg-muted/30 rounded border border-border space-y-1">
                     <div className="flex items-center gap-1 text-muted-foreground">
                         <ComputerDesktopIcon className="w-3 h-3" />
-                        <span className="text-[10px] uppercase">Sistema Operativo</span>
+                        <span className="text-[10px] uppercase">{t('os')}</span>
                     </div>
                     <div className="text-xs truncate">
-                        {stats.os || stats.os_name || stats.platform || "Desconocido"} {stats.os_version || ""}
+                        {stats.os || stats.os_name || stats.platform || t('unknown')} {stats.os_version || ""}
                     </div>
                 </div>
 
@@ -177,7 +179,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                 <div className="col-span-2 p-2 bg-muted/30 rounded border border-border space-y-1">
                     <div className="flex items-center gap-1 text-muted-foreground">
                         <ClockIcon className="w-3 h-3" />
-                        <span className="text-[10px] uppercase">Última Actividad</span>
+                        <span className="text-[10px] uppercase">{t('lastActivity')}</span>
                     </div>
                     <div className="text-xs">
                         {formatTime(stats.timestamp)}
@@ -187,13 +189,13 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
 
             {/* Resources */}
             <div className="space-y-2">
-                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Recursos</h4>
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('resources')}</h4>
 
                 {/* CPU */}
                 <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                         <span className="flex items-center gap-1">
-                            <CpuChipIcon className="w-3 h-3" /> CPU
+                            <CpuChipIcon className="w-3 h-3" /> {t('cpuSimple')}
                         </span>
                         <span>{stats.cpu?.toFixed(1)}%</span>
                     </div>
@@ -208,7 +210,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                 {/* CPU Cores (Grid of squares) */}
                 {cpuCores.length > 0 && (
                     <div className="space-y-1 pt-1">
-                        <div className="text-[10px] text-muted-foreground uppercase">Núcleos ({cpuCores.length})</div>
+                        <div className="text-[10px] text-muted-foreground uppercase">{t('cores')} ({cpuCores.length})</div>
                         <div className="grid grid-cols-8 gap-1">
                             {cpuCores.map((core) => {
                                 const val = core.val || 0;
@@ -236,7 +238,7 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                 <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                         <span className="flex items-center gap-1">
-                            <ServerIcon className="w-3 h-3" /> RAM
+                            <ServerIcon className="w-3 h-3" /> {t('ramSimple')}
                         </span>
                         <span>{stats.ram?.toFixed(1)}%</span>
                     </div>
@@ -248,18 +250,18 @@ export default function DeviceDetails({ deviceId, jwt }: DeviceDetailsProps) {
                     </div>
                     {stats.ram_total > 0 && (
                         <div className="flex justify-between text-[10px] text-muted-foreground pt-0.5">
-                            <span>Usado: {formatBytes(stats.ram_used)}</span>
-                            <span>Total: {formatBytes(stats.ram_total)}</span>
+                            <span>{t('used')}: {formatBytes(stats.ram_used)}</span>
+                            <span>{t('total')}: {formatBytes(stats.ram_total)}</span>
                         </div>
                     )}
                 </div>
                 <div className="grid grid-cols-2 gap-2 pt-1">
                     <div className="p-1.5 bg-muted/20 rounded border border-border text-center">
-                        <div className="text-[10px] text-muted-foreground">Net RX</div>
+                        <div className="text-[10px] text-muted-foreground">{t('netRxSimple')}</div>
                         <div className="text-xs font-mono">{formatBytes(displayNetRx)}/s</div>
                     </div>
                     <div className="p-1.5 bg-muted/20 rounded border border-border text-center">
-                        <div className="text-[10px] text-muted-foreground">Net TX</div>
+                        <div className="text-[10px] text-muted-foreground">{t('netTxSimple')}</div>
                         <div className="text-xs font-mono">{formatBytes(displayNetTx)}/s</div>
                     </div>
                 </div>

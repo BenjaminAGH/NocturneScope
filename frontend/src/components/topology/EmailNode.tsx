@@ -3,6 +3,7 @@
 import { memo, useState, useEffect } from "react";
 import { Handle, Position, NodeProps, useReactFlow } from "@xyflow/react";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface EmailNodeData extends Record<string, unknown> {
     subject?: string;
@@ -14,6 +15,7 @@ export interface EmailNodeData extends Record<string, unknown> {
 }
 
 function EmailNode({ id, data, selected }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as EmailNodeData;
     const { isActive, to } = typedData;
 
@@ -34,7 +36,7 @@ function EmailNode({ id, data, selected }: NodeProps) {
             <div className={`px-3 py-2 flex justify-between items-center ${isActive ? "bg-blue-500/10" : "bg-muted/50"}`}>
                 <div className="flex items-center gap-2">
                     <EnvelopeIcon className={`w-5 h-5 ${isActive ? "text-blue-500 animate-pulse" : "text-muted-foreground"}`} />
-                    <span className="font-medium text-sm">Send Email</span>
+                    <span className="font-medium text-sm">{t('sendEmailTitle')}</span>
                 </div>
             </div>
 
@@ -47,7 +49,7 @@ function EmailNode({ id, data, selected }: NodeProps) {
                 )}
                 {to && (
                     <div className="text-xs text-muted-foreground truncate">
-                        To: {to}
+                        {t('toLabel')}: {to}
                     </div>
                 )}
             </div>

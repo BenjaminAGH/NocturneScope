@@ -3,7 +3,9 @@
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import DeviceDetails from "./DeviceDetails";
+import DeviceDetails from "./DeviceDetails";
 import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface DeviceDetailsNodeData extends Record<string, unknown> {
     connectedDevice?: string;
@@ -11,6 +13,7 @@ export interface DeviceDetailsNodeData extends Record<string, unknown> {
 }
 
 function DeviceDetailsNode({ data }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as DeviceDetailsNodeData;
     const { connectedDevice, jwt } = typedData;
 
@@ -24,7 +27,7 @@ function DeviceDetailsNode({ data }: NodeProps) {
 
             <div className="p-3 border-b border-border bg-muted/20 flex items-center gap-2">
                 <ClipboardDocumentListIcon className="w-5 h-5 text-primary" />
-                <span className="text-sm font-semibold">Detalles del Dispositivo</span>
+                <span className="text-sm font-semibold">{t('deviceDetailsTitle')}</span>
             </div>
 
             <div className="p-4">
@@ -33,7 +36,7 @@ function DeviceDetailsNode({ data }: NodeProps) {
                 ) : (
                     <div className="flex flex-col items-center justify-center py-8 text-muted-foreground gap-2">
                         <ClipboardDocumentListIcon className="w-8 h-8 opacity-50" />
-                        <span className="text-xs text-center">Conecta este nodo a un dispositivo<br />para ver sus detalles</span>
+                        <span className="text-xs text-center">{t('connectNodeHint')}</span>
                     </div>
                 )}
             </div>

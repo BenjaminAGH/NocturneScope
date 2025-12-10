@@ -4,6 +4,7 @@ import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { SOUND_OPTIONS, SoundType } from "@/lib/soundPlayer";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface SoundNodeData extends Record<string, unknown> {
     sound?: SoundType;
@@ -11,9 +12,10 @@ export interface SoundNodeData extends Record<string, unknown> {
 }
 
 function SoundNode({ data, selected }: NodeProps) {
+    const { t } = useLanguage();
     const { sound = 'beep', isActive } = data as SoundNodeData;
 
-    const soundLabel = SOUND_OPTIONS.find(opt => opt.value === sound)?.label || "Sonido";
+    const soundLabel = SOUND_OPTIONS.find(opt => opt.value === sound)?.label || t('soundDefault');
 
     return (
         <div

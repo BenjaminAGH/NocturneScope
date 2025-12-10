@@ -7,27 +7,29 @@ import {
     BellAlertIcon,
     ComputerDesktopIcon
 } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 export const Features = () => {
+    const { t } = useLanguage();
     const features = [
         {
-            title: "Monitoreo en Tiempo Real",
-            description: "Visualiza el tráfico de red y métricas de rendimiento en vivo para una toma de decisiones instantánea.",
+            title: t('featureRealTime'),
+            description: t('featureRealTimeDesc'),
             icon: <ChartBarIcon className="w-8 h-8 text-primary" />,
         },
         {
-            title: "Topología de Red",
-            description: "Mapa interactivo que descubre y visualiza automáticamente la estructura y conexiones de tu red.",
+            title: t('featureTopology'),
+            description: t('featureTopologyDesc'),
             icon: <ShareIcon className="w-8 h-8 text-primary" />,
         },
         {
-            title: "Alertas Inteligentes",
-            description: "Sistema de detección de anomalías que te notifica sobre comportamientos sospechosos o fallos.",
+            title: t('featureAlerts'),
+            description: t('featureAlertsDesc'),
             icon: <BellAlertIcon className="w-8 h-8 text-primary" />,
         },
         {
-            title: "Multi-Plataforma",
-            description: "Agentes ligeros y eficientes compatibles con sistemas Linux y Windows para una cobertura total.",
+            title: t('featureMultiPlatform'),
+            description: t('featureMultiPlatformDesc'),
             icon: <ComputerDesktopIcon className="w-8 h-8 text-primary" />,
         },
     ];
@@ -59,7 +61,7 @@ export const Features = () => {
                 <ScrollAnimation animation="fade-up" delay={0.4}>
                     <div className="mt-16 text-center w-full">
                         <p className="text-lg text-muted-foreground leading-relaxed">
-                            NocturneScope transforma la manera en que gestionas la seguridad de tu red. Nuestra plataforma unifica el monitoreo en tiempo real, la visualización avanzada de topologías y un sistema de alertas proactivo en una sola interfaz intuitiva. Diseñada para escalar con tu infraestructura, ofrece la visibilidad profunda y el control que necesitas para identificar vulnerabilidades, optimizar el rendimiento y responder a incidentes con velocidad y precisión, sin importar la complejidad de tu entorno.
+                            {t('featuresConclusion')}
                         </p>
                     </div>
                 </ScrollAnimation>

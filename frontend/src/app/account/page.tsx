@@ -137,7 +137,7 @@ export default function AccountPage() {
 
                 {/* Profile Section */}
                 <div className="bg-card border border-border rounded-xl p-8 shadow-sm">
-                    
+
                     <div className="relative z-10">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">

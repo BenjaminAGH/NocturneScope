@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon, ComputerDesktopIcon, PresentationChartLineIcon, ChartPieIcon } from "@heroicons/react/24/outline";
+import { ChartBarIcon, CheckCircleIcon, ExclamationTriangleIcon, BoltIcon, EnvelopeIcon, ChevronRightIcon, ChevronLeftIcon, BellIcon, PencilIcon, TrashIcon, ClockIcon, SpeakerWaveIcon, GlobeAltIcon, FunnelIcon, ChevronDownIcon, InformationCircleIcon, CalendarDaysIcon, HashtagIcon, ComputerDesktopIcon, PresentationChartLineIcon, ChartPieIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { SOUND_OPTIONS } from "@/lib/soundPlayer";
 import DeviceDetails from "./DeviceDetails";
 import { Node } from "@xyflow/react";
@@ -36,23 +38,6 @@ interface TopologyControlsProps {
     onRename: (id: number, newName: string) => void;
 }
 
-const METRIC_OPTIONS = [
-    { value: "cpu", label: "CPU Usage" },
-    { value: "ram", label: "RAM Usage" },
-    { value: "disk", label: "Disk Usage" },
-    { value: "net_rx", label: "Network RX" },
-    { value: "net_tx", label: "Network TX" },
-    { value: "temp", label: "Temperature" },
-];
-
-const RANGE_OPTIONS = [
-    { value: "30m", label: "30 Minutos" },
-    { value: "1h", label: "1 Hora" },
-    { value: "6h", label: "6 Horas" },
-    { value: "24h", label: "24 Horas" },
-    { value: "7d", label: "7 Días" },
-];
-
 
 export default function TopologyControls({
     devices,
@@ -82,6 +67,7 @@ export default function TopologyControls({
     jwt,
 }: TopologyControlsProps) {
     const { notify } = useNotification();
+    const { t } = useLanguage();
     const [isOpen, setIsOpen] = useState(true);
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [showRenameDialog, setShowRenameDialog] = useState(false);
@@ -128,11 +114,28 @@ export default function TopologyControls({
     const [activeCategory, setActiveCategory] = useState<'all' | 'monitoring' | 'triggers' | 'logic' | 'actions'>('all');
 
     const categories = [
-        { id: 'all', label: 'Todos' },
-        { id: 'monitoring', label: 'Monitoreo' },
-        { id: 'triggers', label: 'Disparadores' },
-        { id: 'logic', label: 'Lógica' },
-        { id: 'actions', label: 'Acciones' },
+        { id: 'all', label: t('catAll') },
+        { id: 'monitoring', label: t('catMonitoring') },
+        { id: 'triggers', label: t('catTriggers') },
+        { id: 'logic', label: t('catLogic') },
+        { id: 'actions', label: t('catActions') },
+    ];
+
+    const METRIC_OPTIONS = [
+        { value: "cpu", label: t("cpu") },
+        { value: "ram", label: t("ram") },
+        { value: "disk", label: t("disk") },
+        { value: "net_rx", label: t("net_rx") },
+        { value: "net_tx", label: t("net_tx") },
+        { value: "temp", label: t("temp") },
+    ];
+
+    const RANGE_OPTIONS = [
+        { value: "30m", label: t("t_30m") },
+        { value: "1h", label: t("t_1h") },
+        { value: "6h", label: t("t_6h") },
+        { value: "24h", label: t("t_24h") },
+        { value: "7d", label: t("t_7d") },
     ];
 
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -157,12 +160,12 @@ export default function TopologyControls({
 
             {/* Main Content */}
             <div className="w-full h-full bg-card/80 backdrop-blur-md border-l border-border p-4 space-y-4 overflow-y-auto flex flex-col shadow-2xl">
-                <h2 className="text-lg font-semibold">Controles de Topología</h2>
+                <h2 className="text-lg font-semibold">{t('topologyControls')}</h2>
 
                 {/* Herramientas */}
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium">Herramientas</label>
+                        <label className="text-sm font-medium">{t('tools')}</label>
 
                         {/* Category Filter Dropdown */}
                         <div className="relative">
@@ -213,10 +216,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Visualiza métricas en tiempo real (CPU, RAM, etc.) de un dispositivo conectado."
+                                        title={t('metricChartDesc')}
                                     >
                                         <ChartBarIcon className="w-6 h-6" />
-                                        <span className="text-xs">Gráfico</span>
+                                        <span className="text-xs">{t('metricChart')}</span>
                                     </button>
                                     <button
                                         onClick={onAddDetailsNode}
@@ -226,10 +229,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Muestra información detallada (OS, IP, Estado) del dispositivo conectado en el canvas."
+                                        title={t('detailsNodeDesc')}
                                     >
                                         <InformationCircleIcon className="w-6 h-6" />
-                                        <span className="text-xs">Detalles</span>
+                                        <span className="text-xs">{t('detailsNode')}</span>
                                     </button>
                                     <button
                                         onClick={onAddTrafficNode}
@@ -239,10 +242,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Monitorea el tráfico de red entrante y saliente del dispositivo."
+                                        title={t('trafficNodeDesc')}
                                     >
                                         <GlobeAltIcon className="w-6 h-6" />
-                                        <span className="text-xs">Tráfico</span>
+                                        <span className="text-xs">{t('trafficNode')}</span>
                                     </button>
                                     <button
                                         onClick={onAddStatisticsNode}
@@ -252,10 +255,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Muestra una tarjeta de estadística específica (CPU, RAM, etc.) para un dispositivo."
+                                        title={t('statsNodeDesc')}
                                     >
                                         <ChartPieIcon className="w-6 h-6" />
-                                        <span className="text-xs">Estadística</span>
+                                        <span className="text-xs">{t('statsNode')}</span>
                                     </button>
                                 </>
                             )}
@@ -271,10 +274,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Evalúa una condición sobre una métrica (ej: CPU > 80%) para disparar alertas."
+                                        title={t('actionNodeDesc')}
                                     >
                                         <BoltIcon className="w-6 h-6" />
-                                        <span className="text-xs">Acción</span>
+                                        <span className="text-xs">{t('actionNode')}</span>
                                     </button>
                                     <button
                                         onClick={onAddTrafficTriggerNode}
@@ -284,10 +287,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Dispara alertas basadas en patrones de tráfico específicos (ej: puerto, protocolo)."
+                                        title={t('trafficTriggerDesc')}
                                     >
                                         <FunnelIcon className="w-6 h-6" />
-                                        <span className="text-xs">Trigger</span>
+                                        <span className="text-xs">{t('trafficTrigger')}</span>
                                     </button>
                                 </>
                             )}
@@ -303,10 +306,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Introduce una pausa configurable antes de pasar la señal al siguiente nodo."
+                                        title={t('delayNodeDesc')}
                                     >
                                         <ClockIcon className="w-6 h-6" />
-                                        <span className="text-xs">Delay</span>
+                                        <span className="text-xs">{t('delayNode')}</span>
                                     </button>
                                     <button
                                         onClick={onAddTimeWindowNode}
@@ -316,10 +319,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Permite el paso de señales solo dentro de un horario específico configurado."
+                                        title={t('windowNodeDesc')}
                                     >
                                         <CalendarDaysIcon className="w-6 h-6" />
-                                        <span className="text-xs">Ventana</span>
+                                        <span className="text-xs">{t('windowNode')}</span>
                                     </button>
                                     <button
                                         onClick={onAddThresholdNode}
@@ -329,10 +332,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Requiere que una señal se repita X veces en un tiempo dado antes de activarse."
+                                        title={t('thresholdNodeDesc')}
                                     >
                                         <HashtagIcon className="w-6 h-6" />
-                                        <span className="text-xs">Umbral</span>
+                                        <span className="text-xs">{t('thresholdNode')}</span>
                                     </button>
                                 </>
                             )}
@@ -348,10 +351,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Envía un correo electrónico de alerta cuando recibe una señal de activación."
+                                        title={t('emailNodeDesc')}
                                     >
                                         <EnvelopeIcon className="w-6 h-6" />
-                                        <span className="text-xs">Email</span>
+                                        <span className="text-xs">{t('emailNode')}</span>
                                     </button>
                                     <button
                                         onClick={onAddNotificationNode}
@@ -361,10 +364,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Muestra una notificación emergente (toast) en la pantalla del usuario."
+                                        title={t('notificationNodeDesc')}
                                     >
                                         <BellIcon className="w-6 h-6" />
-                                        <span className="text-xs">Notificación</span>
+                                        <span className="text-xs">{t('notificationNode')}</span>
                                     </button>
                                     <button
                                         onClick={onAddSoundNode}
@@ -374,10 +377,10 @@ export default function TopologyControls({
                                             event.dataTransfer.effectAllowed = 'move';
                                         }}
                                         className="flex flex-col items-center justify-center p-3 bg-background/50 hover:bg-accent rounded border border-border transition-colors gap-2 cursor-grab active:cursor-grabbing"
-                                        title="Reproduce un sonido de alarma cuando se activa."
+                                        title={t('soundNodeDesc')}
                                     >
                                         <SpeakerWaveIcon className="w-6 h-6" />
-                                        <span className="text-xs">Sonido</span>
+                                        <span className="text-xs">{t('soundNode')}</span>
                                     </button>
                                 </>
                             )}
@@ -388,22 +391,22 @@ export default function TopologyControls({
                 {/* Configuración específica para Traffic Trigger Node */}
                 {selectedNode?.type === 'traffic-trigger' && (
                     <div className="space-y-4 bg-muted/30 p-3 rounded-lg border border-border animate-in fade-in slide-in-from-right-4">
-                        <label className="text-sm font-medium text-primary">Configuración de Traffic Trigger</label>
+                        <label className="text-sm font-medium text-primary">{t('configTitle')} Traffic Trigger</label>
                         <div>
-                            <label className="text-xs font-medium text-muted-foreground">Tipo de Regla</label>
+                            <label className="text-xs font-medium text-muted-foreground">{t('ruleType')}</label>
                             <select
                                 className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
                                 value={(selectedNode.data as any).ruleType || 'threat_level'}
                                 onChange={(e) => onUpdateNodeData(selectedNode.id, { ruleType: e.target.value, value: '' })}
                             >
-                                <option value="threat_level">Nivel de Amenaza</option>
-                                <option value="port">Puerto</option>
-                                <option value="protocol">Protocolo</option>
-                                <option value="ip">Dirección IP</option>
+                                <option value="threat_level">{t('threatLevel')}</option>
+                                <option value="port">{t('port')}</option>
+                                <option value="protocol">{t('protocol')}</option>
+                                <option value="ip">{t('ipAddr')}</option>
                             </select>
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-muted-foreground">Valor</label>
+                            <label className="text-xs font-medium text-muted-foreground">{t('value')}</label>
                             {selectedNode.data.ruleType === 'threat_level' ? (
                                 <select
                                     className="w-full mt-1 p-2 bg-background border border-border rounded text-sm"
@@ -454,17 +457,17 @@ export default function TopologyControls({
                 {selectedNode && (
                     <div className="space-y-2 border-t border-border pt-4 animate-in fade-in slide-in-from-right-4">
                         <label className="text-sm font-medium text-primary">
-                            {selectedNode.type === 'monitoring' && "Configuración de Gráfico"}
-                            {selectedNode.type === 'action' && "Regla de Disparo"}
-                            {selectedNode.type === 'email' && "Configuración de Email"}
-                            {selectedNode.type === 'notification' && "Configuración de Notificación"}
-                            {selectedNode.type === 'delay' && "Configuración de Delay"}
-                            {selectedNode.type === 'sound' && "Configuración de Sonido"}
-                            {selectedNode.type === 'traffic' && "Configuración de Tráfico"}
-                            {selectedNode.type === 'traffic-trigger' && "Configuración de Traffic Trigger"}
-                            {selectedNode.type === 'time-window' && "Configuración de Ventana de Tiempo"}
-                            {selectedNode.type === 'threshold' && "Configuración de Umbral"}
-                            {selectedNode.type === 'device' && "Detalles del Dispositivo"}
+                            {selectedNode.type === 'monitoring' && `${t('configTitle')} ${t('metricChart')}`}
+                            {selectedNode.type === 'action' && `${t('configTitle')} ${t('actionNode')}`}
+                            {selectedNode.type === 'email' && `${t('configTitle')} ${t('emailNode')}`}
+                            {selectedNode.type === 'notification' && `${t('configTitle')} ${t('notificationNode')}`}
+                            {selectedNode.type === 'delay' && `${t('configTitle')} ${t('delayNode')}`}
+                            {selectedNode.type === 'sound' && `${t('configTitle')} ${t('soundNode')}`}
+                            {selectedNode.type === 'traffic' && `${t('configTitle')} ${t('trafficNode')}`}
+                            {selectedNode.type === 'traffic-trigger' && `${t('configTitle')} ${t('trafficTrigger')}`}
+                            {selectedNode.type === 'time-window' && `${t('configTitle')} ${t('windowNode')}`}
+                            {selectedNode.type === 'threshold' && `${t('configTitle')} ${t('thresholdNode')}`}
+                            {selectedNode.type === 'device' && `${t('detailsNodeDesc')}`}
                         </label>
 
                         <div className="space-y-3 bg-muted/30 p-3 rounded-lg border border-border">
@@ -472,7 +475,7 @@ export default function TopologyControls({
                             {selectedNode.type === 'device' && (
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Cambiar Dispositivo</label>
+                                        <label className="text-xs text-muted-foreground">{t('changeDevice')}</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
                                             value={(selectedNode.data as any).deviceName || selectedNode.id}
@@ -484,7 +487,7 @@ export default function TopologyControls({
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Color del Nodo</label>
+                                        <label className="text-xs text-muted-foreground">{t('nodeColor')}</label>
                                         <div className="flex flex-wrap gap-1 mt-1 mb-2">
                                             {[
                                                 '#eb6f92', // Love
@@ -528,26 +531,26 @@ export default function TopologyControls({
                             {selectedNode.type === 'statistics' && (
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Dispositivo Monitorizado</label>
+                                        <label className="text-xs text-muted-foreground">{t('monitoredDevice')}</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
                                             value={(selectedNode.data as any).deviceId || ""}
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { deviceId: e.target.value })}
                                         >
-                                            <option value="">Seleccionar dispositivo...</option>
+                                            <option value="">{t('selectDevice')}</option>
                                             {devices.map(dev => (
                                                 <option key={dev} value={dev}>{dev}</option>
                                             ))}
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Tipo de Métrica</label>
+                                        <label className="text-xs text-muted-foreground">{t('metricType')}</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
                                             value={(selectedNode.data as any).metricType || ""}
                                             onChange={(e) => onUpdateNodeData(selectedNode.id, { metricType: e.target.value })}
                                         >
-                                            <option value="">Seleccionar métrica...</option>
+                                            <option value="">{t('selectMetric')}</option>
                                             <option value="cpu">CPU</option>
                                             <option value="ram">RAM</option>
                                             <option value="disk">Disco</option>
@@ -560,9 +563,9 @@ export default function TopologyControls({
 
                             {/* Monitoring Node Config */}
                             {selectedNode.type === 'monitoring' && (
-                                <>
+                                <div className="space-y-3">
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Métrica</label>
+                                        <label className="text-xs text-muted-foreground">{t('metric')}</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
                                             value={selectedNode.data.metric || 'cpu'}
@@ -575,7 +578,7 @@ export default function TopologyControls({
                                     </div>
 
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Rango de Tiempo</label>
+                                        <label className="text-xs text-muted-foreground">{t('timeRange')}</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
                                             value={(selectedNode.data as any).range || '1h'}
@@ -587,14 +590,14 @@ export default function TopologyControls({
                                         </select>
                                     </div>
 
-                                </>
+                                </div>
                             )}
 
                             {/* Action Node Config */}
                             {selectedNode.type === 'action' && (
                                 <>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Métrica</label>
+                                        <label className="text-xs text-muted-foreground">{t('metric')}</label>
                                         <select
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
                                             value={selectedNode.data.metric || 'cpu'}
@@ -608,7 +611,7 @@ export default function TopologyControls({
 
                                     <div className="grid grid-cols-3 gap-2">
                                         <div className="col-span-1">
-                                            <label className="text-xs text-muted-foreground">Operador</label>
+                                            <label className="text-xs text-muted-foreground">{t('operator')}</label>
                                             <select
                                                 className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
                                                 value={selectedNode.data.operator || '>='}
@@ -638,7 +641,7 @@ export default function TopologyControls({
                             {selectedNode.type === 'email' && (
                                 <>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Destinatario (To)</label>
+                                        <label className="text-xs text-muted-foreground">{t('recipient')}</label>
                                         <input
                                             type="email"
                                             placeholder="admin@example.com"
@@ -648,7 +651,7 @@ export default function TopologyControls({
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Asunto</label>
+                                        <label className="text-xs text-muted-foreground">{t('subject')}</label>
                                         <input
                                             type="text"
                                             placeholder="Alerta CPU"
@@ -659,7 +662,7 @@ export default function TopologyControls({
                                     </div>
 
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Contenido</label>
+                                        <label className="text-xs text-muted-foreground">{t('content')}</label>
                                         <textarea
                                             placeholder="El uso de CPU es alto..."
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm min-h-[80px] resize-none"
@@ -672,7 +675,7 @@ export default function TopologyControls({
                                             onClick={async () => {
                                                 const email = selectedNode.data.to;
                                                 if (!email) {
-                                                    notify("Por favor ingresa un destinatario primero.", "error");
+                                                    notify(t('enterRecipient'), "error");
                                                     return;
                                                 }
                                                 const jwt = localStorage.getItem("jwt");
@@ -681,15 +684,15 @@ export default function TopologyControls({
                                                 try {
                                                     const { sendTestEmail } = await import("@/lib/api/api");
                                                     await sendTestEmail(jwt, email);
-                                                    notify(`Correo de prueba enviado a ${email}`, "success");
+                                                    notify(`${t('testSendSuccess')} ${email}`, "success");
                                                 } catch (err: any) {
-                                                    notify(`Error enviando correo: ${err.message}`, "error");
+                                                    notify(`${t('testSendError')}: ${err.message}`, "error");
                                                 }
                                             }}
                                             className="w-full px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-xs font-medium transition-colors flex items-center justify-center gap-2"
                                         >
                                             <EnvelopeIcon className="w-3 h-3" />
-                                            Probar Envío
+                                            {t('testSend')}
                                         </button>
                                     </div>
                                 </>
@@ -698,7 +701,7 @@ export default function TopologyControls({
                             {/* Notification Node Config */}
                             {selectedNode.type === 'notification' && (
                                 <div>
-                                    <label className="text-xs text-muted-foreground">Mensaje</label>
+                                    <label className="text-xs text-muted-foreground">{t('message')}</label>
                                     <input
                                         type="text"
                                         placeholder="Mensaje de alerta..."
@@ -712,7 +715,7 @@ export default function TopologyControls({
                             {/* Delay Node Config */}
                             {selectedNode.type === 'delay' && (
                                 <div>
-                                    <label className="text-xs text-muted-foreground">Retraso (ms)</label>
+                                    <label className="text-xs text-muted-foreground">{t('delayMs')}</label>
                                     <input
                                         type="number"
                                         placeholder="10000"
@@ -720,14 +723,14 @@ export default function TopologyControls({
                                         value={(selectedNode.data as any).delay || 5}
                                         onChange={(e) => onUpdateNodeData(selectedNode.id, { delay: parseInt(e.target.value) })}
                                     />
-                                    <p className="text-[10px] text-muted-foreground mt-1">1000ms = 1 segundo</p>
+                                    <p className="text-[10px] text-muted-foreground mt-1">{t('delayHint')}</p>
                                 </div>
                             )}
 
                             {/* Sound Node Config */}
                             {selectedNode.type === 'sound' && (
                                 <div>
-                                    <label className="text-xs text-muted-foreground">Tipo de Sonido</label>
+                                    <label className="text-xs text-muted-foreground">{t('soundType')}</label>
                                     <select
                                         className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
                                         value={(selectedNode.data as any).sound || 'alarm'}
@@ -744,7 +747,7 @@ export default function TopologyControls({
                             {selectedNode.type === 'time-window' && (
                                 <>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Hora Inicio (HH:mm)</label>
+                                        <label className="text-xs text-muted-foreground">{t('startTime')}</label>
                                         <input
                                             type="time"
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
@@ -753,7 +756,7 @@ export default function TopologyControls({
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Hora Fin (HH:mm)</label>
+                                        <label className="text-xs text-muted-foreground">{t('endTime')}</label>
                                         <input
                                             type="time"
                                             className="w-full mt-1 bg-background/80 border border-border rounded px-2 py-1 text-sm"
@@ -768,7 +771,7 @@ export default function TopologyControls({
                             {selectedNode.type === 'threshold' && (
                                 <>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Umbral (Intentos)</label>
+                                        <label className="text-xs text-muted-foreground">{t('thresholdAttempt')}</label>
                                         <input
                                             type="number"
                                             min="1"
@@ -778,7 +781,7 @@ export default function TopologyControls({
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-xs text-muted-foreground">Ventana de Tiempo (segundos)</label>
+                                        <label className="text-xs text-muted-foreground">{t('timeWindowSec')}</label>
                                         <input
                                             type="number"
                                             min="1"
@@ -788,7 +791,7 @@ export default function TopologyControls({
                                         />
                                     </div>
                                     <div className="text-xs text-muted-foreground pt-2 border-t border-border/50">
-                                        Estado actual: {selectedNode.data.currentCount || 0} / {selectedNode.data.threshold || 3}
+                                        {t('currentState')}: {selectedNode.data.currentCount || 0} / {selectedNode.data.threshold || 3}
                                     </div>
                                 </>
                             )}
@@ -799,12 +802,12 @@ export default function TopologyControls({
                                     {selectedNode.data.connectedDevice ? (
                                         <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                                             <CheckCircleIcon className="w-4 h-4" />
-                                            <span>Conectado a: {selectedNode.data.connectedDevice}</span>
+                                            <span>{t('connectedTo')}: {selectedNode.data.connectedDevice}</span>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
                                             <ExclamationTriangleIcon className="w-4 h-4" />
-                                            <span>No conectado a ningún dispositivo</span>
+                                            <span>{t('notConnected')}</span>
                                         </div>
                                     )}
                                 </div>
@@ -819,16 +822,16 @@ export default function TopologyControls({
                         <span className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-card px-2 text-muted-foreground">Dispositivos</span>
+                        <span className="bg-card px-2 text-muted-foreground">{t('devices')}</span>
                     </div>
                 </div>
 
                 {/* Dispositivos disponibles */}
                 <div className="space-y-2 flex-1 min-h-0 flex flex-col">
-                    <label className="text-sm font-medium">Disponibles</label>
+                    <label className="text-sm font-medium">{t('availableDevices')}</label>
                     <div className="space-y-1 overflow-y-auto flex-1 pr-2">
                         {devices.length === 0 ? (
-                            <p className="text-xs text-muted-foreground">No hay dispositivos</p>
+                            <p className="text-xs text-muted-foreground">{t('noAvailableDevices')}</p>
                         ) : (
                             devices.map((device) => (
                                 <button
@@ -847,7 +850,7 @@ export default function TopologyControls({
                                     </div>
                                     <div className="flex-1 text-left">
                                         <div className="text-sm font-medium leading-none truncate">{device}</div>
-                                        <div className="text-[10px] text-muted-foreground mt-1">Arrastra para agregar</div>
+                                        <div className="text-[10px] text-muted-foreground mt-1">{t('dragToAdd')}</div>
                                     </div>
                                 </button>
                             ))
@@ -856,7 +859,7 @@ export default function TopologyControls({
                 </div>
 
                 <div className="border-t border-border pt-4 space-y-2">
-                    <label className="text-sm font-medium">Topologías Guardadas</label>
+                    <label className="text-sm font-medium">{t('savedTopologies')}</label>
                     <div className="flex gap-2">
                         <select
                             className="flex-1 bg-background/80 border border-border rounded px-3 py-2 text-sm"
@@ -866,7 +869,7 @@ export default function TopologyControls({
                                 if (!isNaN(id)) onLoad(id);
                             }}
                         >
-                            <option value="">Seleccionar topología...</option>
+                            <option value="">{t('selectTopology')}</option>
                             {topologies.map((t) => (
                                 <option key={t.ID} value={t.ID}>
                                     {t.Name}
@@ -908,14 +911,14 @@ export default function TopologyControls({
                         onClick={onNew}
                         className="w-full px-4 py-2 bg-background/50 hover:bg-accent border border-border rounded text-sm font-medium transition-colors"
                     >
-                        Nueva Topología
+                        {t('newTopology')}
                     </button>
 
                     <button
                         onClick={handleSaveClick}
                         className="w-full px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-medium transition-colors"
                     >
-                        Guardar
+                        {t('saveTopology')}
                     </button>
                 </div>
 
@@ -923,10 +926,10 @@ export default function TopologyControls({
                 {showSaveDialog && typeof document !== 'undefined' && createPortal(
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
                         <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4 shadow-xl">
-                            <h3 className="text-lg font-semibold">Guardar Topología</h3>
+                            <h3 className="text-lg font-semibold">{t('saveTopologyTitle')}</h3>
                             <input
                                 type="text"
-                                placeholder="Nombre de la topología"
+                                placeholder={t('topologyNamePlaceholder')}
                                 value={topologyName}
                                 onChange={(e) => setTopologyName(e.target.value)}
                                 className="w-full px-3 py-2 bg-background border border-border rounded text-sm"
@@ -941,13 +944,13 @@ export default function TopologyControls({
                                     onClick={() => setShowSaveDialog(false)}
                                     className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm"
                                 >
-                                    Cancelar
+                                    {t('cancel')}
                                 </button>
                                 <button
                                     onClick={handleSaveConfirm}
                                     className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm"
                                 >
-                                    Guardar
+                                    {t('saveTopology')}
                                 </button>
                             </div>
                         </div>
@@ -959,10 +962,10 @@ export default function TopologyControls({
                 {showRenameDialog && typeof document !== 'undefined' && createPortal(
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
                         <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4 shadow-xl">
-                            <h3 className="text-lg font-semibold">Renombrar Topología</h3>
+                            <h3 className="text-lg font-semibold">{t('renameTopologyTitle')}</h3>
                             <input
                                 type="text"
-                                placeholder="Nuevo nombre"
+                                placeholder={t('topologyNamePlaceholder')}
                                 value={topologyName}
                                 onChange={(e) => setTopologyName(e.target.value)}
                                 className="w-full px-3 py-2 bg-background border border-border rounded text-sm"
@@ -977,13 +980,13 @@ export default function TopologyControls({
                                     onClick={() => setShowRenameDialog(false)}
                                     className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm"
                                 >
-                                    Cancelar
+                                    {t('cancel')}
                                 </button>
                                 <button
                                     onClick={handleRenameConfirm}
                                     className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm"
                                 >
-                                    Renombrar
+                                    {t('rename')}
                                 </button>
                             </div>
                         </div>
@@ -995,22 +998,22 @@ export default function TopologyControls({
                 {showDeleteDialog && typeof document !== 'undefined' && createPortal(
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
                         <div className="bg-card border border-border rounded-lg p-6 w-96 space-y-4 shadow-xl">
-                            <h3 className="text-lg font-semibold text-destructive">Eliminar Topología</h3>
+                            <h3 className="text-lg font-semibold text-destructive">{t('deleteTopologyTitle')}</h3>
                             <p className="text-sm text-muted-foreground">
-                                ¿Estás seguro de que deseas eliminar esta topología? Esta acción no se puede deshacer.
+                                {t('deleteConfirmMsg')}
                             </p>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setShowDeleteDialog(false)}
                                     className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm"
                                 >
-                                    Cancelar
+                                    {t('cancel')}
                                 </button>
                                 <button
                                     onClick={handleDeleteConfirm}
                                     className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded text-sm"
                                 >
-                                    Eliminar
+                                    {t('delete')}
                                 </button>
                             </div>
                         </div>

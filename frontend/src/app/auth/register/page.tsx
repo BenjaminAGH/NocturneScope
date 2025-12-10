@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 const ORIGIN = (process.env.NEXT_PUBLIC_API_URL || "https://api.nocturnesec.cl").replace(/\/+$/, "");
 const API = `${ORIGIN}/api`;
@@ -14,6 +15,7 @@ export default function RegisterPage() {
     const [err, setErr] = useState("");
     const [ok, setOk] = useState(false);
     const router = useRouter();
+    const { t } = useLanguage();
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,7 +30,7 @@ export default function RegisterPage() {
             setOk(true);
             setTimeout(() => router.push("/auth/login"), 900);
         } catch {
-            setErr("No se pudo crear la cuenta (email/usuario en uso o backend caído).");
+            setErr(t('registerError'));
         }
     };
 
@@ -36,9 +38,9 @@ export default function RegisterPage() {
         <main className="px-4 py-10 flex justify-center">
             <div className="w-full max-w-sm">
                 <div className="rounded-2xl bg-card text-card-foreground shadow-lg ring-1 ring-border/50 p-5">
-                    <h1 className="text-xl md:text-2xl font-semibold text-center">Crear cuenta</h1>
+                    <h1 className="text-xl md:text-2xl font-semibold text-center">{t('registerTitle')}</h1>
                     <p className="text-sm text-muted-foreground text-center mt-1">
-                        Regístrate para usar el panel de NocturneScope.
+                        {t('registerSubtitle')}
                     </p>
 
                     {err && (
@@ -48,13 +50,13 @@ export default function RegisterPage() {
                     )}
                     {ok && (
                         <div className="mt-4 text-sm rounded-md bg-emerald-500/10 text-emerald-500 px-3 py-2">
-                            Cuenta creada. Redirigiendo a login…
+                            {t('registerSuccess')}
                         </div>
                     )}
 
                     <form onSubmit={onSubmit} className="mt-5 space-y-4">
                         <div className="space-y-2">
-                            <label className="text-sm mb-2 block">Usuario</label>
+                            <label className="text-sm mb-2 block">{t('username')}</label>
                             <input
                                 className="w-full rounded-md border px-3 py-2 bg-background"
                                 value={username}
@@ -64,7 +66,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm mb-2 block">Email</label>
+                            <label className="text-sm mb-2 block">{t('email')}</label>
                             <input
                                 type="email"
                                 className="w-full rounded-md border px-3 py-2 bg-background"
@@ -75,7 +77,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm mb-2 block">Contraseña</label>
+                            <label className="text-sm mb-2 block">{t('password')}</label>
                             <input
                                 type="password"
                                 className="w-full rounded-md border px-3 py-2 bg-background"
@@ -86,13 +88,13 @@ export default function RegisterPage() {
                         </div>
 
                         <button className="w-full rounded-lg bg-primary text-primary-foreground py-2.5 hover:opacity-90 transition">
-                            Registrarme
+                            {t('registerBtn')}
                         </button>
                     </form>
 
                     <div className="mt-5 text-center">
                         <Link href="/auth/login" className="text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground">
-                            Ya tengo cuenta
+                            {t('hasAccount')}
                         </Link>
                     </div>
                 </div>

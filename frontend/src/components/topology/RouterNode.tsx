@@ -2,7 +2,9 @@
 
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
+import { Handle, Position, NodeProps } from "@xyflow/react";
 import { GlobeAltIcon, LinkIcon } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface RouterNodeData extends Record<string, unknown> {
     gatewayIP: string;
@@ -20,8 +22,9 @@ const formatSpeed = (bytesPerSec: number) => {
 };
 
 function RouterNode({ data }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as RouterNodeData;
-    const label = typedData.label || `Router ${typedData.gatewayIP}`;
+    const label = typedData.label || `${t('routerDefault')} ${typedData.gatewayIP}`;
     const deviceCount = typedData.deviceCount || 0;
 
     return (
@@ -37,14 +40,14 @@ function RouterNode({ data }: NodeProps) {
 
                 {/* Gateway IP */}
                 <div className="text-xs text-muted-foreground font-mono">
-                    Gateway: {typedData.gatewayIP}
+                    {t('gateway')}: {typedData.gatewayIP}
                 </div>
 
                 {/* Dispositivos conectados */}
                 {deviceCount > 0 && (
                     <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
                         <LinkIcon className="w-4 h-4" />
-                        <span>{deviceCount} {deviceCount === 1 ? "dispositivo" : "dispositivos"}</span>
+                        <span>{deviceCount} {deviceCount === 1 ? t('deviceCountOne') : t('deviceCountMany')}</span>
                     </div>
                 )}
 
@@ -52,13 +55,13 @@ function RouterNode({ data }: NodeProps) {
                 {(typedData.rxRate !== undefined || typedData.txRate !== undefined) && (
                     <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-500/30">
                         <div className="flex flex-col">
-                            <span className="text-[10px] text-muted-foreground uppercase">Bajada</span>
+                            <span className="text-[10px] text-muted-foreground uppercase">{t('downloadLabel')}</span>
                             <span className="text-xs font-mono font-medium text-green-600 dark:text-green-400">
                                 ↓ {formatSpeed(typedData.rxRate || 0)}
                             </span>
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] text-muted-foreground uppercase">Subida</span>
+                            <span className="text-[10px] text-muted-foreground uppercase">{t('uploadLabel')}</span>
                             <span className="text-xs font-mono font-medium text-blue-600 dark:text-blue-400">
                                 ↑ {formatSpeed(typedData.txRate || 0)}
                             </span>

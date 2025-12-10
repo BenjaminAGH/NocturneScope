@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { BellIcon } from '@heroicons/react/24/outline';
+import { useLanguage } from "@/context/LanguageContext";
 
 export type NotificationNodeData = {
     message: string;
@@ -8,6 +9,7 @@ export type NotificationNodeData = {
 } & Record<string, unknown>;
 
 function NotificationNode({ data, isConnectable }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as NotificationNodeData;
     return (
         <div className={`px-4 py-2 shadow-md rounded-md border-2 bg-card min-w-[150px] transition-colors duration-300 ${typedData.isActive ? 'border-yellow-500 shadow-yellow-500/50' : 'border-border'
@@ -18,9 +20,9 @@ function NotificationNode({ data, isConnectable }: NodeProps) {
                     <BellIcon className="w-5 h-5" />
                 </div>
                 <div className="ml-2">
-                    <div className="text-sm font-bold text-foreground">Notificación</div>
+                    <div className="text-sm font-bold text-foreground">{t('notificationTitle')}</div>
                     <div className="text-xs text-muted-foreground truncate max-w-[120px]">
-                        {typedData.message || "Sin mensaje"}
+                        {typedData.message || t('noMessage')}
                     </div>
                 </div>
             </div>

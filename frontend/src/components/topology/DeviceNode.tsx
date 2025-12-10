@@ -4,6 +4,7 @@ import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { ComputerDesktopIcon, BellAlertIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { formatDuration } from "@/lib/time";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface DeviceNodeData extends Record<string, unknown> {
     deviceName: string;
@@ -45,6 +46,7 @@ function getOSIcon(os: string) {
 }
 
 function DeviceNode({ data }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as DeviceNodeData;
     const status = typedData.status || "unknown";
     const label = typedData.label || typedData.deviceName;
@@ -61,9 +63,9 @@ function DeviceNode({ data }: NodeProps) {
     };
 
     const statusLabels = {
-        online: "Online",
-        offline: "Offline",
-        unknown: "Unknown",
+        online: t('online'),
+        offline: t('offline'),
+        unknown: t('unknown'),
     };
 
     return (
@@ -145,7 +147,7 @@ function DeviceNode({ data }: NodeProps) {
                     {notifications > 0 && (
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-orange-500/10 border border-orange-500/20 text-orange-500 animate-in fade-in slide-in-from-bottom-1">
                             <BellAlertIcon className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-medium">{notifications} {notifications === 1 ? "alerta" : "alertas"}</span>
+                            <span className="text-[10px] font-medium">{notifications} {notifications === 1 ? t('alert') : t('alerts')}</span>
                         </div>
                     )}
                 </div>

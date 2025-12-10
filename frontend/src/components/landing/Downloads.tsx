@@ -1,16 +1,18 @@
 import React from "react";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import { ScrollAnimation } from "@/components/landing/ScrollAnimation";
+import { useLanguage } from "@/context/LanguageContext";
 
 export const Downloads = () => {
+    const { t } = useLanguage();
     return (
         <div id="downloads" className="min-h-[80vh] flex flex-col justify-center scroll-mt-24 py-24 bg-muted/30 border-t border-border/50">
             <div className="container mx-auto px-4">
                 <ScrollAnimation animation="fade-up">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold mb-4">Descarga el Agente</h2>
+                        <h2 className="text-3xl font-bold mb-4">{t('downloadsTitle')}</h2>
                         <p className="text-muted-foreground max-w-2xl mx-auto">
-                            Para comenzar a monitorear tus dispositivos, descarga y ejecuta el agente de NocturneScope en tus máquinas.
+                            {t('downloadsDesc')}
                         </p>
                     </div>
                 </ScrollAnimation>
@@ -26,7 +28,7 @@ export const Downloads = () => {
                             </div>
                             <h3 className="text-xl font-semibold mb-2">Linux (amd64)</h3>
                             <p className="text-sm text-muted-foreground mb-6">
-                                Compatible con la mayoría de distribuciones Linux modernas (Ubuntu, Debian, CentOS, etc).
+                                {t('linuxDesc')}
                             </p>
                             <a
                                 href="https://github.com/BenjaminAGH/NocturneScope/releases/latest/download/nocturne-agent-linux"
@@ -34,7 +36,7 @@ export const Downloads = () => {
                                 className="mt-auto flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                             >
                                 <ArrowDownTrayIcon className="w-5 h-5" />
-                                Descargar para Linux
+                                {t('downloadLinux')}
                             </a>
                             <div className="mt-4 text-xs text-muted-foreground bg-muted p-2 rounded w-full font-mono text-left overflow-x-auto min-h-[5rem] flex items-center">
                                 <div>
@@ -56,7 +58,7 @@ export const Downloads = () => {
                             </div>
                             <h3 className="text-xl font-semibold mb-2">Windows (amd64)</h3>
                             <p className="text-sm text-muted-foreground mb-6">
-                                Ejecutable portable para Windows 10/11 y Server.
+                                {t('windowsDesc')}
                             </p>
                             <a
                                 href="https://github.com/BenjaminAGH/NocturneScope/releases/latest/download/nocturne-agent-windows.exe"

@@ -6,6 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { PresentationChartLineIcon } from "@heroicons/react/24/outline";
 import { getTimeseries } from "@/lib/api/api";
 import { formatTickCL } from "@/lib/time";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface MonitoringNodeData extends Record<string, unknown> {
     jwt?: string;
@@ -27,6 +28,7 @@ const METRIC_COLORS: Record<string, string> = {
 };
 
 function MonitoringNode({ id, data, selected }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as MonitoringNodeData;
     const {
         jwt,
@@ -91,7 +93,7 @@ function MonitoringNode({ id, data, selected }: NodeProps) {
                 <div className="flex items-center gap-2">
                     <PresentationChartLineIcon className="w-5 h-5" />
                     <span className="font-medium text-sm">
-                        {connectedDevice ? connectedDevice : "Sin conexión"}
+                        {connectedDevice ? connectedDevice : t('noConnection')}
                     </span>
                 </div>
                 <div className="flex gap-2">
@@ -108,7 +110,7 @@ function MonitoringNode({ id, data, selected }: NodeProps) {
             <div className="flex-1 p-2 relative min-h-0 nodrag">
                 {!connectedDevice ? (
                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs text-center p-4">
-                        Conecta este nodo a un dispositivo para ver datos
+                        {t('connectNodeHint')}
                     </div>
                 ) : (
                     <div className="w-full h-full text-xs">

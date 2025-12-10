@@ -4,6 +4,7 @@ import { memo, useEffect, useState } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { GlobeAltIcon, ShieldExclamationIcon } from "@heroicons/react/24/outline";
 import { getNetworkTraffic } from "@/lib/api/api";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface TrafficNodeData extends Record<string, unknown> {
     jwt?: string;
@@ -22,6 +23,7 @@ interface TrafficLog {
 }
 
 function TrafficNode({ id, data, selected }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as TrafficNodeData;
     const { jwt, connectedDevice } = typedData;
 
@@ -114,11 +116,11 @@ function TrafficNode({ id, data, selected }: NodeProps) {
                 <div className="flex items-center gap-2">
                     <GlobeAltIcon className="w-4 h-4 text-blue-500" />
                     <span className="font-semibold text-foreground">
-                        {connectedDevice ? `Captura: ${connectedDevice}` : "Sin fuente"}
+                        {connectedDevice ? `${t('capture')}: ${connectedDevice}` : t('noSource')}
                     </span>
                 </div>
                 <span className="text-muted-foreground font-mono">
-                    {logs.length} pkts
+                    {logs.length} {t('packets')}
                 </span>
             </div>
 
@@ -127,21 +129,21 @@ function TrafficNode({ id, data, selected }: NodeProps) {
                 {!connectedDevice ? (
                     <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                         <GlobeAltIcon className="w-8 h-8 mb-2 opacity-20" />
-                        <span>Esperando conexión...</span>
+                        <span>{t('waitingConnection')}</span>
                     </div>
                 ) : loading && logs.length === 0 ? (
-                    <div className="p-4 text-center text-muted-foreground">Cargando paquetes...</div>
+                    <div className="p-4 text-center text-muted-foreground">{t('loadingPackets')}</div>
                 ) : logs.length === 0 ? (
-                    <div className="p-4 text-center text-muted-foreground">No hay tráfico capturado</div>
+                    <div className="p-4 text-center text-muted-foreground">{t('noTrafficCaptured')}</div>
                 ) : (
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-muted text-muted-foreground sticky top-0 z-10 shadow-sm">
                             <tr>
-                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Hora del evento registrado">Time</th>
-                                <th className="px-2 py-1 border-r border-border/50 w-28" title="Dirección IP de origen del paquete">Source</th>
-                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Protocolo de transporte (TCP/UDP)">Proto</th>
-                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Puerto de destino">Port</th>
-                                <th className="px-2 py-1" title="Información adicional (Estado)">Info</th>
+                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Hora del evento registrado">{t('tableTime')}</th>
+                                <th className="px-2 py-1 border-r border-border/50 w-28" title="Dirección IP de origen del paquete">{t('tableSource')}</th>
+                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Protocolo de transporte (TCP/UDP)">{t('tableProto')}</th>
+                                <th className="px-2 py-1 border-r border-border/50 w-16" title="Puerto de destino">{t('tablePort')}</th>
+                                <th className="px-2 py-1" title="Información adicional (Estado)">{t('tableInfo')}</th>
                             </tr>
                         </thead>
                         <tbody>

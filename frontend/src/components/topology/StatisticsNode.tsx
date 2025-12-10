@@ -11,6 +11,7 @@ import {
     ArrowDownIcon,
     ArrowUpIcon
 } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface StatisticsNodeData extends Record<string, unknown> {
     deviceId?: string;
@@ -27,6 +28,7 @@ const formatBytes = (bytes: number) => {
 };
 
 function StatisticsNode({ data }: NodeProps) {
+    const { t } = useLanguage();
     const typedData = data as StatisticsNodeData;
     const { deviceId, metricType, stats } = typedData;
 
@@ -34,7 +36,7 @@ function StatisticsNode({ data }: NodeProps) {
         if (!deviceId) {
             return (
                 <div className="text-center py-2">
-                    <div className="text-sm text-muted-foreground">Selecciona un dispositivo</div>
+                    <div className="text-sm text-muted-foreground">{t('selectDeviceShort')}</div>
                 </div>
             );
         }
@@ -42,7 +44,7 @@ function StatisticsNode({ data }: NodeProps) {
         if (!metricType) {
             return (
                 <div className="text-center py-2">
-                    <div className="text-sm text-muted-foreground">Selecciona una métrica</div>
+                    <div className="text-sm text-muted-foreground">{t('selectMetricShort')}</div>
                 </div>
             );
         }
@@ -54,7 +56,7 @@ function StatisticsNode({ data }: NodeProps) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <CpuChipIcon className="w-5 h-5 text-purple-500" />
-                                <span className="text-sm font-medium text-muted-foreground">CPU</span>
+                                <span className="text-sm font-medium text-muted-foreground">{t('cpuSimple')}</span>
                             </div>
                             <span className="text-xl font-bold">{stats?.cpu?.toFixed(1) || "0"}%</span>
                         </div>
@@ -65,8 +67,8 @@ function StatisticsNode({ data }: NodeProps) {
                             />
                         </div>
                         <div className="text-xs text-muted-foreground flex justify-between">
-                            <span>Uso actual</span>
-                            <span>{stats?.cpu_count || 1} Cores</span>
+                            <span>{t('currentUsage')}</span>
+                            <span>{stats?.cpu_count || 1} {t('cores')}</span>
                         </div>
                     </div>
                 );
@@ -77,7 +79,7 @@ function StatisticsNode({ data }: NodeProps) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <ServerIcon className="w-5 h-5 text-orange-500" />
-                                <span className="text-sm font-medium text-muted-foreground">RAM</span>
+                                <span className="text-sm font-medium text-muted-foreground">{t('ramSimple')}</span>
                             </div>
                             <span className="text-xl font-bold">{stats?.ram?.toFixed(1) || "0"}%</span>
                         </div>
@@ -88,8 +90,8 @@ function StatisticsNode({ data }: NodeProps) {
                             />
                         </div>
                         <div className="text-xs text-muted-foreground flex justify-between">
-                            <span>Usado: {stats?.ram_used ? formatBytes(stats.ram_used) : "0 B"}</span>
-                            <span>Total: {stats?.ram_total ? formatBytes(stats.ram_total) : "0 B"}</span>
+                            <span>{t('used')}: {stats?.ram_used ? formatBytes(stats.ram_used) : "0 B"}</span>
+                            <span>{t('total')}: {stats?.ram_total ? formatBytes(stats.ram_total) : "0 B"}</span>
                         </div>
                     </div>
                 );
@@ -110,7 +112,7 @@ function StatisticsNode({ data }: NodeProps) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <CircleStackIcon className="w-5 h-5 text-emerald-500" />
-                                <span className="text-sm font-medium text-muted-foreground">Disco</span>
+                                <span className="text-sm font-medium text-muted-foreground">{t('storage')}</span>
                             </div>
                             <span className="text-xl font-bold">{percent.toFixed(1)}%</span>
                         </div>
@@ -121,8 +123,8 @@ function StatisticsNode({ data }: NodeProps) {
                             />
                         </div>
                         <div className="text-xs text-muted-foreground flex justify-between">
-                            <span>Usado: {formatBytes(usedDisk)}</span>
-                            <span>Total: {formatBytes(totalDisk)}</span>
+                            <span>{t('used')}: {formatBytes(usedDisk)}</span>
+                            <span>{t('total')}: {formatBytes(totalDisk)}</span>
                         </div>
                     </div>
                 );
@@ -132,12 +134,12 @@ function StatisticsNode({ data }: NodeProps) {
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
                             <FireIcon className="w-5 h-5 text-red-500" />
-                            <span className="text-sm font-medium text-muted-foreground">Temperatura</span>
+                            <span className="text-sm font-medium text-muted-foreground">{t('temperature')}</span>
                         </div>
                         <div className="flex items-end justify-between">
                             <div>
                                 <div className="text-3xl font-bold">{stats?.temp?.toFixed(1) || "—"}°C</div>
-                                <div className="text-xs text-muted-foreground mt-1">Core Temp</div>
+                                <div className="text-xs text-muted-foreground mt-1">{t('coreTemp')}</div>
                             </div>
                         </div>
                     </div>
@@ -148,7 +150,7 @@ function StatisticsNode({ data }: NodeProps) {
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
                             <SignalIcon className="w-5 h-5 text-indigo-500" />
-                            <span className="text-sm font-medium text-muted-foreground">Red</span>
+                            <span className="text-sm font-medium text-muted-foreground">{t('network')}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                             <div className="relative overflow-hidden rounded border border-blue-500/20 bg-blue-500/10 p-2">
@@ -174,7 +176,7 @@ function StatisticsNode({ data }: NodeProps) {
                 );
 
             default:
-                return <div>Métrica desconocida</div>;
+                return <div>{t('unknownMetric')}</div>;
         }
     };
 
