@@ -7,6 +7,7 @@ import { Footer } from "@/components/landing/Footer";
 
 import { NotificationProvider } from "@/context/NotificationContext";
 import { GroupProvider } from "@/context/GroupContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import { Toaster } from "sonner";
 
 import '@/styles/globals.css';
@@ -43,20 +44,22 @@ export default function RootLayout({
         >
           <NotificationProvider>
             <GroupProvider>
-              <Navbar />
-              <div>{children}</div>
-              <Footer />
-              <Toaster
-                position="top-left"
-                toastOptions={{
-                  style: {
-                    background: 'var(--card)',
-                    color: 'var(--foreground)',
-                    border: '1px solid var(--border)',
-                  },
-                  className: 'class-group',
-                }}
-              />
+              <LanguageProvider>
+                <Navbar />
+                <div>{children}</div>
+                <Footer />
+                <Toaster
+                  position="top-left"
+                  toastOptions={{
+                    style: {
+                      background: 'var(--card)',
+                      color: 'var(--foreground)',
+                      border: '1px solid var(--border)',
+                    },
+                    className: 'class-group',
+                  }}
+                />
+              </LanguageProvider>
             </GroupProvider>
           </NotificationProvider>
         </ThemeProvider>

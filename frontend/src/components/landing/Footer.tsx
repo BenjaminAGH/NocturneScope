@@ -4,9 +4,11 @@ import Image from "next/image";
 import React from "react";
 import { Container } from "@/components/landing/Container";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function Footer() {
   const pathname = usePathname();
+  const { t, language, setLanguage } = useLanguage();
   const navigation = ["", "", "", "", ""];
   const legal = ["", "", ""];
 
@@ -26,14 +28,14 @@ export function Footer() {
                 <>
                   <Image
                     src="/img/iconLight.svg"
-                    alt="Logo claro"
+                    alt={t('logoAltLight')}
                     width={32}
                     height={32}
                     className="w-8 block dark:hidden"
                   />
                   <Image
                     src="/img/iconDark.svg"
-                    alt="Logo oscuro"
+                    alt={t('logoAltDark')}
                     width={32}
                     height={32}
                     className="w-8 hidden dark:block"
@@ -44,8 +46,16 @@ export function Footer() {
             </div>
 
             <div className="max-w-md mt-4 text-gray-500 dark:text-gray-400">
-              NocturneScope es la tesis para el título de Ingeniero de Ejecución en Computación
-              e Informática que busca formalizar una plataforma para la gestión de redes.
+              {t('footerDescription')}
+            </div>
+
+            <div className="mt-5">
+              <button
+                onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
+                className="px-3 py-1 text-sm font-medium text-white transition-colors bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                {language === 'es' ? 'English' : 'Español'}
+              </button>
             </div>
           </div>
 
@@ -76,7 +86,7 @@ export function Footer() {
             </div>
           </div>
           <div className="">
-            <div>Redes Sociales</div>
+            <div>{t('socialNetworks')}</div>
             <div className="flex mt-5 space-x-5 text-accent">
               <a
                 href="https://github.com/BenjaminAGH"
@@ -103,7 +113,7 @@ export function Footer() {
         </div>
 
         <div className="my-10 text-sm text-center text-gray-600 dark:text-gray-400">
-          Copyright © {new Date().getFullYear()}. Made by{" "}
+          {t('copyright')} {new Date().getFullYear()}. {t('madeBy')}{" "}
           <a href="https://www.linkedin.com/in/benjamin-guajardo-herrera/" target="_blank" rel="noopener">
             Benjamin Guajardo Herrera
           </a>{" "}
