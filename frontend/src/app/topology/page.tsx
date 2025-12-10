@@ -17,6 +17,7 @@ import {
     SelectionMode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { QuestionMarkCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import DeviceNode, { DeviceNodeData } from "@/components/topology/DeviceNode";
 import RouterNode, { RouterNodeData } from "@/components/topology/RouterNode";
@@ -1228,7 +1229,9 @@ function TopologyEditor() {
     useEffect(() => {
         nodesRef.current = nodes;
     }, [nodes]);
+    const [showShortcuts, setShowShortcuts] = useState(false);
 
+    // Initial load
     useEffect(() => {
         if (!jwt) return;
 
@@ -2071,13 +2074,48 @@ function TopologyEditor() {
                     <Background />
                 </ReactFlow>
 
-                {/* Header */}
-                <div className="absolute top-4 left-4 bg-card border border-border rounded-lg px-4 py-2 shadow-lg z-10">
-                    <h1 className="text-xl font-semibold">Topología de Red</h1>
+                {/* Header Subtil */}
+                <div className="absolute top-4 left-4 z-10 flex items-center gap-3">
                     {currentTopologyName && (
-                        <p className="text-sm text-muted-foreground">{currentTopologyName}</p>
+                        <p className="text-sm font-medium text-muted-foreground/50 select-none cursor-default">
+                            {currentTopologyName}
+                        </p>
                     )}
+                    <button
+                        onClick={() => setShowShortcuts(true)}
+                        className="p-1 rounded-full text-muted-foreground/40 hover:text-muted-foreground/80 hover:bg-black/5 transition-colors"
+                        title="Atajos de teclado"
+                    >
+                        <QuestionMarkCircleIcon className="w-5 h-5" />
+                    </button>
                 </div>
+
+                {/* Shortcuts Modal */}
+                {showShortcuts && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
+                        <div className="bg-card border border-border rounded-xl shadow-2xl p-6 w-[400px] animate-in fade-in zoom-in-95 duration-200">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-semibold text-lg">Atajos de Teclado</h3>
+                                <button
+                                    onClick={() => setShowShortcuts(false)}
+                                    className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    <XMarkIcon className="w-5 h-5" />
+                                </button>
+                            </div>
+                            <div className="space-y-3">
+                                <ShortcutRow keys={["Ctrl", "Z"]} label="Deshacer" />
+                                <ShortcutRow keys={["Ctrl", "Y"]} label="Rehacer" />
+                                <ShortcutRow keys={["Ctrl", "C"]} label="Copiar" />
+                                <ShortcutRow keys={["Ctrl", "V"]} label="Pegar" />
+                                <ShortcutRow keys={["Shift", "Drag"]} label="Selección Múltiple" />
+                                <ShortcutRow keys={["Del"]} label="Eliminar" />
+                                <ShortcutRow keys={["Scroll"]} label="Zoom" />
+                                <ShortcutRow keys={["Drag"]} label="Panorámica" />
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 <TopologyControls
                     devices={devices}
@@ -2150,6 +2188,21 @@ function useUndoRedo<T>(initialState: T) {
     }, [past, present]);
 
     return [present, set, undo, redo, canUndo, canRedo] as const;
+}
+
+function ShortcutRow({ keys, label }: { keys: string[], label: string }) {
+    return (
+        <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">{label}</span>
+            <div className="flex items-center gap-1">
+                {keys.map((k, i) => (
+                    <span key={i} className="px-1.5 py-0.5 rounded-md bg-muted border border-border text-xs font-mono text-foreground/80 min-w-[20px] text-center">
+                        {k}
+                    </span>
+                ))}
+            </div>
+        </div>
+    );
 }
 
 export default function TopologyPage() {

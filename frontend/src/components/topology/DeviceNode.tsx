@@ -45,7 +45,7 @@ function getOSIcon(os: string) {
     return <ComputerDesktopIcon className="w-6 h-6" />;
 }
 
-function DeviceNode({ data }: NodeProps) {
+function DeviceNode({ data, isConnectable }: NodeProps) {
     const { t } = useLanguage();
     const typedData = data as DeviceNodeData;
     const status = typedData.status || "unknown";
@@ -74,6 +74,7 @@ function DeviceNode({ data }: NodeProps) {
             <Handle
                 type="target"
                 position={Position.Top}
+                isConnectable={isConnectable}
                 className="w-3 h-3 !bg-background !border-2 !border-primary z-50"
             />
 
@@ -82,18 +83,21 @@ function DeviceNode({ data }: NodeProps) {
                 type="source"
                 position={Position.Right}
                 id="s-right"
+                isConnectable={isConnectable}
                 className="w-3 h-3 !bg-background !border-2 !border-primary z-50"
             />
             <Handle
                 type="source"
                 position={Position.Bottom}
                 id="s-bottom"
+                isConnectable={isConnectable}
                 className="w-3 h-3 !bg-background !border-2 !border-primary z-50"
             />
             <Handle
                 type="source"
                 position={Position.Left}
                 id="s-left"
+                isConnectable={isConnectable}
                 className="w-3 h-3 !bg-background !border-2 !border-primary z-50"
             />
 
