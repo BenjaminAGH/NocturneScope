@@ -182,7 +182,20 @@ function TopologyEditor() {
                             id: newId,
                             position: { x: n.position.x + 50, y: n.position.y + 50 },
                             selected: true,
-                            data: { ...n.data } // Deep copy data if needed
+                            data: {
+                                ...n.data,
+                                // Sanitization: Reset dynamic state and connections
+                                connectedDevice: undefined,
+                                deviceId: undefined, // For statistics nodes
+                                jwt: jwt || undefined, // Refresh JWT if needed, or remove
+                                status: 'unknown',
+                                isActive: false,
+                                isWaiting: false,
+                                currentCount: 0,
+                                lastInputState: false,
+                                lastReset: Date.now(),
+                                // Keep config-like fields: metric, threshold, operator, label, ruleType, etc.
+                            }
                         };
                     });
 
