@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Container } from "@/components/landing/Container";
 import { ScrollAnimation } from "@/components/landing/ScrollAnimation";
