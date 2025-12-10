@@ -218,6 +218,10 @@ export async function getHistory(jwt: string, device: string, range: string) {
   return apiFetch(`${BASE}/metrics/history?${q}`, { cache: "no-store" }, jwt) as Promise<any[]>;
 }
 
+export async function getNotifications(jwt: string, limit: number = 50) {
+  return apiFetch(`${BASE}/notifications?limit=${limit}`, { cache: "no-store" }, jwt) as Promise<any[]>;
+}
+
 export async function getRecentAlerts(jwt: string) {
   const data = await apiFetch(`${BASE}/alerts/recent`, { cache: "no-store" }, jwt);
   return (data.recent_alerts || []) as string[];

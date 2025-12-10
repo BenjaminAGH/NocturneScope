@@ -20,6 +20,7 @@ type AlertService struct {
 	smtpUser     string
 	smtpPassword string
 	smtpFrom     string
+	notifyRepo   domain.NotificationRepository
 }
 
 type alertRecord struct {
@@ -27,7 +28,7 @@ type alertRecord struct {
 	triggeredAt time.Time
 }
 
-func NewAlertService() *AlertService {
+func NewAlertService(notifyRepo domain.NotificationRepository) *AlertService {
 	return &AlertService{
 		rules:        make(map[uint][]domain.AlertRule),
 		recentAlerts: make([]alertRecord, 0),
@@ -36,6 +37,7 @@ func NewAlertService() *AlertService {
 		smtpUser:     os.Getenv("SMTP_USER"),
 		smtpPassword: os.Getenv("SMTP_PASSWORD"),
 		smtpFrom:     os.Getenv("SMTP_FROM"),
+		notifyRepo:   notifyRepo,
 	}
 }
 
@@ -103,17 +105,49 @@ func (s *AlertService) Evaluate(metric domain.Metric) {
 					triggeredAt: now,
 				})
 
-				// Send email if configured
-				if rule.EmailTo != "" {
-					go func(r domain.AlertRule) {
-						if err := s.SendCustomEmail(r.EmailTo, r.EmailSubject, r.EmailBody); err != nil {
-							log.Printf("Error sending alert email: %v", err)
+				// Execute Action based on type
+				if rule.ActionType == "notification" {
+					n := &domain.Notification{
+						UserID:     rule.UserID,
+						Type:       "topology",
+						Title:      fmt.Sprintf("Alert: %s %s %f", rule.Metric, rule.Operator, rule.Threshold),
+						Message:    rule.NotificationMsg,
+						DeviceName: rule.DeviceID,
+						Topic:      "alert",
+						CreatedAt:  now,
+					}
+					if n.Message == "" {
+						n.Message = fmt.Sprintf("Device %s metric %s value is %.2f (Threshold: %s %.2f)",
+							rule.DeviceID, rule.Metric, metricValue, rule.Operator, rule.Threshold)
+					}
+
+					go func(n *domain.Notification) {
+						if err := s.notifyRepo.Create(n); err != nil {
+							log.Printf("Error creating notification: %v", err)
 						}
-					}(rule)
+					}(n)
+
+				} else {
+					// Send email if configured (Default or "email" type)
+					if rule.EmailTo != "" {
+						go func(r domain.AlertRule) {
+							if err := s.SendCustomEmail(r.EmailTo, r.EmailSubject, r.EmailBody); err != nil {
+								log.Printf("Error sending alert email: %v", err)
+							}
+						}(rule)
+					}
 				}
 			}
 		}
 	}
+}
+
+func (s *AlertService) GetNotifications(userID uint, limit int) ([]domain.Notification, error) {
+	return s.notifyRepo.FindByUser(userID, limit)
+}
+
+func (s *AlertService) MarkNotificationAsRead(id, userID uint) error {
+	return s.notifyRepo.MarkAsRead(id, userID)
 }
 
 func (s *AlertService) GetRecentAlerts(window time.Duration) []string {

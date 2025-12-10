@@ -20,6 +20,7 @@ import {
 import { formatCL, formatTickCL, formatDuration } from "@/lib/time";
 import LogViewer from "@/components/LogViewer";
 import NetworkTrafficLog from "@/components/dashboard/NetworkTrafficLog";
+import NotificationPanel from "@/components/NotificationPanel";
 import {
   ComputerDesktopIcon,
   CpuChipIcon,
@@ -620,6 +621,9 @@ function DashboardContent() {
         <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
           <LogViewer jwt={jwt} device={device} range={range} />
           <NetworkTrafficLog device={device} />
+          <div className="col-span-1 xl:col-span-2 h-[400px]">
+            <NotificationPanel jwt={jwt} />
+          </div>
         </div>
       )}
     </div>

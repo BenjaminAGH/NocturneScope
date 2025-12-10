@@ -124,22 +124,28 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 		if n.Type == "action" {
 			s.log(fmt.Sprintf("Found Action Node: %s", n.ID))
 
-			// Find connected Device (input) and Email (output)
+			// Find connected Device (input) and Output (Email OR Notification)
 			deviceID := findSourceNodeID(flow.Edges, n.ID)
-			emailID := findTargetNodeID(flow.Edges, n.ID)
+			outputID := findTargetNodeID(flow.Edges, n.ID)
 
-			s.log(fmt.Sprintf("Action %s connections - DeviceID: %s, EmailID: %s", n.ID, deviceID, emailID))
+			s.log(fmt.Sprintf("Action %s connections - DeviceID: %s, OutputID: %s", n.ID, deviceID, outputID))
 
-			if deviceID == "" || emailID == "" {
+			if deviceID == "" || outputID == "" {
 				s.log("Skipping action: missing input or output connection")
 				continue
 			}
 
 			deviceNode, ok1 := nodeMap[deviceID]
-			emailNode, ok2 := nodeMap[emailID]
+			outputNode, ok2 := nodeMap[outputID]
 
-			if !ok1 || !ok2 || emailNode.Type != "email" {
-				s.log(fmt.Sprintf("Skipping action: Invalid nodes. DeviceFound: %v, EmailFound: %v, EmailNodeType: %s", ok1, ok2, emailNode.Type))
+			if !ok1 || !ok2 {
+				s.log(fmt.Sprintf("Skipping action: Invalid nodes. DeviceFound: %v, OutputFound: %v", ok1, ok2))
+				continue
+			}
+
+			// Validate Output Node Type
+			if outputNode.Type != "email" && outputNode.Type != "notification" {
+				s.log(fmt.Sprintf("Skipping action: Invalid output node type: %s", outputNode.Type))
 				continue
 			}
 
@@ -179,35 +185,52 @@ func (s *TopologyService) processRules(t *domain.Topology) {
 				threshold = 70.0 // Default
 			}
 
-			// Extract Email Data
-			s.log(fmt.Sprintf("Email Node Data: %v", emailNode.Data)) // Log full data
-			emailTo, _ := emailNode.Data["to"].(string)
-			subject, _ := emailNode.Data["subject"].(string)
-			body, _ := emailNode.Data["body"].(string)
-			cooldown, _ := emailNode.Data["cooldown"].(string)
+			// Extract Output Data
+			var emailTo, subject, body, notificationMsg, cooldown string
+			var actionType string
 
-			s.log(fmt.Sprintf("Extracted Data - Device: %s, Metric: %s, Op: %s, Threshold: %f, Email: %s", deviceName, metric, operator, threshold, emailTo))
+			if outputNode.Type == "email" {
+				actionType = "email"
+				s.log(fmt.Sprintf("Email Node Data: %v", outputNode.Data))
+				emailTo, _ = outputNode.Data["to"].(string)
+				subject, _ = outputNode.Data["subject"].(string)
+				body, _ = outputNode.Data["body"].(string)
+				cooldown, _ = outputNode.Data["cooldown"].(string)
 
-			if emailTo == "" {
-				s.log("Skipping action: EmailTo is empty. User must configure email recipient.")
-				continue
+				if emailTo == "" {
+					s.log("Skipping action: EmailTo is empty. User must configure email recipient.")
+					continue
+				}
+			} else if outputNode.Type == "notification" {
+				actionType = "notification"
+				s.log(fmt.Sprintf("Notification Node Data: %v", outputNode.Data))
+				notificationMsg, _ = outputNode.Data["message"].(string)
+				// Notification nodes might not have cooldown in UI yet, defaulting or checking data
+				// If NotificationNode doesn't have cooldown, we can default it or add it to the node later.
+				// For now, let's look for "cooldown" in data just in case.
+				cooldown, _ = outputNode.Data["cooldown"].(string)
 			}
 
 			if cooldown == "" {
 				cooldown = "1h" // Default
 			}
 
+			s.log(fmt.Sprintf("Extracted Data - Device: %s, Metric: %s, Op: %s, Threshold: %f, Action: %s", deviceName, metric, operator, threshold, actionType))
+
 			rules = append(rules, domain.AlertRule{
-				ID:           n.ID,
-				TopologyID:   t.ID,
-				DeviceID:     deviceName,
-				Metric:       metric,
-				Operator:     operator,
-				Threshold:    threshold,
-				EmailTo:      emailTo,
-				EmailSubject: subject,
-				EmailBody:    body,
-				Cooldown:     cooldown,
+				ID:              n.ID,
+				TopologyID:      t.ID,
+				UserID:          t.UserID,
+				DeviceID:        deviceName,
+				Metric:          metric,
+				Operator:        operator,
+				Threshold:       threshold,
+				EmailTo:         emailTo,
+				EmailSubject:    subject,
+				EmailBody:       body,
+				NotificationMsg: notificationMsg,
+				ActionType:      actionType,
+				Cooldown:        cooldown,
 			})
 		}
 	}

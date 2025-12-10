@@ -14,6 +14,7 @@ import (
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/repository"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/security"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/infrastructure/session"
+	"github.com/BenjaminAGH/nocturnescope/backend/internal/interface/http/handlers"
 	httpRoutes "github.com/BenjaminAGH/nocturnescope/backend/internal/interface/http/routes"
 	"github.com/BenjaminAGH/nocturnescope/backend/internal/usecase/service"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -43,6 +44,7 @@ func main() {
 	networkTrafficRepo := repository.NewNetworkTrafficGormRepository(db)
 	networkTrafficService := service.NewNetworkTrafficService(networkTrafficRepo)
 	deviceService := service.NewDeviceService(deviceRepo)
+	notificationRepo := repository.NewNotificationRepositoryGORM(db)
 
 	// Ensure devadmin user exists (if env vars are set)
 	bootstrap.EnsureDevAdmin(userRepo)
@@ -51,7 +53,7 @@ func main() {
 	sessionStore := session.NewMemoryStore()
 	authService := service.NewAuthService(userRepo, jwtService, sessionStore)
 
-	alertService := service.NewAlertService()
+	alertService := service.NewAlertService(notificationRepo)
 	metricService := service.NewMetricService(influxWriter, alertService, deviceService)
 	apiTokenService := service.NewTokenService(apiTokenRepo)
 	topologyService := service.NewTopologyService(topologyRepo, alertService)
@@ -81,6 +83,10 @@ func main() {
 	if err := topologyService.LoadRules(); err != nil {
 		fmt.Printf("Error loading alert rules: %v\n", err)
 	}
+
+	// Register all routes
+	notificationHandler := handlers.NewNotificationHandler(alertService)
+	httpRoutes.RegisterNotificationRoutes(app, notificationHandler)
 
 	httpRoutes.Register(app, userService, authService, jwtService, metricService, apiTokenService, apiTokenRepo, deviceGroupService, topologyService, alertService, networkTrafficService, deviceService)
 
