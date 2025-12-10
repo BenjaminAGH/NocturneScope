@@ -36,7 +36,7 @@ import {
 type Point = { t: string; v: number };
 
 
-const RANGE_OPTIONS = ["30m", "1h", "6h", "24h", "7d"];
+const RANGE_OPTIONS = ["30m", "1h", "6h", "24h", "7d", "30d"];
 
 import { useGroup } from "@/context/GroupContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -64,6 +64,8 @@ function DashboardContent() {
 
   const [points, setPoints] = useState<Point[]>([]);
   const [last, setLast] = useState<Record<string, any> | null>(null);
+  const [allStats, setAllStats] = useState<Record<string, any>>({});
+  const [loadingAllStats, setLoadingAllStats] = useState(false);
 
   const [loadingDevices, setLoadingDevices] = useState(false);
   const [loadingSeries, setLoadingSeries] = useState(false);
@@ -110,6 +112,28 @@ function DashboardContent() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jwt, selectedGroup, searchParams]);
+
+  // Cargar stats de TODOS los dispositivos para la lista de selección
+  useEffect(() => {
+    if (!jwt || !devices.length) return;
+    setLoadingAllStats(true);
+    const fetchAll = async () => {
+      try {
+        const promises = devices.map(d => getLastStats(jwt, d).then(res => ({ name: d, data: res })).catch(() => ({ name: d, data: null })));
+        const results = await Promise.all(promises);
+        const statsMap: Record<string, any> = {};
+        results.forEach(r => {
+          if (r.data) statsMap[r.name] = r.data;
+        });
+        setAllStats(statsMap);
+      } catch (e) {
+        console.error("Error fetching all stats", e);
+      } finally {
+        setLoadingAllStats(false);
+      }
+    };
+    fetchAll();
+  }, [jwt, devices]);
 
   useEffect(() => {
     if (!jwt || !device) return;
@@ -182,56 +206,51 @@ function DashboardContent() {
         </p>
       </header>
 
-      <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50">
-        <div className="grid gap-3 grid-cols-1 md:grid-cols-5">
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">{t('device')}</label>
-            <select
-              className="w-full bg-background border rounded px-3 py-2 text-sm"
-              value={device}
-              onChange={(e) => setDevice(e.target.value)}
-              disabled={loadingDevices || !devices.length}
-            >
-              {!devices.length ? (
-                <option value="">{t('noDevices')}</option>
-              ) : null}
-              {devices.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
+      {/* Device Selection List */}
+      <div className="space-y-2">
+        <h2 className="text-sm font-medium text-muted-foreground ml-1">{t('devices')}</h2>
+        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+          {loadingDevices && devices.length === 0 ? (
+            <div className="text-sm text-muted-foreground p-2">{t('loading')}</div>
+          ) : null}
+          {!loadingDevices && devices.length === 0 ? (
+            <div className="text-sm text-muted-foreground p-2">{t('noDevices')}</div>
+          ) : null}
+          {devices.map(devName => {
+            const stat = allStats[devName];
+            const isSelected = device === devName;
+            const isOnline = stat && ((Date.now() / 1000) - (stat.timestamp ? new Date(stat.timestamp).getTime() / 1000 : 0) < 300);
 
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">{t('metric')}</label>
-            <select
-              className="w-full bg-background border rounded px-3 py-2 text-sm"
-              value={field}
-              onChange={(e) => setField(e.target.value)}
-            >
-              {FIELD_OPTIONS.map((f) => (
-                <option key={f.v} value={f.v}>
-                  {f.l}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">{t('timeRange')}</label>
-            <select
-              className="w-full bg-background border rounded px-3 py-2 text-sm"
-              value={range}
-              onChange={(e) => setRange(e.target.value)}
-            >
-              {RANGE_OPTIONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
-          </div>
+            return (
+              <div
+                key={devName}
+                onClick={() => setDevice(devName)}
+                className={`
+                            min-w-[240px] p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md
+                            flex flex-col justify-between h-[100px] shrink-0
+                            ${isSelected ? 'bg-primary/5 border-primary ring-1 ring-primary' : 'bg-card border-border hover:bg-muted/50'}
+                        `}
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <ComputerDesktopIcon className={`w-5 h-5 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <span className={`font-bold truncate max-w-[140px] text-sm ${isSelected ? 'text-primary' : 'text-card-foreground'}`}>
+                      {devName}
+                    </span>
+                  </div>
+                  <div className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`} />
+                </div>
+                <div className="flex justify-between items-end text-xs text-muted-foreground">
+                  <span className="truncate max-w-[130px]">
+                    {stat?.os || stat?.platform || t('systemUnknown')}
+                  </span>
+                  <span className="font-mono">
+                    {stat?.ip || "—"}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -512,7 +531,47 @@ function DashboardContent() {
 
       {/* Gráfico */}
       <section className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50">
-        <div className="mb-2 text-sm text-muted-foreground">{subtitle}</div>
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4 border-b border-border/40 pb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <SignalIcon className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">{t('metricChart')}</h3>
+              <p className="text-xs text-muted-foreground">{subtitle}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="space-y-1 grow sm:grow-0">
+              <select
+                className="w-full sm:w-[180px] bg-background border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 outline-none"
+                value={field}
+                onChange={(e) => setField(e.target.value)}
+              >
+                {FIELD_OPTIONS.map((f) => (
+                  <option key={f.v} value={f.v}>
+                    {f.l}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1 grow sm:grow-0">
+              <select
+                className="w-full sm:w-[120px] bg-background border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 outline-none block"
+                value={range}
+                onChange={(e) => setRange(e.target.value)}
+              >
+                {RANGE_OPTIONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
         <div className="h-[360px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={points}>
