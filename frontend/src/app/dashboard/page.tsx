@@ -35,30 +35,32 @@ import {
 
 type Point = { t: string; v: number };
 
-const FIELD_OPTIONS = [
-  { v: "cpu", l: "CPU (%)" },
-  { v: "ram", l: "RAM (%)" },
-  { v: "disk", l: "DISK (%)" },
-  { v: "net_rx", l: "Net RX (B/s)" },
-  { v: "net_tx", l: "Net TX (B/s)" },
-  { v: "temp", l: "Temp (°C)" },
-  { v: "temp", l: "Temp (°C)" },
-];
 
 const RANGE_OPTIONS = ["30m", "1h", "6h", "24h", "7d"];
 
 import { useGroup } from "@/context/GroupContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { selectedGroup, initialized } = useGroup();
+  const { t } = useLanguage();
 
   const [jwt, setJwt] = useState<string | null>(null);
   const [devices, setDevices] = useState<string[]>([]);
   const [device, setDevice] = useState<string>("");
   const [field, setField] = useState<string>("cpu");
   const [range, setRange] = useState<string>("1h");
+
+  const FIELD_OPTIONS = useMemo(() => [
+    { v: "cpu", l: t('cpu') },
+    { v: "ram", l: t('ram') },
+    { v: "disk", l: t('disk') },
+    { v: "net_rx", l: t('net_rx') },
+    { v: "net_tx", l: t('net_tx') },
+    { v: "temp", l: t('temp') },
+  ], [t]);
 
   const [points, setPoints] = useState<Point[]>([]);
   const [last, setLast] = useState<Record<string, any> | null>(null);
@@ -101,7 +103,7 @@ function DashboardContent() {
           setDevice(devs[0]);
         }
       } catch (e: any) {
-        setErr(e?.message || "Error cargando dispositivos");
+        setErr(e?.message || t('noData')); // Using generic noData error or assume default
       } finally {
         setLoadingDevices(false);
       }
@@ -171,19 +173,19 @@ function DashboardContent() {
     <div className="container mx-auto px-4 py-6 space-y-6">
       <header className="space-y-1">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
+          <h1 className="text-2xl font-semibold">{t('dashboard')}</h1>
           <span className="text-muted-foreground">/</span>
           <span className="text-primary font-medium">{selectedGroup.Name}</span>
         </div>
         <p className="text-sm text-muted-foreground">
-          Tiempos mostrados en <strong>America/Santiago</strong> (almacenado en UTC).
+          {t('timeParams')} <strong>America/Santiago</strong> (almacenado en UTC).
         </p>
       </header>
 
       <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50">
         <div className="grid gap-3 grid-cols-1 md:grid-cols-5">
           <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Dispositivo</label>
+            <label className="text-xs font-medium text-muted-foreground">{t('device')}</label>
             <select
               className="w-full bg-background border rounded px-3 py-2 text-sm"
               value={device}
@@ -191,7 +193,7 @@ function DashboardContent() {
               disabled={loadingDevices || !devices.length}
             >
               {!devices.length ? (
-                <option value="">Sin dispositivos</option>
+                <option value="">{t('noDevices')}</option>
               ) : null}
               {devices.map((d) => (
                 <option key={d} value={d}>
@@ -202,7 +204,7 @@ function DashboardContent() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Métrica</label>
+            <label className="text-xs font-medium text-muted-foreground">{t('metric')}</label>
             <select
               className="w-full bg-background border rounded px-3 py-2 text-sm"
               value={field}
@@ -217,7 +219,7 @@ function DashboardContent() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Rango de Tiempo</label>
+            <label className="text-xs font-medium text-muted-foreground">{t('timeRange')}</label>
             <select
               className="w-full bg-background border rounded px-3 py-2 text-sm"
               value={range}
@@ -247,7 +249,7 @@ function DashboardContent() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ComputerDesktopIcon className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium text-muted-foreground">Estado</span>
+              <span className="text-sm font-medium text-muted-foreground">{t('status')}</span>
             </div>
             {last && (
               <div className="flex items-center gap-1.5">
@@ -262,7 +264,7 @@ function DashboardContent() {
             <div className="text-2xl font-bold truncate" title={device}>{device || "—"}</div>
             <div className="flex items-center justify-between mt-1">
               <div className="text-xs text-muted-foreground truncate max-w-[60%]">
-                {last?.os || last?.os_name || last?.platform || "Sistema Desconocido"} {last?.os_version || ""}
+                {last?.os || last?.os_name || last?.platform || t('systemUnknown')} {last?.os_version || ""}
               </div>
               {last?.uptime && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -278,7 +280,7 @@ function DashboardContent() {
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-2">
             <GlobeAltIcon className="w-5 h-5 text-blue-500" />
-            <span className="text-sm font-medium text-muted-foreground">Red</span>
+            <span className="text-sm font-medium text-muted-foreground">{t('network')}</span>
           </div>
           <div className="space-y-3">
             <div>
@@ -311,7 +313,7 @@ function DashboardContent() {
           {/* CPU Cores Grid */}
           {cpuCores.length > 0 ? (
             <div className="mt-3 space-y-1">
-              <div className="text-[10px] text-muted-foreground uppercase">Núcleos ({cpuCores.length})</div>
+              <div className="text-[10px] text-muted-foreground uppercase">{t('cores')} ({cpuCores.length})</div>
               <div className="grid grid-cols-8 gap-1">
                 {cpuCores.map((core) => {
                   const val = core.val || 0;
@@ -335,8 +337,8 @@ function DashboardContent() {
             </div>
           ) : (
             <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-              <span>Uso actual</span>
-              <span>{last?.cpu_count || 1} Cores</span>
+              <span>{t('currentUsage')}</span>
+              <span>{last?.cpu_count || 1} {t('cores')}</span>
             </div>
           )}
         </div>
@@ -357,8 +359,8 @@ function DashboardContent() {
             />
           </div>
           <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-            <span>Usado: {last?.ram_used ? formatBytes(last.ram_used) : "0 B"}</span>
-            <span>Total: {last?.ram_total ? formatBytes(last.ram_total) : "0 B"}</span>
+            <span>{t('used')}: {last?.ram_used ? formatBytes(last.ram_used) : "0 B"}</span>
+            <span>{t('total')}: {last?.ram_total ? formatBytes(last.ram_total) : "0 B"}</span>
           </div>
         </div>
 
@@ -367,7 +369,7 @@ function DashboardContent() {
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <CircleStackIcon className="w-5 h-5 text-emerald-500" />
-              <span className="text-sm font-medium text-muted-foreground">Almacenamiento</span>
+              <span className="text-sm font-medium text-muted-foreground">{t('storage')}</span>
             </div>
             {/* Calculate total usage percent based on sum of partitions if available */}
             {(() => {
@@ -437,7 +439,7 @@ function DashboardContent() {
 
                   {/* Tooltip for all partitions - Moved outside overflow-hidden */}
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 bg-popover text-popover-foreground text-xs rounded-md border border-border shadow-md p-2 z-50 pointer-events-none">
-                    <div className="font-medium mb-1 border-b border-border/50 pb-1">Detalle de Particiones</div>
+                    <div className="font-medium mb-1 border-b border-border/50 pb-1">{t('partitionDetails')}</div>
                     <div className="space-y-1">
                       {partitions.map((p, i) => (
                         <div key={p.id} className="flex justify-between items-center">
@@ -453,8 +455,8 @@ function DashboardContent() {
                 </div>
 
                 <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-                  <span>Usado: {formatBytes(totalDiskUsed)}</span>
-                  <span>Total: {formatBytes(totalDiskSize)}</span>
+                  <span>{t('used')}: {formatBytes(totalDiskUsed)}</span>
+                  <span>{t('total')}: {formatBytes(totalDiskSize)}</span>
                 </div>
               </div>
             );
@@ -464,12 +466,12 @@ function DashboardContent() {
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-2">
             <FireIcon className="w-5 h-5 text-red-500" />
-            <span className="text-sm font-medium text-muted-foreground">Temperatura</span>
+            <span className="text-sm font-medium text-muted-foreground">{t('temperature')}</span>
           </div>
           <div className="flex items-end justify-between">
             <div>
               <div className="text-3xl font-bold">{last?.temp?.toFixed(1) || "—"}°C</div>
-              <div className="text-xs text-muted-foreground mt-1">Core Temp</div>
+              <div className="text-xs text-muted-foreground mt-1">{t('coreTemp')}</div>
             </div>
           </div>
         </div>
@@ -478,7 +480,7 @@ function DashboardContent() {
         <div className="col-span-1 md:col-span-2 rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-2 shrink-0">
             <SignalIcon className="w-5 h-5 text-indigo-500" />
-            <span className="text-sm font-medium text-muted-foreground">Tráfico de Red</span>
+            <span className="text-sm font-medium text-muted-foreground">{t('networkTraffic')}</span>
           </div>
           <div className="grid grid-cols-2 gap-4 grow items-end">
             <div className="relative overflow-hidden rounded-lg border border-blue-500/20 bg-blue-500/10 p-2.5 flex items-center gap-3">
@@ -486,7 +488,7 @@ function DashboardContent() {
                 <ArrowDownIcon className="w-4 h-4 text-blue-500" />
               </div>
               <div>
-                <div className="text-[10px] font-medium text-blue-500 mb-0.5">Descarga (RX)</div>
+                <div className="text-[10px] font-medium text-blue-500 mb-0.5">{t('download')} (RX)</div>
                 <div className="text-sm font-bold font-mono text-foreground">
                   {last?.net_rx ? formatBytes(last.net_rx) : "0 B"}/s
                 </div>
@@ -498,7 +500,7 @@ function DashboardContent() {
                 <ArrowUpIcon className="w-4 h-4 text-indigo-500" />
               </div>
               <div>
-                <div className="text-[10px] font-medium text-indigo-500 mb-0.5">Subida (TX)</div>
+                <div className="text-[10px] font-medium text-indigo-500 mb-0.5">{t('upload')} (TX)</div>
                 <div className="text-sm font-bold font-mono text-foreground">
                   {last?.net_tx ? formatBytes(last.net_tx) : "0 B"}/s
                 </div>
@@ -558,10 +560,10 @@ function DashboardContent() {
         </div>
         <div className="mt-2 text-xs text-muted-foreground">
           {points.length
-            ? `Último punto: ${formatCL(points[points.length - 1].t)}`
+            ? `${t('lastPoint')}: ${formatCL(points[points.length - 1].t)}`
             : loadingSeries
-              ? "Cargando…"
-              : "Sin datos en el rango seleccionado"}
+              ? t('loading')
+              : t('noData')}
         </div>
       </section>
 
@@ -577,8 +579,9 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
   return (
-    <Suspense fallback={<div className="p-4 text-center">Cargando Dashboard...</div>}>
+    <Suspense fallback={<div className="p-4 text-center">{t('loading')}</div>}>
       <DashboardContent />
     </Suspense>
   );

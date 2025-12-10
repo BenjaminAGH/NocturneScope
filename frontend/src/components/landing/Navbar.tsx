@@ -19,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
 import { useGroup } from "@/context/GroupContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export const Navbar = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ export const Navbar = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const { notifications, unreadCount, markAllAsRead, clearHistory } = useNotification();
   const { selectedGroup } = useGroup();
+  const { t } = useLanguage();
 
   // Rutas públicas donde solo se muestra "Iniciar Sesión"
   const publicRoutes = ['/', '/auth/login', '/auth/register'];
@@ -78,7 +80,7 @@ export const Navbar = () => {
           <span className="flex items-center space-x-2">
             <Image
               src="img/scope_icon.svg"
-              alt="Logo claro"
+              alt={t('logoAltLight')}
               width={100}
               height={100}
               className="block dark:hidden"
@@ -86,7 +88,7 @@ export const Navbar = () => {
             />
             <Image
               src="img/scope_icon.svg"
-              alt="Logo oscuro"
+              alt={t('logoAltDark')}
               width={100}
               height={100}
               className="hidden dark:block"
@@ -108,7 +110,7 @@ export const Navbar = () => {
                 }`}
             >
               <Squares2X2Icon className="w-4 h-4" />
-              Dashboard
+              {t('dashboard')}
             </Link>
             <Link
               href="/topology"
@@ -118,7 +120,7 @@ export const Navbar = () => {
                 }`}
             >
               <ShareIcon className="w-4 h-4" />
-              Topología
+              {t('topology')}
             </Link>
           </div>
         )}
@@ -128,13 +130,13 @@ export const Navbar = () => {
           {pathname === "/" && (
             <div className="hidden lg:flex items-center space-x-6 mr-4">
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                Características
+                {t('features')}
               </Link>
               <Link href="#video" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                Demo
+                {t('demo')}
               </Link>
               <Link href="#downloads" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                Descarga
+                {t('downloads')}
               </Link>
             </div>
           )}
@@ -162,19 +164,19 @@ export const Navbar = () => {
               >
                 <Menu.Items className="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-xl bg-card shadow-xl ring-1 ring-border focus:outline-none max-h-[400px] flex flex-col">
                   <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between bg-muted/30 rounded-t-xl">
-                    <h3 className="text-sm font-semibold">Notificaciones</h3>
+                    <h3 className="text-sm font-semibold">{t('notifications')}</h3>
                     <div className="flex gap-2">
                       <button
                         onClick={() => markAllAsRead()}
                         className="p-1 hover:bg-background rounded-md text-muted-foreground hover:text-primary transition-colors"
-                        title="Marcar todas como leídas"
+                        title={t('markAllRead')}
                       >
                         <CheckCircleIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => clearHistory()}
                         className="p-1 hover:bg-background rounded-md text-muted-foreground hover:text-destructive transition-colors"
-                        title="Borrar historial"
+                        title={t('clearHistory')}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </button>
@@ -184,7 +186,7 @@ export const Navbar = () => {
                   <div className="overflow-y-auto flex-1 p-2 space-y-1">
                     {notifications.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground text-sm">
-                        No hay notificaciones
+                        {t('noNotifications')}
                       </div>
                     ) : (
                       notifications.map((notif) => (
@@ -211,7 +213,7 @@ export const Navbar = () => {
               href={isLoggedIn ? "/dashboard" : "/auth/login"}
               className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors"
             >
-              {isLoggedIn ? "Ir al Dashboard" : "Iniciar Sesión"}
+              {isLoggedIn ? t('goToDashboard') : t('login')}
             </Link>
           ) : (
             <Menu as="div" className="relative">
@@ -231,7 +233,7 @@ export const Navbar = () => {
               >
                 <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-card py-2 shadow-xl ring-1 ring-border focus:outline-none">
                   <div className="px-4 py-2 border-b border-border/50 mb-1">
-                    <p className="text-xs font-medium text-muted-foreground">Mi Cuenta</p>
+                    <p className="text-xs font-medium text-muted-foreground">{t('myAccount')}</p>
                   </div>
 
                   <Menu.Item>
@@ -242,7 +244,7 @@ export const Navbar = () => {
                           } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
                       >
                         <KeyIcon className="w-4 h-4" />
-                        Tokens API
+                        {t('apiTokens')}
                       </Link>
                     )}
                   </Menu.Item>
@@ -254,7 +256,7 @@ export const Navbar = () => {
                           } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
                       >
                         <UserCircleIcon className="w-4 h-4" />
-                        Administrar Cuenta
+                        {t('adminAccount')}
                       </Link>
                     )}
                   </Menu.Item>
@@ -268,7 +270,7 @@ export const Navbar = () => {
                             } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
                         >
                           <ShieldCheckIcon className="w-4 h-4" />
-                          Administrar Usuarios
+                          {t('adminUsers')}
                         </Link>
                       )}
                     </Menu.Item>
@@ -284,7 +286,7 @@ export const Navbar = () => {
                           } flex w-full items-center gap-2 px-4 py-2 text-sm mx-1 rounded-lg transition-colors text-left`}
                       >
                         <ArrowRightOnRectangleIcon className="w-4 h-4" />
-                        Cerrar Sesión
+                        {t('logout')}
                       </button>
                     )}
                   </Menu.Item>
@@ -301,6 +303,7 @@ export const Navbar = () => {
 function GroupSwitcher() {
   const router = useRouter();
   const { selectedGroup, groups, setSelectedGroup } = useGroup();
+  const { t } = useLanguage();
 
   if (!selectedGroup) return null;
 
@@ -321,7 +324,7 @@ function GroupSwitcher() {
       >
         <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-card py-2 shadow-xl ring-1 ring-border focus:outline-none">
           <div className="px-4 py-2 border-b border-border/50 mb-1">
-            <p className="text-xs font-medium text-muted-foreground">Cambiar Grupo</p>
+            <p className="text-xs font-medium text-muted-foreground">{t('changeGroup')}</p>
           </div>
 
           {groups.map((group) => (
@@ -352,7 +355,7 @@ function GroupSwitcher() {
                   } flex items-center gap-2 px-4 py-2 text-sm text-primary mx-1 rounded-lg transition-colors`}
               >
                 <Squares2X2Icon className="w-4 h-4" />
-                Gestionar Grupos
+                {t('manageGroups')}
               </Link>
             )}
           </Menu.Item>
