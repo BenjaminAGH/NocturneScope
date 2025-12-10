@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getAccessToken } from "@/lib/api/api";
 import { listUsers, createUser, updateUser, deleteUser, User, CreateUserData, UpdateUserData } from "@/lib/api/admin";
+import { useLanguage } from "@/context/LanguageContext";
 import UserTable from "@/components/admin/UserTable";
 import UserModal from "@/components/admin/UserModal";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 export default function AdminUsersPage() {
     const router = useRouter();
+    const { t } = useLanguage();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -85,7 +87,7 @@ export default function AdminUsersPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="text-muted-foreground">Loading...</div>
+                <div className="text-muted-foreground">{t('loading')}</div>
             </div>
         );
     }
@@ -93,8 +95,8 @@ export default function AdminUsersPage() {
     return (
         <div className="container mx-auto px-4 py-6 space-y-6">
             <header className="space-y-1">
-                <h1 className="text-2xl font-semibold">User Management</h1>
-                <p className="text-sm text-muted-foreground">Manage all users in the system</p>
+                <h1 className="text-2xl font-semibold">{t('userManagement')}</h1>
+                <p className="text-sm text-muted-foreground">{t('manageUsersDesc')}</p>
             </header>
 
             {error && (
@@ -109,7 +111,7 @@ export default function AdminUsersPage() {
                     className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
                     <PlusIcon className="h-5 w-5 mr-2" />
-                    Create User
+                    {t('createUser')}
                 </button>
             </div>
 
@@ -132,22 +134,22 @@ export default function AdminUsersPage() {
             {deleteConfirm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md space-y-4">
-                        <h3 className="text-lg font-semibold">Confirm Delete</h3>
+                        <h3 className="text-lg font-semibold">{t('confirmDeleteUser')}</h3>
                         <p className="text-muted-foreground">
-                            Are you sure you want to delete user <strong className="text-foreground">{deleteConfirm.username}</strong>? This action cannot be undone.
+                            {t('deleteUserMsg')} <strong className="text-foreground">{deleteConfirm.username}</strong>?
                         </p>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setDeleteConfirm(null)}
                                 className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm"
                             >
-                                Cancel
+                                {t('cancel')}
                             </button>
                             <button
                                 onClick={() => handleDeleteUser(deleteConfirm)}
                                 className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded text-sm"
                             >
-                                Delete
+                                {t('delete')}
                             </button>
                         </div>
                     </div>

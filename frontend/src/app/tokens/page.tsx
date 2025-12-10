@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { createApiToken, listApiTokens, deleteApiToken, getDevices, deleteDevice, getGroups, APIToken } from "@/lib/api/api";
 import { InformationCircleIcon, CheckCircleIcon, ClipboardDocumentIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNotification } from "@/context/NotificationContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { useGroup, DeviceGroup } from "@/context/GroupContext";
 
 export default function TokensPage() {
     const router = useRouter();
+    const { t } = useLanguage();
     const { groups: contextGroups, refreshGroups } = useGroup(); // Renamed to avoid conflict with local state
     const [jwt, setJwt] = useState<string | null>(null);
     const [tokens, setTokens] = useState<APIToken[]>([]);
@@ -87,7 +89,7 @@ export default function TokensPage() {
     };
 
     const handleDeleteToken = async (tokenId: number) => {
-        if (!jwt || !confirm("¿Estás seguro de eliminar este token? Esta acción no se puede deshacer.")) return;
+        if (!jwt || !confirm(t('confirmDeleteToken'))) return;
 
         setLoading(true);
         setError("");
@@ -134,16 +136,16 @@ export default function TokensPage() {
         <div className="container mx-auto px-4 py-6 space-y-6">
             <header className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-semibold">Gestión de Tokens API</h1>
+                    <h1 className="text-2xl font-semibold">{t('tokenManagement')}</h1>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Administra los tokens de acceso para tus dispositivos
+                        {t('tokenManagementDesc')}
                     </p>
                 </div>
                 <button
                     onClick={() => setShowCreateModal(true)}
                     className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
-                    + Crear Token
+                    + {t('createToken')}
                 </button>
             </header>
 
@@ -159,12 +161,12 @@ export default function TokensPage() {
                     <table className="w-full">
                         <thead className="bg-muted/50 border-b border-border">
                             <tr>
-                                <th className="text-left px-4 py-3 text-sm font-medium">Nombre</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium">Estado</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium">Dispositivo</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium">Grupo</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium">Creado</th>
-                                <th className="text-right px-4 py-3 text-sm font-medium">Acciones</th>
+                                <th className="text-left px-4 py-3 text-sm font-medium">{t('tokenName')}</th>
+                                <th className="text-left px-4 py-3 text-sm font-medium">{t('status')}</th>
+                                <th className="text-left px-4 py-3 text-sm font-medium">{t('device')}</th>
+                                <th className="text-left px-4 py-3 text-sm font-medium">{t('group')}</th>
+                                <th className="text-left px-4 py-3 text-sm font-medium">{t('createdAt')}</th>
+                                <th className="text-right px-4 py-3 text-sm font-medium">{t('actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -192,7 +194,7 @@ export default function TokensPage() {
                                         <td className="px-4 py-3 text-sm">
                                             <div className="flex items-center gap-2">
                                                 <div className={`w - 2 h - 2 rounded - full ${token.Status === 'online' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'} `} />
-                                                <span className="text-xs text-muted-foreground capitalize">{token.Status === 'online' ? 'Activo' : 'Inactivo'}</span>
+                                                <span className="text-xs text-muted-foreground capitalize">{token.Status === 'online' ? t('active') : t('inactive')}</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-sm">
@@ -202,7 +204,7 @@ export default function TokensPage() {
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted text-muted-foreground rounded-md font-medium text-xs">
-                                                    Sin Asignar
+                                                    {t('unassigned')}
                                                 </span>
                                             )}
                                         </td>
@@ -225,7 +227,7 @@ export default function TokensPage() {
                                                 disabled={loading}
                                                 className="px-3 py-1 text-sm text-destructive hover:bg-destructive/10 rounded transition-colors disabled:opacity-50"
                                             >
-                                                Eliminar
+                                                {t('delete')}
                                             </button>
                                         </td>
                                     </tr>
@@ -240,13 +242,13 @@ export default function TokensPage() {
             <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-4">
                 <h3 className="font-medium text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
                     <InformationCircleIcon className="w-5 h-5" />
-                    Información
+                    {t('infoTitle')}
                 </h3>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Cada token está asociado a un dispositivo y un grupo específico</li>
-                    <li>• Los tokens permiten que tus dispositivos envíen métricas al sistema</li>
-                    <li>• Guarda el token en un lugar seguro, solo se muestra una vez al crearlo</li>
-                    <li>• Puedes eliminar tokens que ya no uses</li>
+                    <li>• {t('infoToken1')}</li>
+                    <li>• {t('infoToken2')}</li>
+                    <li>• {t('infoToken3')}</li>
+                    <li>• {t('infoToken4')}</li>
                 </ul>
             </div>
 
@@ -302,7 +304,7 @@ export default function TokensPage() {
                                             </datalist>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
-                                            Escribe el nombre del nuevo dispositivo o selecciona uno existente. Si se deja vacío, se actualizará automáticamente al conectar el agente.
+                                            {t('deviceHint')}
                                         </p>
                                     </div>
                                 </div>
@@ -348,7 +350,7 @@ export default function TokensPage() {
                                         onClick={closeCreateModal}
                                         className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm"
                                     >
-                                        Cerrar
+                                        {t('close')}
                                     </button>
                                 </div>
                             </>

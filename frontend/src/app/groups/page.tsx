@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGroup, DeviceGroup } from "@/context/GroupContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { createDeviceGroup, updateDeviceGroup, deleteDeviceGroup } from "@/lib/api/groups";
 import GroupCard from "@/components/groups/GroupCard";
 import GroupModal from "@/components/groups/GroupModal";
@@ -11,6 +12,7 @@ import { toast } from "sonner";
 
 export default function GroupsPage() {
     const router = useRouter();
+    const { t } = useLanguage();
     const { groups, refreshGroups, setSelectedGroup, loading } = useGroup();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingGroup, setEditingGroup] = useState<DeviceGroup | null>(null);
@@ -58,7 +60,7 @@ export default function GroupsPage() {
     };
 
     const handleDeleteGroup = async (group: DeviceGroup) => {
-        if (!confirm(`¿Estás seguro de eliminar el grupo "${group.Name}"? Se eliminarán todos los tokens asociados.`)) {
+        if (!confirm(`${t('confirmDeleteGroup')} "${group.Name}"?`)) {
             return;
         }
 
@@ -79,8 +81,8 @@ export default function GroupsPage() {
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground mb-2">Mis Grupos</h1>
-                    <p className="text-muted-foreground">Selecciona un grupo para ver sus dispositivos</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">{t('myGroups')}</h1>
+                    <p className="text-muted-foreground">{t('selectGroupDesc')}</p>
                 </div>
                 <button
                     onClick={() => {
@@ -90,7 +92,7 @@ export default function GroupsPage() {
                     className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
                     <PlusIcon className="w-5 h-5" />
-                    Nuevo Grupo
+                    {t('newGroup')}
                 </button>
             </div>
 
@@ -102,8 +104,8 @@ export default function GroupsPage() {
                 </div>
             ) : groups.length === 0 ? (
                 <div className="text-center py-12 bg-muted/10 rounded-xl border border-dashed border-border">
-                    <h3 className="text-lg font-medium text-foreground mb-2">No tienes grupos creados</h3>
-                    <p className="text-muted-foreground mb-4">Crea tu primer grupo para comenzar a monitorear dispositivos</p>
+                    <h3 className="text-lg font-medium text-foreground mb-2">{t('noGroups')}</h3>
+                    <p className="text-muted-foreground mb-4">{t('createFirstGroup')}</p>
                     <button
                         onClick={() => {
                             setEditingGroup(null);
@@ -111,7 +113,7 @@ export default function GroupsPage() {
                         }}
                         className="text-primary hover:underline"
                     >
-                        Crear mi primer grupo
+                        {t('createGroupBtn')}
                     </button>
                 </div>
             ) : (

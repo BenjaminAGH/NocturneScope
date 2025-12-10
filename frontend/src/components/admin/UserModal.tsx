@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { User, CreateUserData, UpdateUserData } from "@/lib/api/admin";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface UserModalProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface UserModalProps {
 }
 
 export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserModalProps) {
+    const { t } = useLanguage();
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -49,7 +51,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
         try {
             if (mode === "create") {
                 if (!formData.password) {
-                    setError("Password is required for new users");
+                    setError(t('passwordRequired'));
                     setLoading(false);
                     return;
                 }
@@ -66,7 +68,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
             }
             onClose();
         } catch (err: any) {
-            setError(err.message || "An error occurred");
+            setError(err.message || t('errorOccurred'));
         } finally {
             setLoading(false);
         }
@@ -79,7 +81,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
             <div className="bg-card border border-border rounded-lg w-full max-w-md">
                 <div className="flex items-center justify-between p-6 border-b border-border">
                     <h2 className="text-xl font-semibold">
-                        {mode === "create" ? "Create New User" : "Edit User"}
+                        {mode === "create" ? t('createNewUser') : t('editUser')}
                     </h2>
                     <button
                         onClick={onClose}
@@ -99,7 +101,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
 
                     <div className="space-y-2">
                         <label htmlFor="username" className="block text-sm font-medium">
-                            Username
+                            {t('username')}
                         </label>
                         <input
                             type="text"
@@ -114,7 +116,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
 
                     <div className="space-y-2">
                         <label htmlFor="email" className="block text-sm font-medium">
-                            Email
+                            {t('email')}
                         </label>
                         <input
                             type="email"
@@ -129,7 +131,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
 
                     <div className="space-y-2">
                         <label htmlFor="role" className="block text-sm font-medium">
-                            Role
+                            {t('role')}
                         </label>
                         <select
                             id="role"
@@ -147,7 +149,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
 
                     <div className="space-y-2">
                         <label htmlFor="password" className="block text-sm font-medium">
-                            Password {mode === "edit" && <span className="text-muted-foreground text-xs">(leave blank to keep current)</span>}
+                            {t('password')} {mode === "edit" && <span className="text-muted-foreground text-xs">({t('leaveBlank')})</span>}
                         </label>
                         <input
                             type="password"
@@ -167,14 +169,14 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
                             className="flex-1 px-4 py-2 bg-background hover:bg-accent border border-border rounded text-sm transition-colors disabled:opacity-50"
                             disabled={loading}
                         >
-                            Cancel
+                            {t('cancel')}
                         </button>
                         <button
                             type="submit"
                             className="flex-1 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm transition-colors disabled:opacity-50"
                             disabled={loading}
                         >
-                            {loading ? "Saving..." : mode === "create" ? "Create" : "Save"}
+                            {loading ? t('saving') : mode === "create" ? t('create') : t('save')}
                         </button>
                     </div>
                 </form>

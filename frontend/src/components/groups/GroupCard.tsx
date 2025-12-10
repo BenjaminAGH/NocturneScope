@@ -2,6 +2,7 @@
 
 import { DeviceGroup } from "@/context/GroupContext";
 import { PencilIcon, TrashIcon, ServerIcon } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface GroupCardProps {
     group: DeviceGroup;
@@ -11,6 +12,7 @@ interface GroupCardProps {
 }
 
 export default function GroupCard({ group, onSelect, onEdit, onDelete }: GroupCardProps) {
+    const { t } = useLanguage();
     return (
         <div
             className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer group relative overflow-hidden"
@@ -23,7 +25,7 @@ export default function GroupCard({ group, onSelect, onEdit, onDelete }: GroupCa
                         onEdit(group);
                     }}
                     className="p-2 hover:bg-muted rounded-full text-muted-foreground hover:text-primary transition-colors"
-                    title="Editar grupo"
+                    title={t('editGroup')}
                 >
                     <PencilIcon className="w-4 h-4" />
                 </button>
@@ -33,7 +35,7 @@ export default function GroupCard({ group, onSelect, onEdit, onDelete }: GroupCa
                         onDelete(group);
                     }}
                     className="p-2 hover:bg-destructive/10 rounded-full text-muted-foreground hover:text-destructive transition-colors"
-                    title="Eliminar grupo"
+                    title={t('deleteGroupTitle')}
                 >
                     <TrashIcon className="w-4 h-4" />
                 </button>
@@ -45,12 +47,12 @@ export default function GroupCard({ group, onSelect, onEdit, onDelete }: GroupCa
                 </div>
                 <div>
                     <h3 className="text-lg font-semibold text-foreground mb-1">{group.Name}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{group.Description || "Sin descripción"}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{group.Description || t('noDescription')}</p>
                 </div>
             </div>
 
             <div className="mt-4 pt-4 border-t border-border/50 flex justify-between items-center text-xs text-muted-foreground">
-                <span>Creado: {new Date(group.CreatedAt).toLocaleDateString()}</span>
+                <span>{t('createdAt')}: {new Date(group.CreatedAt).toLocaleDateString()}</span>
             </div>
         </div>
     );

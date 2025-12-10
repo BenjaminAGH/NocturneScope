@@ -2,7 +2,6 @@
 
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { Handle, Position, NodeProps } from "@xyflow/react";
 import { GlobeAltIcon, LinkIcon } from "@heroicons/react/24/outline";
 import { useLanguage } from "@/context/LanguageContext";
 

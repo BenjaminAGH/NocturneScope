@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { User } from "@/lib/api/admin";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface UserTableProps {
     users: User[];
@@ -11,6 +12,7 @@ interface UserTableProps {
 }
 
 export default function UserTable({ users, onEdit, onDelete }: UserTableProps) {
+    const { t } = useLanguage();
     const [sortField, setSortField] = useState<keyof User>("id");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
@@ -64,28 +66,28 @@ export default function UserTable({ users, onEdit, onDelete }: UserTableProps) {
                             className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-muted/70 transition-colors"
                             onClick={() => handleSort("id")}
                         >
-                            ID {sortField === "id" && (sortDirection === "asc" ? "↑" : "↓")}
+                            {t('id')} {sortField === "id" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
                         <th
                             className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-muted/70 transition-colors"
                             onClick={() => handleSort("username")}
                         >
-                            Username {sortField === "username" && (sortDirection === "asc" ? "↑" : "↓")}
+                            {t('username')} {sortField === "username" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
                         <th
                             className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-muted/70 transition-colors"
                             onClick={() => handleSort("email")}
                         >
-                            Email {sortField === "email" && (sortDirection === "asc" ? "↑" : "↓")}
+                            {t('email')} {sortField === "email" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
                         <th
                             className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-muted/70 transition-colors"
                             onClick={() => handleSort("role")}
                         >
-                            Role {sortField === "role" && (sortDirection === "asc" ? "↑" : "↓")}
+                            {t('role')} {sortField === "role" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
                         <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                            Actions
+                            {t('actions')}
                         </th>
                     </tr>
                 </thead>
@@ -110,14 +112,14 @@ export default function UserTable({ users, onEdit, onDelete }: UserTableProps) {
                                 <button
                                     onClick={() => onEdit(user)}
                                     className="text-primary hover:text-primary/80 mr-4 inline-flex items-center transition-colors"
-                                    title="Edit user"
+                                    title={t('editUser')}
                                 >
                                     <PencilIcon className="h-5 w-5" />
                                 </button>
                                 <button
                                     onClick={() => onDelete(user)}
                                     className="text-destructive hover:text-destructive/80 inline-flex items-center transition-colors"
-                                    title="Delete user"
+                                    title={t('deleteUserTitle')}
                                 >
                                     <TrashIcon className="h-5 w-5" />
                                 </button>
@@ -128,7 +130,7 @@ export default function UserTable({ users, onEdit, onDelete }: UserTableProps) {
             </table>
             {users.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                    No users found
+                    {t('noUsersFound')}
                 </div>
             )}
         </div>

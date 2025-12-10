@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useNotification } from "@/context/NotificationContext";
+import { useLanguage } from "@/context/LanguageContext";
 import {
     UserCircleIcon,
     KeyIcon,
@@ -34,6 +35,7 @@ interface Group {
 
 export default function AccountPage() {
     const router = useRouter();
+    const { t } = useLanguage();
     const { notify } = useNotification();
     const [jwt, setJwt] = useState<string | null>(null);
     const [user, setUser] = useState<UserProfile | null>(null);
@@ -100,7 +102,7 @@ export default function AccountPage() {
     };
 
     const handleDeleteDevice = async (id: number) => {
-        if (!jwt || !confirm("¿Estás seguro? Esto revocará el token y desconectará el agente.")) return;
+        if (!jwt || !confirm(t('confirmRevoke'))) return;
 
         try {
             const { deleteApiToken } = await import("@/lib/api/api");
@@ -130,8 +132,8 @@ export default function AccountPage() {
                         <UserCircleIcon className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold">Mi Cuenta</h1>
-                        <p className="text-muted-foreground">Administra tu perfil y recursos asociados</p>
+                        <h1 className="text-2xl font-bold">{t('myAccount')}</h1>
+                        <p className="text-muted-foreground">{t('accountSubtitle')}</p>
                     </div>
                 </div>
 
@@ -144,14 +146,14 @@ export default function AccountPage() {
                                 <div className="p-2 bg-primary/10 rounded-lg">
                                     <ShieldCheckIcon className="w-6 h-6 text-primary" />
                                 </div>
-                                <h2 className="text-xl font-bold tracking-tight">Información de Perfil</h2>
+                                <h2 className="text-xl font-bold tracking-tight">{t('profileInfo')}</h2>
                             </div>
                             {!isEditing && (
                                 <button
                                     onClick={() => setIsEditing(true)}
                                     className="px-4 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-all"
                                 >
-                                    Editar Perfil
+                                    {t('editProfile')}
                                 </button>
                             )}
                         </div>
@@ -159,7 +161,7 @@ export default function AccountPage() {
                         <form onSubmit={handleUpdateProfile} className="space-y-6 max-w-lg">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Rol</label>
+                                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('role')}</label>
                                     <div className="px-4 py-3 bg-muted/30 border border-border rounded-xl text-sm font-mono text-foreground flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-primary"></div>
                                         {user?.Role.toUpperCase()}
@@ -167,7 +169,7 @@ export default function AccountPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email</label>
+                                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('email')}</label>
                                     <div className="px-4 py-3 bg-muted/30 border border-border rounded-xl text-sm text-foreground flex items-center gap-2 overflow-hidden">
                                         <EnvelopeIcon className="w-4 h-4 text-muted-foreground shrink-0" />
                                         <span className="truncate">{user?.Email}</span>
@@ -176,7 +178,7 @@ export default function AccountPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nombre de Usuario</label>
+                                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('username')}</label>
                                 <input
                                     type="text"
                                     disabled={!isEditing}
@@ -190,7 +192,7 @@ export default function AccountPage() {
                                 <div className="space-y-6 pt-6 border-t border-border animate-in fade-in slide-in-from-top-4 duration-300">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nueva Contraseña</label>
+                                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('newPassword')}</label>
                                             <input
                                                 type="password"
                                                 className="w-full px-4 py-3 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
@@ -200,7 +202,7 @@ export default function AccountPage() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Confirmar Contraseña</label>
+                                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('confirmPassword')}</label>
                                             <input
                                                 type="password"
                                                 className="w-full px-4 py-3 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
@@ -222,13 +224,13 @@ export default function AccountPage() {
                                             }}
                                             className="px-6 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors"
                                         >
-                                            Cancelar
+                                            {t('cancel')}
                                         </button>
                                         <button
                                             type="submit"
                                             className="px-6 py-2.5 text-sm font-medium bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                                         >
-                                            Guardar Cambios
+                                            {t('saveChanges')}
                                         </button>
                                     </div>
                                 </div>

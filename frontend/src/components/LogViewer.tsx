@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { getHistory } from "@/lib/api/api";
 import { formatCL } from "@/lib/time";
+import { useLanguage } from "@/context/LanguageContext";
 
 type LogViewerProps = {
     jwt: string;
@@ -9,6 +10,7 @@ type LogViewerProps = {
 };
 
 export default function LogViewer({ jwt, device, range }: LogViewerProps) {
+    const { t } = useLanguage();
     const [logs, setLogs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -26,7 +28,7 @@ export default function LogViewer({ jwt, device, range }: LogViewerProps) {
         setError("");
         getHistory(jwt, device, range)
             .then((data) => setLogs(data || []))
-            .catch((e) => setError(e.message || "Error cargando logs"))
+            .catch((e) => setError(e.message || t('errorLoadingLogs')))
             .finally(() => setLoading(false));
     };
 
@@ -76,7 +78,7 @@ export default function LogViewer({ jwt, device, range }: LogViewerProps) {
     return (
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Logs del Sistema ({range})</h2>
+                <h2 className="text-lg font-semibold">{t('systemLogs')} ({range})</h2>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setIsPaused(!isPaused)}
@@ -85,7 +87,7 @@ export default function LogViewer({ jwt, device, range }: LogViewerProps) {
                             : "bg-green-500/10 text-green-500 border-green-500/50"
                             }`}
                     >
-                        {isPaused ? "⏸ Pausado" : "▶ En vivo"}
+                        {isPaused ? `⏸ ${t('paused')}` : `▶ ${t('live')}`}
                     </button>
                 </div>
             </div>
@@ -101,19 +103,19 @@ export default function LogViewer({ jwt, device, range }: LogViewerProps) {
                     <thead className="text-muted-foreground border-b border-border/50">
                         <tr>
                             <th className="py-2 px-2 cursor-pointer hover:text-foreground" onClick={() => handleSort("time")}>
-                                Tiempo <SortIcon column="time" />
+                                {t('time')} <SortIcon column="time" />
                             </th>
                             <th className="py-2 px-2 cursor-pointer hover:text-foreground" onClick={() => handleSort("cpu")}>
-                                CPU (%) <SortIcon column="cpu" />
+                                {t('cpu')} <SortIcon column="cpu" />
                             </th>
                             <th className="py-2 px-2 cursor-pointer hover:text-foreground" onClick={() => handleSort("ram")}>
-                                RAM (%) <SortIcon column="ram" />
+                                {t('ram')} <SortIcon column="ram" />
                             </th>
                             <th className="py-2 px-2 cursor-pointer hover:text-foreground" onClick={() => handleSort("disk")}>
-                                Disk (%) <SortIcon column="disk" />
+                                {t('disk')} <SortIcon column="disk" />
                             </th>
                             <th className="py-2 px-2 cursor-pointer hover:text-foreground" onClick={() => handleSort("temp")}>
-                                Temp (°C) <SortIcon column="temp" />
+                                {t('temp')} <SortIcon column="temp" />
                             </th>
                         </tr>
                     </thead>
@@ -121,14 +123,14 @@ export default function LogViewer({ jwt, device, range }: LogViewerProps) {
                         {loading && logs.length === 0 && (
                             <tr>
                                 <td colSpan={5} className="py-4 text-center text-muted-foreground">
-                                    Cargando...
+                                    {t('loading')}
                                 </td>
                             </tr>
                         )}
                         {!loading && logs.length === 0 && (
                             <tr>
                                 <td colSpan={5} className="py-4 text-center text-muted-foreground">
-                                    Sin datos recientes
+                                    {t('noRecentData')}
                                 </td>
                             </tr>
                         )}
@@ -157,7 +159,7 @@ export default function LogViewer({ jwt, device, range }: LogViewerProps) {
             {logs.length > PAGE_SIZE && (
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div>
-                        Página {page + 1} de {totalPages}
+                        {t('page')} {page + 1} {t('of')} {totalPages}
                     </div>
                     <div className="flex gap-2">
                         <button
@@ -165,14 +167,14 @@ export default function LogViewer({ jwt, device, range }: LogViewerProps) {
                             disabled={page === 0}
                             className="px-3 py-1 rounded border border-border/50 disabled:opacity-50 hover:bg-muted"
                         >
-                            ← Anterior
+                            ← {t('previous')}
                         </button>
                         <button
                             onClick={handleNext}
                             disabled={page >= totalPages - 1}
                             className="px-3 py-1 rounded border border-border/50 disabled:opacity-50 hover:bg-muted"
                         >
-                            Siguiente →
+                            {t('next')} →
                         </button>
                     </div>
                 </div>

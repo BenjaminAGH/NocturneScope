@@ -3,7 +3,6 @@
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import DeviceDetails from "./DeviceDetails";
-import DeviceDetails from "./DeviceDetails";
 import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 import { useLanguage } from "@/context/LanguageContext";
 
