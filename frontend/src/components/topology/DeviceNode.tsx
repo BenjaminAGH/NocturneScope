@@ -1,8 +1,8 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { ComputerDesktopIcon, BellAlertIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { ComputerDesktopIcon, BellAlertIcon, ClockIcon, InformationCircleIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { formatDuration } from "@/lib/time";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -55,6 +55,8 @@ function DeviceNode({ data, isConnectable }: NodeProps) {
     const os = typedData.os || "";
     const color = typedData.color || "#c4a7e7"; // Default Rose Pine Iris
     const uptime = typedData.uptime || 0;
+    const [showTooltip, setShowTooltip] = useState(false);
+
 
     const statusColors = {
         online: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]",
@@ -110,13 +112,43 @@ function DeviceNode({ data, isConnectable }: NodeProps) {
                 {/* Top Border Accent */}
                 <div className="absolute top-0 left-0 right-0 h-1" style={{ background: color }} />
 
+                {/* Tooltip con Botón Dashboard */}
+                {showTooltip && (
+                    <div className="absolute inset-0 z-20 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center animate-in fade-in duration-200">
+                        <p className="text-xs text-muted-foreground mb-3 font-medium">{label}</p>
+                        <a
+                            href={`/dashboard?device=${typedData.deviceName}`}
+                            className="flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-md hover:bg-primary/90 transition-colors shadow-lg"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <span>{t('viewDashboard')}</span>
+                            <ArrowTopRightOnSquareIcon className="w-3 h-3" />
+                        </a>
+                        <button
+                            className="mt-3 text-[10px] text-muted-foreground hover:text-foreground underline"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowTooltip(false);
+                            }}
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                )}
+
                 <div className="p-4 space-y-3 relative z-10">
                     {/* Header con icono y nombre */}
                     <div className="flex items-center gap-3">
                         <div
-                            className="p-2 rounded-lg bg-white/5 border border-white/10 shadow-inner text-foreground"
+                            className="p-2 rounded-lg bg-white/5 border border-white/10 shadow-inner text-foreground cursor-pointer hover:scale-105 transition-transform"
                             style={{ color: color }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowTooltip(!showTooltip);
+                            }}
+                            title="Click for options"
                         >
+                            {/* Overlay icon on hover to indicate action */}
                             {getOSIcon(os)}
                         </div>
                         <div className="flex-1 min-w-0">

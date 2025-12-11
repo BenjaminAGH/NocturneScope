@@ -54,7 +54,6 @@ function DashboardContent() {
   const [device, setDevice] = useState<string>("");
   const [field, setField] = useState<string>("cpu");
   const [range, setRange] = useState<string>("1h");
-  const [showDeviceList, setShowDeviceList] = useState(false);
 
   const FIELD_OPTIONS = useMemo(() => [
     { v: "cpu", l: t('cpu') },
@@ -104,11 +103,12 @@ function DashboardContent() {
         const deviceQuery = searchParams.get('device');
         if (deviceQuery && devs.includes(deviceQuery)) {
           setDevice(deviceQuery);
-        } else if (!device && devs.length) {
-          setDevice(devs[0]);
+        } else {
+          // Do not auto-select first device. Require explicit selection.
+          setDevice("");
         }
       } catch (e: any) {
-        setErr(e?.message || t('noData')); // Using generic noData error or assume default
+        setErr(e?.message || t('noData'));
       } finally {
         setLoadingDevices(false);
       }
@@ -220,16 +220,11 @@ function DashboardContent() {
 
       {/* Últimos valores */}
       <section className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-        {/* Status Card */}
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between relative">
-          <div
-            className="flex items-center justify-between cursor-pointer group select-none"
-            onClick={() => setShowDeviceList(!showDeviceList)}
-          >
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ComputerDesktopIcon className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">{t('status')}</span>
-              <ChevronDownIcon className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${showDeviceList ? "rotate-180" : ""}`} />
+              <span className="text-sm font-medium text-muted-foreground">{t('status')}</span>
             </div>
             {last && (
               <div className="flex items-center gap-1.5">
@@ -241,39 +236,11 @@ function DashboardContent() {
             )}
           </div>
 
-          {showDeviceList && (
-            <div className="absolute top-12 left-0 w-full px-4 z-50">
-              <div className="bg-popover border border-border rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100 ring-1 ring-black/5">
-                <div className="max-h-[240px] overflow-y-auto p-1">
-                  {devices.map(d => {
-                    const stat = allStats[d];
-                    const isOnline = stat && ((Date.now() / 1000) - (stat.timestamp ? new Date(stat.timestamp).getTime() / 1000 : 0) < 300);
-                    const isSelected = device === d;
-                    return (
-                      <div
-                        key={d}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDevice(d);
-                          setShowDeviceList(false);
-                        }}
-                        className={`flex items-center justify-between px-3 py-2 rounded-md text-sm cursor-pointer transition-colors ${isSelected ? 'bg-primary/10 text-primary' : 'hover:bg-muted'}`}
-                      >
-                        <span className="font-medium truncate">{d}</span>
-                        <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-
           <div className="mt-4 space-y-1">
-            <div className="text-2xl font-bold truncate" title={device}>{device || "—"}</div>
+            <div className="text-2xl font-bold truncate" title={device}>{device || t('selectDevice')}</div>
             <div className="flex items-center justify-between mt-1">
               <div className="text-xs text-muted-foreground truncate max-w-[60%]">
-                {last?.os || last?.os_name || last?.platform || t('systemUnknown')} {last?.os_version || ""}
+                {last ? (last.os || last.os_name || last.platform || t('systemUnknown')) : "—"} {last?.os_version || ""}
               </div>
               {last?.uptime && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -282,6 +249,11 @@ function DashboardContent() {
                 </div>
               )}
             </div>
+            {!device && (
+              <div className="text-xs text-orange-400 mt-2">
+                {t('selectGroupDesc')}
+              </div>
+            )}
           </div>
         </div>
 
@@ -320,36 +292,38 @@ function DashboardContent() {
           </div>
 
           {/* CPU Cores Grid */}
-          {cpuCores.length > 0 ? (
-            <div className="mt-3 space-y-1">
-              <div className="text-[10px] text-muted-foreground uppercase">{t('cores')} ({cpuCores.length})</div>
-              <div className="grid grid-cols-8 gap-1">
-                {cpuCores.map((core) => {
-                  const val = core.val || 0;
-                  let bgColor = "bg-muted"; // Gray
-                  if (val >= 90) bgColor = "bg-red-500";
-                  else if (val > 5) bgColor = "bg-green-500";
+          {
+            cpuCores.length > 0 ? (
+              <div className="mt-3 space-y-1">
+                <div className="text-[10px] text-muted-foreground uppercase">{t('cores')} ({cpuCores.length})</div>
+                <div className="grid grid-cols-8 gap-1">
+                  {cpuCores.map((core) => {
+                    const val = core.val || 0;
+                    let bgColor = "bg-muted"; // Gray
+                    if (val >= 90) bgColor = "bg-red-500";
+                    else if (val > 5) bgColor = "bg-green-500";
 
-                  return (
-                    <div
-                      key={core.id}
-                      className={`aspect-square rounded-sm ${bgColor} transition-colors duration-500 flex items-center justify-center relative cursor-default`}
-                      title={`Core ${core.id.replace('cpu_core_', '')}: ${val.toFixed(1)}%`}
-                    >
-                      <span className="text-[9px] font-mono text-white font-bold leading-none select-none">
-                        {val.toFixed(0)}
-                      </span>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={core.id}
+                        className={`aspect-square rounded-sm ${bgColor} transition-colors duration-500 flex items-center justify-center relative cursor-default`}
+                        title={`Core ${core.id.replace('cpu_core_', '')}: ${val.toFixed(1)}%`}
+                      >
+                        <span className="text-[9px] font-mono text-white font-bold leading-none select-none">
+                          {val.toFixed(0)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-              <span>{t('currentUsage')}</span>
-              <span>{last?.cpu_count || 1} {t('cores')}</span>
-            </div>
-          )}
+            ) : (
+              <div className="mt-2 text-xs text-muted-foreground flex justify-between">
+                <span>{t('currentUsage')}</span>
+                <span>{last?.cpu_count || 1} {t('cores')}</span>
+              </div>
+            )
+          }
         </div>
 
         {/* RAM Card */}
@@ -396,80 +370,82 @@ function DashboardContent() {
             })()}
           </div>
 
-          {(() => {
-            if (!last) return null;
-            const partitions = Object.keys(last)
-              .filter(k => k.startsWith('disk_usage_'))
-              .map(k => {
-                const displayMount = k.replace('disk_usage_', '').replace('_root', '/');
-                return {
-                  id: k,
-                  mount: displayMount,
-                  usage: last[k],
-                  total: last[k.replace('usage', 'total')],
-                  used: last[k.replace('usage', 'used')]
-                };
-              })
-              .sort((a, b) => a.mount.localeCompare(b.mount));
+          {
+            (() => {
+              if (!last) return null;
+              const partitions = Object.keys(last)
+                .filter(k => k.startsWith('disk_usage_'))
+                .map(k => {
+                  const displayMount = k.replace('disk_usage_', '').replace('_root', '/');
+                  return {
+                    id: k,
+                    mount: displayMount,
+                    usage: last[k],
+                    total: last[k.replace('usage', 'total')],
+                    used: last[k.replace('usage', 'used')]
+                  };
+                })
+                .sort((a, b) => a.mount.localeCompare(b.mount));
 
-            // Calculate total disk size from partitions for the bar
-            const totalDiskSize = partitions.reduce((acc, p) => acc + (p.total || 0), 0);
-            const totalDiskUsed = partitions.reduce((acc, p) => acc + (p.used || 0), 0);
+              // Calculate total disk size from partitions for the bar
+              const totalDiskSize = partitions.reduce((acc, p) => acc + (p.total || 0), 0);
+              const totalDiskUsed = partitions.reduce((acc, p) => acc + (p.used || 0), 0);
 
-            // Colors for partitions
-            const colors = [
-              "bg-emerald-500",
-              "bg-blue-500",
-              "bg-purple-500",
-              "bg-orange-500",
-              "bg-pink-500",
-              "bg-cyan-500",
-            ];
+              // Colors for partitions
+              const colors = [
+                "bg-emerald-500",
+                "bg-blue-500",
+                "bg-purple-500",
+                "bg-orange-500",
+                "bg-pink-500",
+                "bg-cyan-500",
+              ];
 
-            return (
-              <div className="flex flex-col justify-end flex-1 mt-2">
-                <div className="relative group w-full">
-                  <div className="w-full bg-muted/30 rounded-full h-3 overflow-hidden flex ring-1 ring-border/20">
-                    {partitions.map((p, i) => {
-                      // Calculate width relative to TOTAL disk size
-                      let width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
-                      // Ensure minimum width for visibility if used > 0
-                      if (p.used > 0 && width < 2) width = 2;
+              return (
+                <div className="flex flex-col justify-end flex-1 mt-2">
+                  <div className="relative group w-full">
+                    <div className="w-full bg-muted/30 rounded-full h-3 overflow-hidden flex ring-1 ring-border/20">
+                      {partitions.map((p, i) => {
+                        // Calculate width relative to TOTAL disk size
+                        let width = totalDiskSize > 0 ? (p.used / totalDiskSize) * 100 : 0;
+                        // Ensure minimum width for visibility if used > 0
+                        if (p.used > 0 && width < 2) width = 2;
 
-                      return (
-                        <div
-                          key={p.id}
-                          className={`${colors[i % colors.length]} h-full transition-all duration-500 hover:opacity-80`}
-                          style={{ width: `${width}%` }}
-                        />
-                      );
-                    })}
-                  </div>
+                        return (
+                          <div
+                            key={p.id}
+                            className={`${colors[i % colors.length]} h-full transition-all duration-500 hover:opacity-80`}
+                            style={{ width: `${width}%` }}
+                          />
+                        );
+                      })}
+                    </div>
 
-                  {/* Tooltip for all partitions - Moved outside overflow-hidden */}
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 bg-popover text-popover-foreground text-xs rounded-md border border-border shadow-md p-2 z-50 pointer-events-none">
-                    <div className="font-medium mb-1 border-b border-border/50 pb-1">{t('partitionDetails')}</div>
-                    <div className="space-y-1">
-                      {partitions.map((p, i) => (
-                        <div key={p.id} className="flex justify-between items-center">
-                          <div className="flex items-center gap-1.5">
-                            <div className={`w-2 h-2 rounded-full ${colors[i % colors.length]}`} />
-                            <span className="font-mono truncate max-w-[80px]">{p.mount}</span>
+                    {/* Tooltip for all partitions - Moved outside overflow-hidden */}
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 bg-popover text-popover-foreground text-xs rounded-md border border-border shadow-md p-2 z-50 pointer-events-none">
+                      <div className="font-medium mb-1 border-b border-border/50 pb-1">{t('partitionDetails')}</div>
+                      <div className="space-y-1">
+                        {partitions.map((p, i) => (
+                          <div key={p.id} className="flex justify-between items-center">
+                            <div className="flex items-center gap-1.5">
+                              <div className={`w-2 h-2 rounded-full ${colors[i % colors.length]}`} />
+                              <span className="font-mono truncate max-w-[80px]">{p.mount}</span>
+                            </div>
+                            <span className="font-mono text-muted-foreground">{formatBytes(p.used)} / {formatBytes(p.total)}</span>
                           </div>
-                          <span className="font-mono text-muted-foreground">{formatBytes(p.used)} / {formatBytes(p.total)}</span>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="mt-2 text-xs text-muted-foreground flex justify-between">
-                  <span>{t('used')}: {formatBytes(totalDiskUsed)}</span>
-                  <span>{t('total')}: {formatBytes(totalDiskSize)}</span>
+                  <div className="mt-2 text-xs text-muted-foreground flex justify-between">
+                    <span>{t('used')}: {formatBytes(totalDiskUsed)}</span>
+                    <span>{t('total')}: {formatBytes(totalDiskSize)}</span>
+                  </div>
                 </div>
-              </div>
-            );
-          })()}
+              );
+            })()
+          }
         </div>
 
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
@@ -617,16 +593,18 @@ function DashboardContent() {
       </section>
 
       {/* Logs */}
-      {jwt && device && (
-        <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
-          <LogViewer jwt={jwt} device={device} range={range} />
-          <NetworkTrafficLog device={device} />
-          <div className="col-span-1 xl:col-span-2 h-[400px]">
-            <NotificationPanel jwt={jwt} />
+      {
+        jwt && device && (
+          <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
+            <LogViewer jwt={jwt} device={device} range={range} />
+            <NetworkTrafficLog device={device} />
+            <div className="col-span-1 xl:col-span-2 h-[400px]">
+              <NotificationPanel jwt={jwt} />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 }
 

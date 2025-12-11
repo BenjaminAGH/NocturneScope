@@ -1949,11 +1949,7 @@ function TopologyEditor() {
         return () => clearTimeout(timer);
     }, [nodes, edges, selectedTopology, currentTopologyName, handleSave]);
 
-    const handleNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
-        if (node.type === 'device' && node.data?.deviceName) {
-            router.push(`/dashboard?device=${encodeURIComponent(node.data.deviceName as string)}`);
-        }
-    }, [router]);
+
 
     const handleRenameTopology = async (id: number, newName: string) => {
         const jwt = localStorage.getItem("jwt");
@@ -2081,7 +2077,7 @@ function TopologyEditor() {
                     className="bg-background"
                     onDragOver={onDragOver}
                     onDrop={onDrop}
-                    onNodeDoubleClick={handleNodeDoubleClick}
+
                 >
                     <Controls />
                     <Background />

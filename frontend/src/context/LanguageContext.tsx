@@ -303,6 +303,7 @@ export const translations = {
         ramSimple: "RAM",
         netRxSimple: "Net RX",
         netTxSimple: "Net TX",
+        viewDashboard: "Ver Dashboard",
     },
     en: {
         footerDescription: "NocturneScope is the thesis for the Computer Execution Engineer degree seeking to formalize a platform for network management.",
@@ -594,6 +595,7 @@ export const translations = {
         ramSimple: "RAM",
         netRxSimple: "Net RX",
         netTxSimple: "Net TX",
+        viewDashboard: "View Dashboard",
     },
 };
 

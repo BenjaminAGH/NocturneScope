@@ -15,8 +15,10 @@ import {
   TrashIcon,
   CheckCircleIcon,
   ShieldCheckIcon,
-  ServerIcon
+  ServerIcon,
+  DocumentTextIcon
 } from "@heroicons/react/24/outline";
+import ReportModal from "../reports/ReportModal";
 import { useNotification } from "@/context/NotificationContext";
 import { useGroup } from "@/context/GroupContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -26,6 +28,7 @@ export const Navbar = () => {
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const { notifications, unreadCount, markAllAsRead, clearHistory } = useNotification();
   const { selectedGroup } = useGroup();
   const { t } = useLanguage();
@@ -302,6 +305,18 @@ export const Navbar = () => {
               </Transition>
             </Menu>
           )}
+
+          {!isPublicRoute && isLoggedIn && (
+            <button
+              onClick={() => setIsReportModalOpen(true)}
+              className="p-2 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 text-muted-foreground hover:text-foreground"
+              title={t('generateReport') || "Generate Report"}
+            >
+              <DocumentTextIcon className="w-6 h-6" />
+            </button>
+          )}
+
+          <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
         </div>
       </nav>
     </div>
