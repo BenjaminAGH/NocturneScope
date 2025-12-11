@@ -304,6 +304,7 @@ export const translations = {
         netRxSimple: "Net RX",
         netTxSimple: "Net TX",
         viewDashboard: "Ver Dashboard",
+        selectDeviceFromTopology: "Seleccionar dispositivo...",
     },
     en: {
         footerDescription: "NocturneScope is the thesis for the Computer Execution Engineer degree seeking to formalize a platform for network management.",
@@ -596,6 +597,7 @@ export const translations = {
         netRxSimple: "Net RX",
         netTxSimple: "Net TX",
         viewDashboard: "View Dashboard",
+        selectDeviceFromTopology: "Select device...",
     },
 };
 

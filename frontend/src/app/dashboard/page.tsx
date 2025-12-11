@@ -237,21 +237,31 @@ function DashboardContent() {
           </div>
 
           <div className="mt-4 space-y-1">
-            <div className="text-2xl font-bold truncate" title={device}>{device || t('selectDevice')}</div>
-            <div className="flex items-center justify-between mt-1">
-              <div className="text-xs text-muted-foreground truncate max-w-[60%]">
-                {last ? (last.os || last.os_name || last.platform || t('systemUnknown')) : "—"} {last?.os_version || ""}
+            {devices.length > 0 ? (
+              <select
+                className="w-full bg-transparent text-2xl font-bold truncate outline-none cursor-pointer appearance-none -ml-1"
+                value={device}
+                onChange={(e) => setDevice(e.target.value)}
+                title={device || t('selectDevice')}
+              >
+                <option value="" disabled className="text-muted-foreground">{t('selectDevice')}</option>
+                {devices.map(d => (
+                  <option key={d} value={d} className="text-base text-foreground bg-card">
+                    {d}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="text-2xl font-bold truncate" title={device}>{device || t('noDevices')}</div>
+            )}
+            {!device && devices.length > 0 && (
+              <div className="pointer-events-none absolute right-4 top-[4.5rem] opacity-50">
+                <ChevronDownIcon className="w-4 h-4" />
               </div>
-              {last?.uptime && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <ClockIcon className="w-3 h-3" />
-                  <span>{formatDuration(last.uptime)}</span>
-                </div>
-              )}
-            </div>
-            {!device && (
+            )}
+            {!device && devices.length === 0 && (
               <div className="text-xs text-orange-400 mt-2">
-                {t('selectDeviceFromTopology') || "Select a device from the Topology view"}
+                {t('selectGroupDesc')}
               </div>
             )}
           </div>
