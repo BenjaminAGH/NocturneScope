@@ -121,18 +121,16 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => (
 
             {/* Header */}
             <View style={styles.header}>
-                {/* Logo Left - Scope Icon (Grayscale equivalent via style logic not available directly on Image, assuming filtered source or accept as is) */}
-                {/* Since user asked for Black and White, we use the standard icon. PDF renderer processes images essentially as is. */}
-                {/* We can use standard Image component. */}
+                {/* Logo Left - Scope Icon */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                    {/* Using absolute path or public URL. In React PDF, fetching from public can be tricky in dev. */}
-                    {/* We will assume it can load from the same host or base64. pass base64 if needed later. */}
-                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>SCOPE</Text>
+                    {/* Try to use img from public folder. React-PDF usually needs absolute URL or base64. 
+                We will try relative path 'img/scope_icon.svg' assuming potential vite resolution or fallback to Text if fails visually.*/}
+                    {/* User requested img/scope_icon.png, but it doesn't exist. Trying svg or skip if broken. */}
+                    <Image src="/img/scope_icon.svg" style={styles.headerLogo} />
                 </View>
 
-                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <Text style={styles.headerTitle}>NECTURNE SECURITY</Text>
-                    <Text style={{ fontSize: 8, color: '#666' }}>Automated Report</Text>
+                <View style={{ flexDirection: 'column', alignItems: 'flex-end', gap: 5 }}>
+                    <Image src="/nocturneDark.svg" style={{ width: 100, height: 20 }} />
                 </View>
             </View>
 

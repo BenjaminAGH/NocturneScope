@@ -251,7 +251,7 @@ function DashboardContent() {
             </div>
             {!device && (
               <div className="text-xs text-orange-400 mt-2">
-                {t('selectGroupDesc')}
+                {t('selectDeviceFromTopology') || "Select a device from the Topology view"}
               </div>
             )}
           </div>

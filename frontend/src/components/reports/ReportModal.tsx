@@ -62,12 +62,12 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
             const interval = '1m';
 
             // Fetch Data
-            // We need multiple metrics: cpu, ram, temp? Using getTimeseries for each is one way, or just fetch main ones.
-            // Let's fetch CPU and RAM for now as primary criticals.
-            const [cpuTs, ramTs, tempTs, lastStats] = await Promise.all([
+            const [cpuTs, ramTs, tempTs, netRxTs, netTxTs, lastStats] = await Promise.all([
                 getTimeseries(jwt, { device: selectedDevice, field: 'cpu', range, agg: 'mean', interval }),
                 getTimeseries(jwt, { device: selectedDevice, field: 'ram', range, agg: 'mean', interval }),
-                getTimeseries(jwt, { device: selectedDevice, field: 'temp', range, agg: 'mean', interval }), // Assuming temp exists
+                getTimeseries(jwt, { device: selectedDevice, field: 'temp', range, agg: 'mean', interval }),
+                getTimeseries(jwt, { device: selectedDevice, field: 'net_rx', range, agg: 'mean', interval }),
+                getTimeseries(jwt, { device: selectedDevice, field: 'net_tx', range, agg: 'mean', interval }),
                 getLastStats(jwt, selectedDevice)
             ]);
 
@@ -75,11 +75,15 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
             const pointsCpu = cpuTs.points || [];
             const pointsRam = ramTs.points || [];
             const pointsTemp = tempTs.points || [];
+            const pointsNetRx = netRxTs.points || [];
+            const pointsNetTx = netTxTs.points || [];
 
             // Calculate Averages
             const avgCpu = pointsCpu.reduce((a: number, b: any) => a + b.v, 0) / (pointsCpu.length || 1);
             const avgRam = pointsRam.reduce((a: number, b: any) => a + b.v, 0) / (pointsRam.length || 1);
             const avgTemp = pointsTemp.reduce((a: number, b: any) => a + b.v, 0) / (pointsTemp.length || 1);
+            const avgNetRx = pointsNetRx.reduce((a: number, b: any) => a + b.v, 0) / (pointsNetRx.length || 1);
+            const avgNetTx = pointsNetTx.reduce((a: number, b: any) => a + b.v, 0) / (pointsNetTx.length || 1);
 
             // Find Critical Events
             const criticalEvents: CriticalEvent[] = [];
@@ -130,6 +134,18 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
                     min: Math.min(...pointsTemp.map((p: any) => p.v), 0),
                     max: Math.max(...pointsTemp.map((p: any) => p.v), 0),
                     avg: avgTemp
+                },
+                {
+                    name: 'Net RX (B/s)',
+                    min: Math.min(...pointsNetRx.map((p: any) => p.v), 0),
+                    max: Math.max(...pointsNetRx.map((p: any) => p.v), 0),
+                    avg: avgNetRx
+                },
+                {
+                    name: 'Net TX (B/s)',
+                    min: Math.min(...pointsNetTx.map((p: any) => p.v), 0),
+                    max: Math.max(...pointsNetTx.map((p: any) => p.v), 0),
+                    avg: avgNetTx
                 }
             ];
 

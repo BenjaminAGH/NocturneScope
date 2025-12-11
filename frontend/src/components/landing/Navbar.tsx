@@ -227,93 +227,93 @@ export const Navbar = () => {
               {isLoggedIn ? t('goToDashboard') : t('login')}
             </Link>
           ) : (
-            <Menu as="div" className="relative">
-              <Menu.Button className="flex items-center gap-2 p-1 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <UserCircleIcon className="w-6 h-6" />
-                </div>
-              </Menu.Button>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                className="p-2 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 text-muted-foreground hover:text-foreground"
+                title={t('generateReport') || "Generate Report"}
               >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-card py-2 shadow-xl ring-1 ring-border focus:outline-none">
-                  <div className="px-4 py-2 border-b border-border/50 mb-1">
-                    <p className="text-xs font-medium text-muted-foreground">{t('myAccount')}</p>
+                <DocumentTextIcon className="w-6 h-6" />
+              </button>
+
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center gap-2 p-1 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <UserCircleIcon className="w-6 h-6" />
                   </div>
+                </Menu.Button>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-card py-2 shadow-xl ring-1 ring-border focus:outline-none">
+                    <div className="px-4 py-2 border-b border-border/50 mb-1">
+                      <p className="text-xs font-medium text-muted-foreground">{t('myAccount')}</p>
+                    </div>
 
-                  <Menu.Item>
-                    {({ active }) => (
-                      <Link
-                        href="/tokens"
-                        className={`${active ? "bg-muted" : ""
-                          } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
-                      >
-                        <KeyIcon className="w-4 h-4" />
-                        {t('apiTokens')}
-                      </Link>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <Link
-                        href="/account"
-                        className={`${active ? "bg-muted" : ""
-                          } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
-                      >
-                        <UserCircleIcon className="w-4 h-4" />
-                        {t('adminAccount')}
-                      </Link>
-                    )}
-                  </Menu.Item>
-
-                  {(userRole === "devadmin" || userRole === "devuser") && (
                     <Menu.Item>
                       {({ active }) => (
                         <Link
-                          href="/admin/users"
+                          href="/tokens"
                           className={`${active ? "bg-muted" : ""
                             } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
                         >
-                          <ShieldCheckIcon className="w-4 h-4" />
-                          {t('adminUsers')}
+                          <KeyIcon className="w-4 h-4" />
+                          {t('apiTokens')}
                         </Link>
                       )}
                     </Menu.Item>
-                  )}
+                    <Menu.Item>
+                      {({ active }) => (
+                        <Link
+                          href="/account"
+                          className={`${active ? "bg-muted" : ""
+                            } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
+                        >
+                          <UserCircleIcon className="w-4 h-4" />
+                          {t('adminAccount')}
+                        </Link>
+                      )}
+                    </Menu.Item>
 
-                  <div className="my-1 border-t border-border/50" />
-
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        onClick={handleLogout}
-                        className={`${active ? "bg-destructive/10 text-destructive" : "text-foreground"
-                          } flex w-full items-center gap-2 px-4 py-2 text-sm mx-1 rounded-lg transition-colors text-left`}
-                      >
-                        <ArrowRightOnRectangleIcon className="w-4 h-4" />
-                        {t('logout')}
-                      </button>
+                    {(userRole === "devadmin" || userRole === "devuser") && (
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            href="/admin/users"
+                            className={`${active ? "bg-muted" : ""
+                              } flex items-center gap-2 px-4 py-2 text-sm text-foreground mx-1 rounded-lg transition-colors`}
+                          >
+                            <ShieldCheckIcon className="w-4 h-4" />
+                            {t('adminUsers')}
+                          </Link>
+                        )}
+                      </Menu.Item>
                     )}
-                  </Menu.Item>
-                </Menu.Items>
-              </Transition>
-            </Menu>
-          )}
 
-          {!isPublicRoute && isLoggedIn && (
-            <button
-              onClick={() => setIsReportModalOpen(true)}
-              className="p-2 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 text-muted-foreground hover:text-foreground"
-              title={t('generateReport') || "Generate Report"}
-            >
-              <DocumentTextIcon className="w-6 h-6" />
-            </button>
+                    <div className="my-1 border-t border-border/50" />
+
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          onClick={handleLogout}
+                          className={`${active ? "bg-destructive/10 text-destructive" : "text-foreground"
+                            } flex w-full items-center gap-2 px-4 py-2 text-sm mx-1 rounded-lg transition-colors text-left`}
+                        >
+                          <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                          {t('logout')}
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
           )}
 
           <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
