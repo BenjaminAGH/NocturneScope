@@ -221,61 +221,79 @@ function DashboardContent() {
       {/* Últimos valores */}
       <section className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between relative">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ComputerDesktopIcon className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium text-muted-foreground">{t('status')}</span>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ComputerDesktopIcon className="w-5 h-5 text-primary" />
+                <span className="text-sm font-medium text-muted-foreground">{t('status')}</span>
+              </div>
+              {last && (
+                <div className="flex items-center gap-1.5">
+                  <div className={`w-2 h-2 rounded-full ${((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
+                  <span className={`text-xs font-medium ${((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "text-green-600" : "text-red-600"}`}>
+                    {((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "Online" : "Offline"}
+                  </span>
+                </div>
+              )}
             </div>
-            {last && (
-              <div className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full ${((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
-                <span className={`text-xs font-medium ${((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "text-green-600" : "text-red-600"}`}>
-                  {((Date.now() / 1000) - (last.timestamp ? new Date(last.timestamp).getTime() / 1000 : 0) < 300) ? "Online" : "Offline"}
-                </span>
-              </div>
-            )}
-          </div>
 
-          <div className="mt-4 space-y-1">
-            {devices.length > 0 ? (
-              <select
-                className="w-full bg-transparent text-2xl font-bold truncate outline-none cursor-pointer"
-                value={device}
-                onChange={(e) => setDevice(e.target.value)}
-                title={device || t('selectDevice')}
-              >
-                <option value="" disabled className="text-muted-foreground">{t('selectDevice')}</option>
-                {devices.map(d => (
-                  <option key={d} value={d} className="text-foreground bg-card">
-                    {d}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div className="text-2xl font-bold truncate" title={device}>{device || t('noDevices')}</div>
-            )}
-            {!device && devices.length === 0 && (
-              <div className="text-xs text-orange-400 mt-2">
-                {t('selectGroupDesc')}
+            <div className="space-y-1">
+              {devices.length > 0 ? (
+                <select
+                  className="w-full bg-transparent text-2xl font-bold truncate outline-none cursor-pointer p-0 m-0 border-none focus:ring-0"
+                  value={device}
+                  onChange={(e) => setDevice(e.target.value)}
+                  title={device || t('selectDevice')}
+                >
+                  <option value="" disabled className="text-muted-foreground">{t('selectDevice')}</option>
+                  {devices.map(d => (
+                    <option key={d} value={d} className="text-foreground bg-card">
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="text-2xl font-bold truncate" title={device}>{device || t('noDevices')}</div>
+              )}
+              {!device && devices.length === 0 && (
+                <div className="text-xs text-orange-400 mt-2">
+                  {t('selectGroupDesc')}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-auto">
+              <div className="flex items-center justify-between mt-1 pt-4 border-t border-border/40">
+                <div className="text-xs text-muted-foreground truncate max-w-[60%]">
+                  {last ? (last.os || last.os_name || last.platform || t('systemUnknown')) : "—"} {last?.os_version || ""}
+                </div>
+                {last?.uptime && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <ClockIcon className="w-3 h-3" />
+                    <span>{formatDuration(last.uptime)}</span>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
 
         {/* Network Card */}
         <div className="rounded-xl bg-card text-card-foreground p-4 ring-1 ring-border/50 flex flex-col justify-between">
-          <div className="flex items-center gap-2 mb-2">
-            <GlobeAltIcon className="w-5 h-5 text-blue-500" />
-            <span className="text-sm font-medium text-muted-foreground">{t('network')}</span>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <div className="text-[10px] uppercase text-muted-foreground">IP Address</div>
-              <div className="font-mono text-sm">{last?.ip || "—"}</div>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 mb-2">
+              <GlobeAltIcon className="w-5 h-5 text-blue-500" />
+              <span className="text-sm font-medium text-muted-foreground">{t('network')}</span>
             </div>
-            <div>
-              <div className="text-[10px] uppercase text-muted-foreground">Gateway</div>
-              <div className="font-mono text-sm">{last?.gateway || "—"}</div>
+            <div className="space-y-3">
+              <div>
+                <div className="text-[10px] uppercase text-muted-foreground">IP Address</div>
+                <div className="font-mono text-sm">{last?.ip || "—"}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase text-muted-foreground">Gateway</div>
+                <div className="font-mono text-sm">{last?.gateway || "—"}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -570,11 +588,26 @@ function DashboardContent() {
                 />
               </YAxis>
               <Tooltip
-                labelFormatter={(v) => formatCL(v)}
-                formatter={(value: any) => [
-                  typeof value === "number" ? value.toFixed(2) : value,
-                  "valor",
-                ]}
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="rounded-lg border border-border bg-popover px-3 py-2 text-sm shadow-md text-popover-foreground">
+                        <div className="mb-1 font-semibold">{formatCL(label)}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-primary" />
+                          <span className="text-muted-foreground">
+                            {/* Show label based on metric */}
+                            {t('value')}:
+                          </span>
+                          <span className="font-mono font-medium">
+                            {typeof payload[0].value === 'number' ? payload[0].value.toFixed(2) : payload[0].value}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
               />
               <Area
                 type="monotone"
