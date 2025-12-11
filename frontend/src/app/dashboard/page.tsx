@@ -239,25 +239,20 @@ function DashboardContent() {
           <div className="mt-4 space-y-1">
             {devices.length > 0 ? (
               <select
-                className="w-full bg-transparent text-2xl font-bold truncate outline-none cursor-pointer appearance-none -ml-1"
+                className="w-full bg-transparent text-2xl font-bold truncate outline-none cursor-pointer"
                 value={device}
                 onChange={(e) => setDevice(e.target.value)}
                 title={device || t('selectDevice')}
               >
                 <option value="" disabled className="text-muted-foreground">{t('selectDevice')}</option>
                 {devices.map(d => (
-                  <option key={d} value={d} className="text-base text-foreground bg-card">
+                  <option key={d} value={d} className="text-foreground bg-card">
                     {d}
                   </option>
                 ))}
               </select>
             ) : (
               <div className="text-2xl font-bold truncate" title={device}>{device || t('noDevices')}</div>
-            )}
-            {!device && devices.length > 0 && (
-              <div className="pointer-events-none absolute right-4 top-[4.5rem] opacity-50">
-                <ChevronDownIcon className="w-4 h-4" />
-              </div>
             )}
             {!device && devices.length === 0 && (
               <div className="text-xs text-orange-400 mt-2">
