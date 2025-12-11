@@ -592,7 +592,7 @@ function DashboardContent() {
                   if (active && payload && payload.length) {
                     return (
                       <div className="rounded-lg border border-border bg-popover px-3 py-2 text-sm shadow-md text-popover-foreground">
-                        <div className="mb-1 font-semibold">{formatCL(label)}</div>
+                        <div className="mb-1 font-semibold">{label ? formatCL(label) : ""}</div>
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-primary" />
                           <span className="text-muted-foreground">
