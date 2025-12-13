@@ -42,6 +42,7 @@ export default function ReportsPage() {
     const [selectedMetrics, setSelectedMetrics] = useState<string[]>(['cpu', 'ram', 'temp', 'net_rx', 'net_tx']);
     const [thresholdCpu, setThresholdCpu] = useState(80);
     const [thresholdRam, setThresholdRam] = useState(80);
+    const [thresholdTemp, setThresholdTemp] = useState(75);
     const [loading, setLoading] = useState(false);
     const [deviceLoading, setDeviceLoading] = useState(false);
     const [reportData, setReportData] = useState<any>(null);
@@ -191,6 +192,19 @@ export default function ReportsPage() {
                                 metric: 'RAM',
                                 value: p.v,
                                 threshold: thresholdRam
+                            });
+                        }
+                    });
+                }
+                // Check Temp
+                if (selectedMetrics.includes('temp')) {
+                    pointsTemp.forEach((p: any) => {
+                        if (p.v > thresholdTemp) {
+                            deviceCriticalEvents.push({
+                                time: new Date(p.t).toLocaleTimeString(),
+                                metric: 'Temp',
+                                value: p.v,
+                                threshold: thresholdTemp
                             });
                         }
                     });
@@ -482,8 +496,20 @@ export default function ReportsPage() {
                                             />
                                         </div>
                                     )}
-                                    {!selectedMetrics.includes('cpu') && !selectedMetrics.includes('ram') && (
-                                        <p className="text-xs text-muted-foreground italic">Enable CPU or RAM metrics to configure thresholds.</p>
+                                    {selectedMetrics.includes('temp') && (
+                                        <div className="animate-in fade-in slide-in-from-left-1">
+                                            <label className="block text-xs font-medium text-muted-foreground mb-1">{t('criticalTemp')}</label>
+                                            <input
+                                                type="number"
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                                value={thresholdTemp}
+                                                onChange={(e) => setThresholdTemp(Number(e.target.value))}
+                                                min="0" max="120"
+                                            />
+                                        </div>
+                                    )}
+                                    {!selectedMetrics.includes('cpu') && !selectedMetrics.includes('ram') && !selectedMetrics.includes('temp') && (
+                                        <p className="text-xs text-muted-foreground italic">Enable CPU, RAM, or Temp metrics to configure thresholds.</p>
                                     )}
                                 </div>
                             </div>
