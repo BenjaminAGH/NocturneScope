@@ -149,6 +149,14 @@ interface ReportData {
         metricChartDesc?: string;
         dataTables?: string;
         dataTablesSection?: string;
+        cpuUsage?: string;
+        ramUsage?: string;
+        netRx?: string;
+        netTx?: string;
+        groupTrends?: string;
+        deviceHealthDist?: string;
+        axisTime?: string;
+        axisValue?: string;
     };
     origin?: string;
     history?: {
@@ -170,15 +178,15 @@ interface ReportData {
 }
 
 // Chart Component using SVG
-const ChartComponent = ({ data, color, title, unit = "%" }: { data: { t: string; v: number }[], color: string, title: string, unit?: string }) => {
+const ChartComponent = ({ data, color, title, unit = "%", xLabel = "Time", yLabel = "Value" }: { data: { t: string; v: number }[], color: string, title: string, unit?: string, xLabel?: string, yLabel?: string }) => {
     if (!data || data.length < 2) return null;
 
     // Downsample if too many points to avoid PDF bloat/crash
     const downsampledData = data.length > 200 ? data.filter((_, i) => i % Math.ceil(data.length / 200) === 0) : data;
 
     const width = 500;
-    const height = 150;
-    const padding = 20;
+    const height = 180; // Increased for X axis label
+    const padding = 40; // Increased for Y axis label
     const chartWidth = width - padding * 2;
     const chartHeight = height - padding * 2;
 
@@ -192,11 +200,34 @@ const ChartComponent = ({ data, color, title, unit = "%" }: { data: { t: string;
 
     return (
         <View style={{ marginBottom: 20 }} wrap={false}>
-            <Text style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 5 }}>{title}</Text>
+            <Text style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 5, marginLeft: padding }}>{title}</Text>
             <Svg width={width} height={height}>
                 {/* Axes */}
                 <Line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="black" strokeWidth={1} />
                 <Line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="black" strokeWidth={1} />
+
+                {/* Y Axis Label (Rotated) - React PDF doesn't support text rotation easily in all versions, using simple text or skipping rotation if problematic.
+                   Actually transform is supported. */}
+                <Text
+                    x={10}
+                    y={height / 2}
+                    style={{
+                        fontSize: 8,
+                        transform: 'rotate(-90deg)',
+                        transformOrigin: '0 0' // Pivot might be tricky, keeping it simple or omitting rotation if it breaks layout
+                    }}
+                >
+                    {/* Simplified: Just put it at the top or side without rotation for safety if unsure about specific version support, but rotation is standard.
+                       Let's try standard horizontal label at top of Y axis for reliability. */}
+                </Text>
+
+                {/* Alternative Y Axis Label at Top */}
+                <Text x={padding - 10} y={padding - 10} style={{ fontSize: 8 }}>{yLabel}</Text>
+
+                {/* X Axis Label */}
+                <Text x={width / 2} y={height - 5} style={{ fontSize: 8, textAlign: 'center' }}>{xLabel}</Text>
+
+                {/* Horizontal Grid Lines */}
 
                 {/* Grid Lines (Horizontal) - 4 lines */}
                 {[0.25, 0.5, 0.75, 1].map((ratio) => {
@@ -207,8 +238,8 @@ const ChartComponent = ({ data, color, title, unit = "%" }: { data: { t: string;
                 })}
 
                 {/* Y Axis Labels */}
-                <Text x={0} y={height - padding} style={{ fontSize: 8 }}>{minVal}</Text>
-                <Text x={0} y={padding + 5} style={{ fontSize: 8 }}>{maxVal.toFixed(1)}{unit}</Text>
+                <Text x={5} y={height - padding} style={{ fontSize: 8 }}>{minVal}</Text>
+                <Text x={5} y={padding + 5} style={{ fontSize: 8 }}>{maxVal.toFixed(1)}{unit}</Text>
 
                 {/* Data Line */}
                 <Polyline points={points} stroke={color} strokeWidth={2} fill="none" />
@@ -453,19 +484,52 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                     {!isGroup && data.history && (
                         <>
                             {data.stats.some(s => s.name.includes('CPU')) && (
-                                <ChartComponent data={data.history.cpu} color="#8884d8" title={`CPU Usage (%)`} />
+                                <ChartComponent
+                                    data={data.history.cpu}
+                                    color="#8884d8"
+                                    title={labels.cpuUsage || `CPU Usage (%)`}
+                                    xLabel={labels.axisTime}
+                                    yLabel="%"
+                                />
                             )}
                             {data.stats.some(s => s.name.includes('RAM')) && (
-                                <ChartComponent data={data.history.ram} color="#82ca9d" title={`RAM Usage (%)`} />
+                                <ChartComponent
+                                    data={data.history.ram}
+                                    color="#82ca9d"
+                                    title={labels.ramUsage || `RAM Usage (%)`}
+                                    xLabel={labels.axisTime}
+                                    yLabel="%"
+                                />
                             )}
                             {data.stats.some(s => s.name.includes('Temp')) && (
-                                <ChartComponent data={data.history.temp} color="#ff7300" title={`Temperature (°C)`} unit="°C" />
+                                <ChartComponent
+                                    data={data.history.temp}
+                                    color="#ff7300"
+                                    title={labels.metric?.includes('Temp') ? labels.metric : `Temperature (°C)`} // Fallback to generic if key missing
+                                    unit="°C"
+                                    xLabel={labels.axisTime}
+                                    yLabel="°C"
+                                />
                             )}
                             {data.stats.some(s => s.name.includes('Net RX')) && (
-                                <ChartComponent data={data.history.net_rx} color="#0088FE" title={`Network RX (B/s)`} unit=" B/s" />
+                                <ChartComponent
+                                    data={data.history.net_rx}
+                                    color="#0088FE"
+                                    title={labels.netRx || `Network RX (B/s)`}
+                                    unit=" B/s"
+                                    xLabel={labels.axisTime}
+                                    yLabel="B/s"
+                                />
                             )}
                             {data.stats.some(s => s.name.includes('Net TX')) && (
-                                <ChartComponent data={data.history.net_tx} color="#00C49F" title={`Network TX (B/s)`} unit=" B/s" />
+                                <ChartComponent
+                                    data={data.history.net_tx}
+                                    color="#00C49F"
+                                    title={labels.netTx || `Network TX (B/s)`}
+                                    unit=" B/s"
+                                    xLabel={labels.axisTime}
+                                    yLabel="B/s"
+                                />
                             )}
                         </>
                     )}
@@ -479,20 +543,39 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                                     { label: 'Healthy', value: data.pieStats.healthy, color: '#82ca9d' }, // Green
                                     { label: 'Critical/Warnings', value: data.pieStats.critical, color: '#ff7300' } // Orange/Red
                                 ]}
-                                title="Device Health Distribution"
+                                title={labels.deviceHealthDist || "Device Health Distribution"}
                             />
 
-                            <Text style={{ fontSize: 10, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>Group Average Trends</Text>
+                            <Text style={{ fontSize: 10, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>{labels.groupTrends || "Group Average Trends"}</Text>
 
                             {/* Line Charts for Group Averages */}
                             {data.stats.some(s => s.name.includes('CPU')) && (
-                                <ChartComponent data={data.groupHistory.cpu} color="#8884d8" title={`Avg Group CPU (%)`} />
+                                <ChartComponent
+                                    data={data.groupHistory.cpu}
+                                    color="#8884d8"
+                                    title={labels.cpuUsage || `Avg Group CPU (%)`}
+                                    xLabel={labels.axisTime}
+                                    yLabel="%"
+                                />
                             )}
                             {data.stats.some(s => s.name.includes('RAM')) && (
-                                <ChartComponent data={data.groupHistory.ram} color="#82ca9d" title={`Avg Group RAM (%)`} />
+                                <ChartComponent
+                                    data={data.groupHistory.ram}
+                                    color="#82ca9d"
+                                    title={labels.ramUsage || `Avg Group RAM (%)`}
+                                    xLabel={labels.axisTime}
+                                    yLabel="%"
+                                />
                             )}
                             {data.stats.some(s => s.name.includes('Temp')) && (
-                                <ChartComponent data={data.groupHistory.temp} color="#ff7300" title={`Avg Group Temp (°C)`} unit="°C" />
+                                <ChartComponent
+                                    data={data.groupHistory.temp}
+                                    color="#ff7300"
+                                    title={labels.metric?.includes('Temp') ? labels.metric : `Avg Group Temp (°C)`}
+                                    unit="°C"
+                                    xLabel={labels.axisTime}
+                                    yLabel="°C"
+                                />
                             )}
                         </>
                     )}
