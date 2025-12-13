@@ -207,7 +207,7 @@ export async function getLastStats(jwt: string, device: string) {
 
 export async function getTimeseries(
   jwt: string,
-  params: { device: string; field: string; range: string; agg: string; interval: string }
+  params: { device: string; field: string; range?: string; agg: string; interval: string; start?: string; stop?: string }
 ) {
   const q = new URLSearchParams(params as any).toString();
   return apiFetch(`${BASE}/metrics/timeseries?${q}`, { cache: "no-store" }, jwt) as Promise<{ points: { t: string; v: number }[] }>;

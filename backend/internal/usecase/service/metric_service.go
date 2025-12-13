@@ -147,13 +147,12 @@ type Point struct {
 }
 
 // TimeSeries retorna una serie temporal para un `field` dado, con rango/agg/interval configurables.
-func (s *MetricService) TimeSeries(ctx context.Context, device, field, rangeDur, agg, interval string) ([]Point, error) {
+func (s *MetricService) TimeSeries(ctx context.Context, device, field, rangeDur, startVal, stopVal, agg, interval string) ([]Point, error) {
 	q, err := s.queryAPI()
 	if err != nil {
 		return nil, err
 	}
 
-	r := durOrDefault(rangeDur, "1h")
 	a := aggOrDefault(agg, "mean")
 	every := intervalOrDefault(interval, "1m")
 
@@ -169,14 +168,26 @@ func (s *MetricService) TimeSeries(ctx context.Context, device, field, rangeDur,
 		fn = "sum"
 	}
 
+	var rangeClause string
+	if startVal != "" {
+		stopStr := ""
+		if stopVal != "" {
+			stopStr = fmt.Sprintf(", stop: %s", stopVal)
+		}
+		rangeClause = fmt.Sprintf("range(start: %s%s)", startVal, stopStr)
+	} else {
+		r := durOrDefault(rangeDur, "1h")
+		rangeClause = fmt.Sprintf("range(start: -%s)", r)
+	}
+
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
-  |> range(start: -%s)
+  |> %s
   |> filter(fn: (r) => r._measurement == "system_metrics" and r.device == "%s" and r._field == "%s")
   |> aggregateWindow(every: %s, fn: %s, createEmpty: false)
   |> keep(columns: ["_time","_value"])
   |> sort(columns: ["_time"])
-`, s.writer.Bucket(), r, device, field, every, fn)
+`, s.writer.Bucket(), rangeClause, device, field, every, fn)
 
 	res, err := q.Query(ctx, flux)
 	if err != nil {

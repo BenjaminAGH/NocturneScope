@@ -96,10 +96,12 @@ func (h *MetricQueryHandler) TimeSeries(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "missing device or field"})
 	}
 	rangeDur := c.Query("range", "1h")
+	startVal := c.Query("start", "")
+	stopVal := c.Query("stop", "")
 	interval := c.Query("interval", "1m")
 	agg := c.Query("agg", "mean")
 
-	points, err := h.svc.TimeSeries(context.Background(), device, field, rangeDur, agg, interval)
+	points, err := h.svc.TimeSeries(context.Background(), device, field, rangeDur, startVal, stopVal, agg, interval)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
