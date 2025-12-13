@@ -334,7 +334,7 @@ export const translations = {
         configureReport: "Configura los ajustes y haz clic en 'Generar Reporte' para ver los resultados aquí.",
         selectMetrics: "Métricas a Incluir",
         // PDF Report Labels
-        criticalTemp: "Temperatura promedio excede umbral",
+        criticalTempMsg: "Temperatura promedio excede umbral",
         dataTablesSection: "Tablas de Datos",
 
         systemPerformanceReport: "Reporte de Rendimiento del Sistema",
