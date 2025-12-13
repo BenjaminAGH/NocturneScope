@@ -334,7 +334,9 @@ export const translations = {
         configureReport: "Configura los ajustes y haz clic en 'Generar Reporte' para ver los resultados aquí.",
         selectMetrics: "Métricas a Incluir",
         // PDF Report Labels
-        groupHealthReport: "Reporte de Salud de Grupo",
+        criticalTemp: "Temperatura promedio excede umbral",
+        dataTablesSection: "Tablas de Datos",
+
         systemPerformanceReport: "Reporte de Rendimiento del Sistema",
         executiveSummary: "Resumen Ejecutivo",
         topOffenders: "Top Consumo",
@@ -657,7 +659,6 @@ export const translations = {
         criticalThresholds: "Critical Thresholds",
         criticalCpu: "Critical CPU (%)",
         criticalRam: "Critical RAM (%)",
-        criticalTemp: "Critical Temp (°C)",
         generateReport: "Generate Report",
         generating: "Generating...",
         selectDeviceFirst: "Select a device first",
@@ -674,6 +675,8 @@ export const translations = {
         configureReport: "Configure settings and click 'Generate Report' to see results here.",
         selectMetrics: "Metrics to Include",
         // PDF Report Labels
+        criticalTemp: "Avg Temperature exceeds threshold",
+        dataTablesSection: "Data Tables",
         groupHealthReport: "Group Health Report",
         systemPerformanceReport: "System Performance Report",
         executiveSummary: "Executive Summary",

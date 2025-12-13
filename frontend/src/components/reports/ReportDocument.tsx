@@ -148,6 +148,7 @@ interface ReportData {
 
         metricChartDesc?: string;
         dataTables?: string;
+        dataTablesSection?: string;
     };
     origin?: string;
     history?: {
@@ -366,8 +367,8 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
 
 
                 {/* SECTION: DATA TABLES */}
-                <View>
-                    <Text style={styles.title}>{labels.dataTables || "Data Tables"}</Text>
+                <View style={{ marginTop: 20 }}>
+                    <Text style={styles.title}>{labels.dataTablesSection || "Data Tables"}</Text>
 
                     {/* Table 1: Top Offenders (Group Only) */}
                     {isGroup && data.topOffenders && (
