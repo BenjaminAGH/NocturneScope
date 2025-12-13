@@ -688,7 +688,6 @@ export const translations = {
         criticalTemp: "Avg Temperature exceeds threshold",
         dataTablesSection: "Data Tables",
         groupHealthReport: "Group Health Report",
-        groupHealthReport: "Group Health Report",
         systemPerformanceReport: "System Performance Report",
         executiveSummary: "Executive Summary",
         topOffenders: "Top Offenders",
