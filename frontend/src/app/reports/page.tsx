@@ -1,13 +1,24 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { ArrowPathIcon, DocumentArrowDownIcon, ExclamationTriangleIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, DocumentArrowDownIcon, ExclamationTriangleIcon, DocumentTextIcon, EyeIcon } from '@heroicons/react/24/outline';
 import ReportDocument from '@/components/reports/ReportDocument';
 import { getDevices, getTimeseries, getLastStats } from '@/lib/api/api';
 import { useLanguage } from '@/context/LanguageContext';
 import { useGroup } from '@/context/GroupContext';
+
+// Dynamic import for PDFViewer to avoid SSR issues
+const PDFViewer = dynamic(
+    () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
+    {
+        ssr: false,
+        loading: () => <div className="h-[500px] w-full flex items-center justify-center bg-muted/20 rounded-lg animate-pulse">Loading Preview...</div>,
+    }
+);
 
 interface CriticalEvent {
     time: string;
@@ -31,6 +42,7 @@ export default function ReportsPage() {
     const [deviceLoading, setDeviceLoading] = useState(false);
     const [reportData, setReportData] = useState<any>(null);
     const [error, setError] = useState('');
+    const [showPreview, setShowPreview] = useState(false);
 
     // Authentication & Group Check
     useEffect(() => {
@@ -309,53 +321,77 @@ export default function ReportsPage() {
                                 </div>
                             </div>
                         ) : reportData ? (
-                            <div className="space-y-6 w-full max-w-md">
-                                <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
-                                    <DocumentArrowDownIcon className="w-10 h-10" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-foreground">Report Ready</h2>
-                                    <p className="text-muted-foreground mt-1">
-                                        Your report for <span className="font-medium text-foreground">{reportData.device}</span> has been generated successfully.
-                                    </p>
-                                </div>
-                                <div className="bg-muted/30 rounded-lg p-4 text-left text-sm space-y-2 border border-border/50">
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Generated At:</span>
-                                        <span className="font-mono">{reportData.generatedAt}</span>
+                            <div className="space-y-6 w-full h-full flex flex-col">
+                                <div className="flex items-center justify-between w-full mb-4">
+                                    <div className="text-left">
+                                        <h2 className="text-2xl font-bold text-foreground">Report Ready</h2>
+                                        <p className="text-muted-foreground text-sm">
+                                            Generated for <span className="font-medium text-foreground">{reportData.device}</span>
+                                        </p>
                                     </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Range:</span>
-                                        <span className="font-medium">{reportData.range}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Critical Events:</span>
-                                        <span className={`font-bold ${reportData.criticalEvents.length > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                            {reportData.criticalEvents.length}
-                                        </span>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setShowPreview(!showPreview)}
+                                            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+                                        >
+                                            <EyeIcon className="w-4 h-4" />
+                                            {showPreview ? "Hide Preview" : "Show Preview"}
+                                        </button>
+                                        <PDFDownloadLink
+                                            document={<ReportDocument data={reportData} />}
+                                            fileName={`necturne-report-${selectedDevice}-${new Date().toISOString().split('T')[0]}.pdf`}
+                                            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                                        >
+                                            {/* @ts-ignore */}
+                                            {({ loading: pdfLoading }) =>
+                                                pdfLoading ? (
+                                                    <>
+                                                        <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                                                        Processing...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <DocumentArrowDownIcon className="w-4 h-4" />
+                                                        Download
+                                                    </>
+                                                )
+                                            }
+                                        </PDFDownloadLink>
                                     </div>
                                 </div>
 
-                                <PDFDownloadLink
-                                    document={<ReportDocument data={reportData} />}
-                                    fileName={`necturne-report-${selectedDevice}-${new Date().toISOString().split('T')[0]}.pdf`}
-                                    className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-green-600 px-6 py-3 text-base font-semibold text-white hover:bg-green-700 transition-all shadow-lg hover:shadow-green-500/20"
-                                >
-                                    {/* @ts-ignore */}
-                                    {({ blob, url, loading: pdfLoading, error }) =>
-                                        pdfLoading ? (
-                                            <>
-                                                <ArrowPathIcon className="w-5 h-5 animate-spin" />
-                                                Preparing PDF...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <DocumentArrowDownIcon className="w-5 h-5" />
-                                                Download PDF
-                                            </>
-                                        )
-                                    }
-                                </PDFDownloadLink>
+                                {showPreview ? (
+                                    <div className="flex-1 w-full min-h-[500px] border border-border/50 rounded-lg overflow-hidden shadow-inner bg-gray-100 dark:bg-gray-800">
+                                        <PDFViewer width="100%" height="100%" className="w-full h-full" showToolbar={true}>
+                                            <ReportDocument data={reportData} />
+                                        </PDFViewer>
+                                    </div>
+                                ) : (
+                                    <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-6">
+                                        <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
+                                            <DocumentArrowDownIcon className="w-10 h-10" />
+                                        </div>
+                                        <div className="bg-muted/30 rounded-lg p-6 text-left text-sm space-y-3 border border-border/50 w-full max-w-sm mx-auto">
+                                            <div className="flex justify-between border-b border-border/10 pb-2">
+                                                <span className="text-muted-foreground">Generated At:</span>
+                                                <span className="font-mono">{reportData.generatedAt}</span>
+                                            </div>
+                                            <div className="flex justify-between border-b border-border/10 pb-2">
+                                                <span className="text-muted-foreground">Range:</span>
+                                                <span className="font-medium bg-background px-2 py-0.5 rounded text-xs border border-border">{reportData.range}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-muted-foreground">Critical Events:</span>
+                                                <span className={`font-bold px-2 py-0.5 rounded text-xs ${reportData.criticalEvents.length > 0 ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}`}>
+                                                    {reportData.criticalEvents.length}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <p className="text-muted-foreground text-sm max-w-xs">
+                                            Click "Show Preview" to view the PDF directly here, or "Download" to save it to your device.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="space-y-4 text-muted-foreground opacity-60">
