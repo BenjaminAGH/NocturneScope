@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useState, useEffect } from 'react';
+
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { PDFDownloadLink } from '@react-pdf/renderer';
