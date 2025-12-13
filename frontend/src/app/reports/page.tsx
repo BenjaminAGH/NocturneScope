@@ -221,7 +221,14 @@ export default function ReportsPage() {
                     device: deviceName,
                     stats,
                     criticalEvents: deviceCriticalEvents,
-                    summary: { uptime: lastStats?.uptime ? `${(lastStats.uptime / 3600).toFixed(1)}h` : 'Unknown', avgCpu, avgRam, avgTemp }
+                    summary: { uptime: lastStats?.uptime ? `${(lastStats.uptime / 3600).toFixed(1)}h` : 'Unknown', avgCpu, avgRam, avgTemp },
+                    history: {
+                        cpu: pointsCpu,
+                        ram: pointsRam,
+                        temp: pointsTemp,
+                        net_rx: pointsNetRx,
+                        net_tx: pointsNetTx
+                    }
                 };
             };
 
@@ -280,6 +287,13 @@ export default function ReportsPage() {
                     avgRam: groupAvgRam,
                     avgTemp: groupAvgTemp,
                     totalDevices: scope === 'group' ? count : undefined
+                },
+                history: scope === 'group' ? undefined : {
+                    cpu: results[0].history?.cpu || [],
+                    ram: results[0].history?.ram || [],
+                    temp: results[0].history?.temp || [],
+                    net_rx: results[0].history?.net_rx || [],
+                    net_tx: results[0].history?.net_tx || []
                 },
                 criticalEvents: aggregatedEvents,
                 stats: scope === 'group'

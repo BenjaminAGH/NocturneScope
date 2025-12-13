@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Image, Font, Svg, Polyline, Line } from '@react-pdf/renderer';
 
 // Create styles
 const styles = StyleSheet.create({
@@ -146,8 +145,64 @@ interface ReportData {
         range: string;
         date: string;
         generatedBy: string;
+        metricChartDesc?: string;
+    };
+    history?: {
+        cpu: { t: string; v: number }[];
+        ram: { t: string; v: number }[];
+        temp: { t: string; v: number }[];
+        net_rx: { t: string; v: number }[];
+        net_tx: { t: string; v: number }[];
     };
 }
+
+// Chart Component using SVG
+const ChartComponent = ({ data, color, title, unit = "%" }: { data: { t: string; v: number }[], color: string, title: string, unit?: string }) => {
+    if (!data || data.length < 2) return null;
+
+    // Downsample if too many points to avoid PDF bloat/crash
+    const downsampledData = data.length > 200 ? data.filter((_, i) => i % Math.ceil(data.length / 200) === 0) : data;
+
+    const width = 500;
+    const height = 150;
+    const padding = 20;
+    const chartWidth = width - padding * 2;
+    const chartHeight = height - padding * 2;
+
+    const maxVal = Math.max(...downsampledData.map(p => p.v), 10); // Ensure at least 0-10 scale
+    const minVal = 0; // Always start at 0 for percentages usually, or Math.min(...data.map(p => p.v));
+
+    const normalizeX = (index: number) => padding + (index / (downsampledData.length - 1)) * chartWidth;
+    const normalizeY = (value: number) => height - padding - ((value - minVal) / (maxVal - minVal)) * chartHeight;
+
+    const points = downsampledData.map((p, i) => `${normalizeX(i)},${normalizeY(p.v)}`).join(' ');
+
+    return (
+        <View style={{ marginBottom: 20 }} wrap={false}>
+            <Text style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 5 }}>{title}</Text>
+            <Svg width={width} height={height}>
+                {/* Axes */}
+                <Line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="black" strokeWidth={1} />
+                <Line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="black" strokeWidth={1} />
+
+                {/* Grid Lines (Horizontal) - 4 lines */}
+                {[0.25, 0.5, 0.75, 1].map((ratio) => {
+                    const y = height - padding - ratio * chartHeight;
+                    return (
+                        <Line key={ratio} x1={padding} y1={y} x2={width - padding} y2={y} stroke="#eee" strokeWidth={1} />
+                    );
+                })}
+
+                {/* Y Axis Labels */}
+                <Text x={0} y={height - padding} style={{ fontSize: 8 }}>{minVal}</Text>
+                <Text x={0} y={padding + 5} style={{ fontSize: 8 }}>{maxVal.toFixed(1)}{unit}</Text>
+
+                {/* Data Line */}
+                <Polyline points={points} stroke={color} strokeWidth={2} fill="none" />
+            </Svg>
+        </View>
+    );
+};
 
 interface ReportDocumentProps {
     data: ReportData;
@@ -254,6 +309,29 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                             ))}
                         </View>
                     </>
+                )}
+
+                {/* Charts Section (Single Device Only) */}
+                {!isGroup && data.history && (
+                    <View break>
+                        <Text style={styles.subtitle}>{labels.metricChartDesc || "Performance Charts"}</Text>
+
+                        {data.stats.some(s => s.name.includes('CPU')) && (
+                            <ChartComponent data={data.history.cpu} color="#8884d8" title={`CPU Usage (%)`} />
+                        )}
+                        {data.stats.some(s => s.name.includes('RAM')) && (
+                            <ChartComponent data={data.history.ram} color="#82ca9d" title={`RAM Usage (%)`} />
+                        )}
+                        {data.stats.some(s => s.name.includes('Temp')) && (
+                            <ChartComponent data={data.history.temp} color="#ff7300" title={`Temperature (°C)`} unit="°C" />
+                        )}
+                        {data.stats.some(s => s.name.includes('Net RX')) && (
+                            <ChartComponent data={data.history.net_rx} color="#0088FE" title={`Network RX (B/s)`} unit=" B/s" />
+                        )}
+                        {data.stats.some(s => s.name.includes('Net TX')) && (
+                            <ChartComponent data={data.history.net_tx} color="#00C49F" title={`Network TX (B/s)`} unit=" B/s" />
+                        )}
+                    </View>
                 )}
 
                 {/* Critical Events */}
