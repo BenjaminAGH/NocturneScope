@@ -250,14 +250,24 @@ export default function ReportsPage() {
                 totalCpu += res.summary.avgCpu;
                 totalRam += res.summary.avgRam;
                 totalTemp += res.summary.avgTemp;
-
-                topOffenders.push({
-                    device: res.device,
-                    cpu: res.summary.avgCpu,
-                    ram: res.summary.avgRam,
-                    alerts: res.criticalEvents.length
-                });
             });
+
+            // Helper to aggregate history for group trends
+            const aggregateHistory = (res: any[], field: string) => {
+                const map = new Map<string, { sum: number, count: number }>();
+                res.forEach(d => {
+                    const points = d.history?.[field] || [];
+                    points.forEach((p: any) => {
+                        if (!map.has(p.t)) map.set(p.t, { sum: 0, count: 0 });
+                        const entry = map.get(p.t)!;
+                        entry.sum += p.v;
+                        entry.count++;
+                    });
+                });
+                return Array.from(map.entries())
+                    .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
+                    .map(([t, val]) => ({ t, v: val.sum / val.count }));
+            };
 
             // Calculate Group Averages
             const count = results.length || 1;
@@ -295,6 +305,15 @@ export default function ReportsPage() {
                     net_rx: results[0].history?.net_rx || [],
                     net_tx: results[0].history?.net_tx || []
                 },
+                groupHistory: scope === 'group' ? {
+                    cpu: aggregateHistory(results, 'cpu'),
+                    ram: aggregateHistory(results, 'ram'),
+                    temp: aggregateHistory(results, 'temp')
+                } : undefined,
+                pieStats: scope === 'group' ? {
+                    healthy: results.length - topOffenders.length,
+                    critical: topOffenders.length
+                } : undefined,
                 criticalEvents: aggregatedEvents,
                 stats: scope === 'group'
                     ? [

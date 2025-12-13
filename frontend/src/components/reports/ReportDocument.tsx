@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image, Font, Svg, Polyline, Line } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Image, Font, Svg, Polyline, Line, Path } from '@react-pdf/renderer';
 
 // Create styles
 const styles = StyleSheet.create({
@@ -154,6 +154,15 @@ interface ReportData {
         net_rx: { t: string; v: number }[];
         net_tx: { t: string; v: number }[];
     };
+    groupHistory?: {
+        cpu: { t: string; v: number }[];
+        ram: { t: string; v: number }[];
+        temp: { t: string; v: number }[];
+    };
+    pieStats?: {
+        healthy: number;
+        critical: number;
+    };
 }
 
 // Chart Component using SVG
@@ -204,6 +213,69 @@ const ChartComponent = ({ data, color, title, unit = "%" }: { data: { t: string;
     );
 };
 
+// Pie Chart Component
+const PieChartComponent = ({ data, title }: { data: { label: string, value: number, color: string }[], title: string }) => {
+    const total = data.reduce((acc, curr) => acc + curr.value, 0);
+    if (total === 0) return null;
+
+    let startAngle = 0;
+    const radius = 50;
+    const cx = 100;
+    const cy = 75;
+
+    const paths = data.map((slice) => {
+        if (slice.value === 0) return null;
+        const angle = (slice.value / total) * 360;
+        const endAngle = startAngle + angle;
+
+        // Convert polar to cartesian
+        const x1 = cx + radius * Math.cos(Math.PI * startAngle / 180);
+        const y1 = cy + radius * Math.sin(Math.PI * startAngle / 180);
+        const x2 = cx + radius * Math.cos(Math.PI * endAngle / 180);
+        const y2 = cy + radius * Math.sin(Math.PI * endAngle / 180);
+
+        // SVG Path command
+        const d = [
+            `M ${cx} ${cy}`,
+            `L ${x1} ${y1}`,
+            `A ${radius} ${radius} 0 ${angle > 180 ? 1 : 0} 1 ${x2} ${y2}`,
+            'Z'
+        ].join(' ');
+
+        // Legend position (simple calculation, improved later if needed)
+        // const midAngle = startAngle + angle / 2;
+        // const lx = cx + (radius + 20) * Math.cos(Math.PI * midAngle / 180);
+        // const ly = cy + (radius + 20) * Math.sin(Math.PI * midAngle / 180);
+
+        const currentStart = startAngle;
+        startAngle = endAngle;
+
+        return (
+            <React.Fragment key={slice.label}>
+                <Path d={d} fill={slice.color} />
+            </React.Fragment>
+        );
+    });
+
+    return (
+        <View style={{ marginBottom: 20, alignItems: 'center' }} wrap={false}>
+            <Text style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 10 }}>{title}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Svg width={200} height={150}>
+                    {paths}
+                </Svg>
+                <View style={{ marginLeft: 20 }}>
+                    {data.map((slice, i) => (
+                        <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+                            <View style={{ width: 10, height: 10, backgroundColor: slice.color, marginRight: 5 }} />
+                            <Text style={{ fontSize: 9 }}>{slice.label}: {slice.value} ({((slice.value / total) * 100).toFixed(0)}%)</Text>
+                        </View>
+                    ))}
+                </View>
+            </View>
+        </View>
+    );
+};
 interface ReportDocumentProps {
     data: ReportData;
 }
@@ -311,29 +383,6 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                     </>
                 )}
 
-                {/* Charts Section (Single Device Only) */}
-                {!isGroup && data.history && (
-                    <View break>
-                        <Text style={styles.subtitle}>{labels.metricChartDesc || "Performance Charts"}</Text>
-
-                        {data.stats.some(s => s.name.includes('CPU')) && (
-                            <ChartComponent data={data.history.cpu} color="#8884d8" title={`CPU Usage (%)`} />
-                        )}
-                        {data.stats.some(s => s.name.includes('RAM')) && (
-                            <ChartComponent data={data.history.ram} color="#82ca9d" title={`RAM Usage (%)`} />
-                        )}
-                        {data.stats.some(s => s.name.includes('Temp')) && (
-                            <ChartComponent data={data.history.temp} color="#ff7300" title={`Temperature (°C)`} unit="°C" />
-                        )}
-                        {data.stats.some(s => s.name.includes('Net RX')) && (
-                            <ChartComponent data={data.history.net_rx} color="#0088FE" title={`Network RX (B/s)`} unit=" B/s" />
-                        )}
-                        {data.stats.some(s => s.name.includes('Net TX')) && (
-                            <ChartComponent data={data.history.net_tx} color="#00C49F" title={`Network TX (B/s)`} unit=" B/s" />
-                        )}
-                    </View>
-                )}
-
                 {/* Critical Events */}
                 <Text style={styles.subtitle}>{labels.criticalEventsAnalysis}</Text>
                 <Text style={{ fontSize: 8, color: '#666', marginBottom: 5 }}>{labels.criticalEventsDesc}</Text>
@@ -363,6 +412,59 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                         <Text style={{ margin: 5, fontSize: 8, fontStyle: 'italic', textAlign: 'center' }}>
                             ... {data.criticalEvents.length - 50} {labels.moreEventsOmitted} ...
                         </Text>
+                    )}
+                </View>
+
+                {/* Charts Section (Moved to Bottom) */}
+                <View break>
+                    <Text style={styles.subtitle}>{labels.metricChartDesc || "Visualizations"}</Text>
+
+                    {/* Single Device Charts */}
+                    {!isGroup && data.history && (
+                        <>
+                            {data.stats.some(s => s.name.includes('CPU')) && (
+                                <ChartComponent data={data.history.cpu} color="#8884d8" title={`CPU Usage (%)`} />
+                            )}
+                            {data.stats.some(s => s.name.includes('RAM')) && (
+                                <ChartComponent data={data.history.ram} color="#82ca9d" title={`RAM Usage (%)`} />
+                            )}
+                            {data.stats.some(s => s.name.includes('Temp')) && (
+                                <ChartComponent data={data.history.temp} color="#ff7300" title={`Temperature (°C)`} unit="°C" />
+                            )}
+                            {data.stats.some(s => s.name.includes('Net RX')) && (
+                                <ChartComponent data={data.history.net_rx} color="#0088FE" title={`Network RX (B/s)`} unit=" B/s" />
+                            )}
+                            {data.stats.some(s => s.name.includes('Net TX')) && (
+                                <ChartComponent data={data.history.net_tx} color="#00C49F" title={`Network TX (B/s)`} unit=" B/s" />
+                            )}
+                        </>
+                    )}
+
+                    {/* Group Charts */}
+                    {isGroup && data.groupHistory && data.pieStats && (
+                        <>
+                            {/* Pie Chart: Device Status (Healthy vs Critical) */}
+                            <PieChartComponent
+                                data={[
+                                    { label: 'Healthy', value: data.pieStats.healthy, color: '#82ca9d' }, // Green
+                                    { label: 'Critical/Warnings', value: data.pieStats.critical, color: '#ff7300' } // Orange/Red
+                                ]}
+                                title="Device Health Distribution"
+                            />
+
+                            <Text style={{ fontSize: 10, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>Group Average Trends</Text>
+
+                            {/* Line Charts for Group Averages */}
+                            {data.stats.some(s => s.name.includes('CPU')) && (
+                                <ChartComponent data={data.groupHistory.cpu} color="#8884d8" title={`Avg Group CPU (%)`} />
+                            )}
+                            {data.stats.some(s => s.name.includes('RAM')) && (
+                                <ChartComponent data={data.groupHistory.ram} color="#82ca9d" title={`Avg Group RAM (%)`} />
+                            )}
+                            {data.stats.some(s => s.name.includes('Temp')) && (
+                                <ChartComponent data={data.groupHistory.temp} color="#ff7300" title={`Avg Group Temp (°C)`} unit="°C" />
+                            )}
+                        </>
                     )}
                 </View>
 
