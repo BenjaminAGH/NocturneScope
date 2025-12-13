@@ -321,10 +321,10 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                 {/* Header */}
                 <View style={styles.header}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                        {data.origin && <Image src={`${data.origin}/img/scope_icon.svg`} style={styles.headerLogo} />}
+                        {data.origin && <Image src={`${data.origin}/nocturneDark.svg`} style={{ width: 100, height: 20 }} />}
                     </View>
                     <View style={{ flexDirection: 'column', alignItems: 'flex-end', gap: 5 }}>
-                        {data.origin && <Image src={`${data.origin}/nocturneDark.svg`} style={{ width: 100, height: 20 }} />}
+                        {data.origin && <Image src={`${data.origin}/img/scope_icon.svg`} style={styles.headerLogo} />}
                     </View>
                 </View>
 
