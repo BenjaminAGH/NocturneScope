@@ -35,6 +35,7 @@ export default function ReportsPage() {
     // State
     const [devices, setDevices] = useState<string[]>([]);
     const [selectedDevice, setSelectedDevice] = useState<string>('');
+    const [scope, setScope] = useState<'device' | 'group'>('device');
     const [range, setRange] = useState('1h');
     const [thresholdCpu, setThresholdCpu] = useState(80);
     const [thresholdRam, setThresholdRam] = useState(80);
@@ -76,10 +77,15 @@ export default function ReportsPage() {
     }, [selectedGroup, t]);
 
     const handleGenerate = async () => {
-        if (!selectedDevice) {
+        if (scope === 'device' && !selectedDevice) {
             setError(t('selectDevice') || "Select a device");
             return;
         }
+        if (scope === 'group' && devices.length === 0) {
+            setError("No devices available in this group.");
+            return;
+        }
+
         setLoading(true);
         setError('');
 
@@ -87,112 +93,138 @@ export default function ReportsPage() {
             const jwt = localStorage.getItem('jwt');
             if (!jwt) throw new Error("No JWT");
 
-            // Define interval
             const interval = '1m';
+            const devicesToProcess = scope === 'group' ? devices : [selectedDevice];
 
-            // Fetch Data
-            const [cpuTs, ramTs, tempTs, netRxTs, netTxTs, lastStats] = await Promise.all([
-                getTimeseries(jwt, { device: selectedDevice, field: 'cpu', range, agg: 'mean', interval }),
-                getTimeseries(jwt, { device: selectedDevice, field: 'ram', range, agg: 'mean', interval }),
-                getTimeseries(jwt, { device: selectedDevice, field: 'temp', range, agg: 'mean', interval }),
-                getTimeseries(jwt, { device: selectedDevice, field: 'net_rx', range, agg: 'mean', interval }),
-                getTimeseries(jwt, { device: selectedDevice, field: 'net_tx', range, agg: 'mean', interval }),
-                getLastStats(jwt, selectedDevice)
-            ]);
+            // Helper to process a single device
+            const processDevice = async (deviceName: string) => {
+                const [cpuTs, ramTs, tempTs, netRxTs, netTxTs, lastStats] = await Promise.all([
+                    getTimeseries(jwt, { device: deviceName, field: 'cpu', range, agg: 'mean', interval }),
+                    getTimeseries(jwt, { device: deviceName, field: 'ram', range, agg: 'mean', interval }),
+                    getTimeseries(jwt, { device: deviceName, field: 'temp', range, agg: 'mean', interval }),
+                    getTimeseries(jwt, { device: deviceName, field: 'net_rx', range, agg: 'mean', interval }),
+                    getTimeseries(jwt, { device: deviceName, field: 'net_tx', range, agg: 'mean', interval }),
+                    getLastStats(jwt, deviceName)
+                ]);
 
-            // Process Data
-            const pointsCpu = cpuTs.points || [];
-            const pointsRam = ramTs.points || [];
-            const pointsTemp = tempTs.points || [];
-            const pointsNetRx = netRxTs.points || [];
-            const pointsNetTx = netTxTs.points || [];
+                const pointsCpu = cpuTs.points || [];
+                const pointsRam = ramTs.points || [];
+                const pointsTemp = tempTs.points || [];
+                const pointsNetRx = netRxTs.points || [];
+                const pointsNetTx = netTxTs.points || [];
 
-            // Calculate Averages
-            const avgCpu = pointsCpu.reduce((a: number, b: any) => a + b.v, 0) / (pointsCpu.length || 1);
-            const avgRam = pointsRam.reduce((a: number, b: any) => a + b.v, 0) / (pointsRam.length || 1);
-            const avgTemp = pointsTemp.reduce((a: number, b: any) => a + b.v, 0) / (pointsTemp.length || 1);
-            const avgNetRx = pointsNetRx.reduce((a: number, b: any) => a + b.v, 0) / (pointsNetRx.length || 1);
-            const avgNetTx = pointsNetTx.reduce((a: number, b: any) => a + b.v, 0) / (pointsNetTx.length || 1);
+                const avgCpu = pointsCpu.reduce((a: number, b: any) => a + b.v, 0) / (pointsCpu.length || 1);
+                const avgRam = pointsRam.reduce((a: number, b: any) => a + b.v, 0) / (pointsRam.length || 1);
+                const avgTemp = pointsTemp.reduce((a: number, b: any) => a + b.v, 0) / (pointsTemp.length || 1);
+                const avgNetRx = pointsNetRx.reduce((a: number, b: any) => a + b.v, 0) / (pointsNetRx.length || 1);
+                const avgNetTx = pointsNetTx.reduce((a: number, b: any) => a + b.v, 0) / (pointsNetTx.length || 1);
 
-            // Find Critical Events
-            const criticalEvents: CriticalEvent[] = [];
+                const deviceCriticalEvents: CriticalEvent[] = [];
+                // Check CPU
+                pointsCpu.forEach((p: any) => {
+                    if (p.v > thresholdCpu) {
+                        deviceCriticalEvents.push({
+                            time: new Date(p.t).toLocaleTimeString(),
+                            metric: 'CPU',
+                            value: p.v,
+                            threshold: thresholdCpu
+                        });
+                    }
+                });
+                // Check RAM
+                pointsRam.forEach((p: any) => {
+                    if (p.v > thresholdRam) {
+                        deviceCriticalEvents.push({
+                            time: new Date(p.t).toLocaleTimeString(),
+                            metric: 'RAM',
+                            value: p.v,
+                            threshold: thresholdRam
+                        });
+                    }
+                });
 
-            // Check CPU
-            pointsCpu.forEach((p: any) => {
-                if (p.v > thresholdCpu) {
-                    criticalEvents.push({
-                        time: new Date(p.t).toLocaleTimeString(),
-                        metric: 'CPU',
-                        value: p.v,
-                        threshold: thresholdCpu
-                    });
-                }
+                return {
+                    device: deviceName,
+                    stats: [
+                        { name: 'CPU (%)', min: Math.min(...pointsCpu.map((p: any) => p.v), 0), max: Math.max(...pointsCpu.map((p: any) => p.v), 0), avg: avgCpu },
+                        { name: 'RAM (%)', min: Math.min(...pointsRam.map((p: any) => p.v), 0), max: Math.max(...pointsRam.map((p: any) => p.v), 0), avg: avgRam },
+                        { name: 'Temp (°C)', min: Math.min(...pointsTemp.map((p: any) => p.v), 0), max: Math.max(...pointsTemp.map((p: any) => p.v), 0), avg: avgTemp },
+                        { name: 'Net RX (B/s)', min: Math.min(...pointsNetRx.map((p: any) => p.v), 0), max: Math.max(...pointsNetRx.map((p: any) => p.v), 0), avg: avgNetRx },
+                        { name: 'Net TX (B/s)', min: Math.min(...pointsNetTx.map((p: any) => p.v), 0), max: Math.max(...pointsNetTx.map((p: any) => p.v), 0), avg: avgNetTx }
+                    ],
+                    criticalEvents: deviceCriticalEvents,
+                    summary: { uptime: lastStats?.uptime ? `${(lastStats.uptime / 3600).toFixed(1)}h` : 'Unknown', avgCpu, avgRam, avgTemp }
+                };
+            };
+
+            // Run requests (could throttle if list is huge, but simplistic for now)
+            const results = await Promise.all(devicesToProcess.map(d => processDevice(d)));
+
+            // Aggregate Data
+            let aggregatedEvents: any[] = [];
+            let totalCpu = 0;
+            let totalRam = 0;
+            let totalTemp = 0;
+            let topOffenders = [];
+
+            results.forEach(res => {
+                // Add Device Name to events if group scope
+                const events = res.criticalEvents.map(e => ({ ...e, deviceName: res.device }));
+                aggregatedEvents = [...aggregatedEvents, ...events];
+
+                totalCpu += res.summary.avgCpu;
+                totalRam += res.summary.avgRam;
+                totalTemp += res.summary.avgTemp;
+
+                topOffenders.push({
+                    device: res.device,
+                    cpu: res.summary.avgCpu,
+                    ram: res.summary.avgRam,
+                    alerts: res.criticalEvents.length
+                });
             });
 
-            // Check RAM
-            pointsRam.forEach((p: any) => {
-                if (p.v > thresholdRam) {
-                    criticalEvents.push({
-                        time: new Date(p.t).toLocaleTimeString(),
-                        metric: 'RAM',
-                        value: p.v,
-                        threshold: thresholdRam
-                    });
-                }
+            // Calculate Group Averages
+            const count = results.length || 1;
+            const groupAvgCpu = totalCpu / count;
+            const groupAvgRam = totalRam / count;
+            const groupAvgTemp = totalTemp / count;
+
+            // Sort Events
+            aggregatedEvents.sort((a, b) => a.time.localeCompare(b.time));
+
+            // Sort Top Offenders
+            // Sort by Alerts first, then CPU
+            topOffenders.sort((a, b) => {
+                if (b.alerts !== a.alerts) return b.alerts - a.alerts;
+                return b.cpu - a.cpu;
             });
+            topOffenders = topOffenders.slice(0, 5); // Take top 5
 
-            // Sort events by time
-            criticalEvents.sort((a, b) => a.time.localeCompare(b.time));
-
-            // Stats Array
-            const stats = [
-                {
-                    name: 'CPU (%)',
-                    min: Math.min(...pointsCpu.map((p: any) => p.v), 0),
-                    max: Math.max(...pointsCpu.map((p: any) => p.v), 0),
-                    avg: avgCpu
-                },
-                {
-                    name: 'RAM (%)',
-                    min: Math.min(...pointsRam.map((p: any) => p.v), 0),
-                    max: Math.max(...pointsRam.map((p: any) => p.v), 0),
-                    avg: avgRam
-                },
-                {
-                    name: 'Temp (°C)',
-                    min: Math.min(...pointsTemp.map((p: any) => p.v), 0),
-                    max: Math.max(...pointsTemp.map((p: any) => p.v), 0),
-                    avg: avgTemp
-                },
-                {
-                    name: 'Net RX (B/s)',
-                    min: Math.min(...pointsNetRx.map((p: any) => p.v), 0),
-                    max: Math.max(...pointsNetRx.map((p: any) => p.v), 0),
-                    avg: avgNetRx
-                },
-                {
-                    name: 'Net TX (B/s)',
-                    min: Math.min(...pointsNetTx.map((p: any) => p.v), 0),
-                    max: Math.max(...pointsNetTx.map((p: any) => p.v), 0),
-                    avg: avgNetTx
-                }
-            ];
-
-            const data = {
-                device: selectedDevice,
+            const finalData = {
+                scope,
+                device: scope === 'group' ? selectedGroup?.Name || 'Group' : selectedDevice,
                 range,
                 generatedAt: new Date().toLocaleString(),
                 summary: {
-                    uptime: lastStats?.uptime ? `${(lastStats.uptime / 3600).toFixed(1)}h` : 'Unknown',
-                    avgCpu,
-                    avgRam,
-                    avgTemp
+                    uptime: scope === 'group' ? 'N/A' : results[0].summary.uptime,
+                    avgCpu: groupAvgCpu,
+                    avgRam: groupAvgRam,
+                    avgTemp: groupAvgTemp,
+                    totalDevices: scope === 'group' ? count : undefined
                 },
-                criticalEvents,
-                stats
+                criticalEvents: aggregatedEvents,
+                stats: scope === 'group'
+                    ? [
+                        { name: 'Avg CPU (%)', min: 0, max: 0, avg: groupAvgCpu },
+                        { name: 'Avg RAM (%)', min: 0, max: 0, avg: groupAvgRam },
+                        // Network stats aggregation omitted for brevity in group view, can be added if needed
+                    ]
+                    : results[0].stats,
+                topOffenders: scope === 'group' ? topOffenders : undefined
             };
 
-            setReportData(data);
+            setReportData(finalData);
 
         } catch (e: any) {
             console.error(e);
@@ -219,22 +251,53 @@ export default function ReportsPage() {
                     <div className="bg-card rounded-xl border border-border/50 p-6 shadow-sm">
                         <h2 className="text-lg font-semibold mb-4">Configuration</h2>
                         <div className="space-y-4">
-                            {/* Device Selection */}
+
+                            {/* Scope Selection */}
                             <div>
-                                <label className="block text-sm font-medium text-muted-foreground mb-1">{t('device')}</label>
-                                <select
-                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
-                                    value={selectedDevice}
-                                    onChange={(e) => {
-                                        setSelectedDevice(e.target.value);
-                                        setReportData(null);
-                                    }}
-                                    disabled={deviceLoading}
-                                >
-                                    <option value="">{deviceLoading ? "Loading..." : "Select a device..."}</option>
-                                    {devices.map(d => <option key={d} value={d}>{d}</option>)}
-                                </select>
+                                <label className="block text-sm font-medium text-muted-foreground mb-2">Report Scope</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => { setScope('device'); setReportData(null); }}
+                                        className={`px-3 py-2 text-sm font-medium rounded-md border transition-all ${scope === 'device' ? 'bg-primary/10 border-primary text-primary' : 'bg-background border-input text-muted-foreground hover:bg-accent'}`}
+                                    >
+                                        Single Device
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setScope('group'); setReportData(null); }}
+                                        className={`px-3 py-2 text-sm font-medium rounded-md border transition-all ${scope === 'group' ? 'bg-primary/10 border-primary text-primary' : 'bg-background border-input text-muted-foreground hover:bg-accent'}`}
+                                    >
+                                        Group Summary
+                                    </button>
+                                </div>
                             </div>
+
+                            {/* Device Selection (Only if Single Device) */}
+                            {scope === 'device' && (
+                                <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">{t('device')}</label>
+                                    <select
+                                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
+                                        value={selectedDevice}
+                                        onChange={(e) => {
+                                            setSelectedDevice(e.target.value);
+                                            setReportData(null);
+                                        }}
+                                        disabled={deviceLoading}
+                                    >
+                                        <option value="">{deviceLoading ? "Loading..." : "Select a device..."}</option>
+                                        {devices.map(d => <option key={d} value={d}>{d}</option>)}
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Group Info (Only if Group) */}
+                            {scope === 'group' && (
+                                <div className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-md animate-in fade-in slide-in-from-top-1 duration-200">
+                                    Generating report for <strong>{devices.length}</strong> devices in group <strong>{selectedGroup.Name}</strong>.
+                                </div>
+                            )}
 
                             {/* Range Selection */}
                             <div>
@@ -286,7 +349,7 @@ export default function ReportsPage() {
                                     type="button"
                                     className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 transition-all"
                                     onClick={handleGenerate}
-                                    disabled={loading || !selectedDevice}
+                                    disabled={loading || (scope === 'device' && !selectedDevice)}
                                 >
                                     {loading ? (
                                         <>
@@ -319,6 +382,7 @@ export default function ReportsPage() {
                                     <div className="h-4 w-48 bg-muted rounded mx-auto"></div>
                                     <div className="h-3 w-32 bg-muted rounded mx-auto"></div>
                                 </div>
+                                {scope === 'group' && <p className="text-xs text-muted-foreground">Aggregating data from all devices...</p>}
                             </div>
                         ) : reportData ? (
                             <div className="space-y-6 w-full h-full flex flex-col">
@@ -326,7 +390,7 @@ export default function ReportsPage() {
                                     <div className="text-left">
                                         <h2 className="text-2xl font-bold text-foreground">Report Ready</h2>
                                         <p className="text-muted-foreground text-sm">
-                                            Generated for <span className="font-medium text-foreground">{reportData.device}</span>
+                                            Generated for <span className="font-medium text-foreground">{reportData.device}</span> ({reportData.scope === 'group' ? 'Group Summary' : 'Single Device'})
                                         </p>
                                     </div>
                                     <div className="flex gap-2">
@@ -339,7 +403,7 @@ export default function ReportsPage() {
                                         </button>
                                         <PDFDownloadLink
                                             document={<ReportDocument data={reportData} />}
-                                            fileName={`necturne-report-${selectedDevice}-${new Date().toISOString().split('T')[0]}.pdf`}
+                                            fileName={`necturne-report-${scope === 'group' ? 'GROUP' : selectedDevice}-${new Date().toISOString().split('T')[0]}.pdf`}
                                             className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                                         >
                                             {/* @ts-ignore */}
@@ -386,6 +450,12 @@ export default function ReportsPage() {
                                                     {reportData.criticalEvents.length}
                                                 </span>
                                             </div>
+                                            {reportData.scope === 'group' && (
+                                                <div className="flex justify-between pt-2 border-t border-border/10">
+                                                    <span className="text-muted-foreground">Total Devices:</span>
+                                                    <span className="font-bold">{reportData.summary.totalDevices}</span>
+                                                </div>
+                                            )}
                                         </div>
                                         <p className="text-muted-foreground text-sm max-w-xs">
                                             Click "Show Preview" to view the PDF directly here, or "Download" to save it to your device.
