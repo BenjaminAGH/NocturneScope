@@ -365,59 +365,6 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
 
 
 
-                {/* SECTION: VISUALIZATIONS */}
-                <View break>
-                    <Text style={styles.title}>{labels.metricChartDesc || "Visualizations"}</Text>
-
-                    {/* Single Device Charts */}
-                    {!isGroup && data.history && (
-                        <>
-                            {data.stats.some(s => s.name.includes('CPU')) && (
-                                <ChartComponent data={data.history.cpu} color="#8884d8" title={`CPU Usage (%)`} />
-                            )}
-                            {data.stats.some(s => s.name.includes('RAM')) && (
-                                <ChartComponent data={data.history.ram} color="#82ca9d" title={`RAM Usage (%)`} />
-                            )}
-                            {data.stats.some(s => s.name.includes('Temp')) && (
-                                <ChartComponent data={data.history.temp} color="#ff7300" title={`Temperature (°C)`} unit="°C" />
-                            )}
-                            {data.stats.some(s => s.name.includes('Net RX')) && (
-                                <ChartComponent data={data.history.net_rx} color="#0088FE" title={`Network RX (B/s)`} unit=" B/s" />
-                            )}
-                            {data.stats.some(s => s.name.includes('Net TX')) && (
-                                <ChartComponent data={data.history.net_tx} color="#00C49F" title={`Network TX (B/s)`} unit=" B/s" />
-                            )}
-                        </>
-                    )}
-
-                    {/* Group Charts */}
-                    {isGroup && data.groupHistory && data.pieStats && (
-                        <>
-                            {/* Pie Chart: Device Status (Healthy vs Critical) */}
-                            <PieChartComponent
-                                data={[
-                                    { label: 'Healthy', value: data.pieStats.healthy, color: '#82ca9d' }, // Green
-                                    { label: 'Critical/Warnings', value: data.pieStats.critical, color: '#ff7300' } // Orange/Red
-                                ]}
-                                title="Device Health Distribution"
-                            />
-
-                            <Text style={{ fontSize: 10, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>Group Average Trends</Text>
-
-                            {/* Line Charts for Group Averages */}
-                            {data.stats.some(s => s.name.includes('CPU')) && (
-                                <ChartComponent data={data.groupHistory.cpu} color="#8884d8" title={`Avg Group CPU (%)`} />
-                            )}
-                            {data.stats.some(s => s.name.includes('RAM')) && (
-                                <ChartComponent data={data.groupHistory.ram} color="#82ca9d" title={`Avg Group RAM (%)`} />
-                            )}
-                            {data.stats.some(s => s.name.includes('Temp')) && (
-                                <ChartComponent data={data.groupHistory.temp} color="#ff7300" title={`Avg Group Temp (°C)`} unit="°C" />
-                            )}
-                        </>
-                    )}
-                </View>
-
                 {/* SECTION: DATA TABLES */}
                 <View break>
                     <Text style={styles.title}>{labels.dataTables || "Data Tables"}</Text>
@@ -495,6 +442,59 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                             </View>
                         ))}
                     </View>
+                </View>
+
+                {/* SECTION: VISUALIZATIONS */}
+                <View break>
+                    <Text style={styles.title}>{labels.metricChartDesc || "Visualizations"}</Text>
+
+                    {/* Single Device Charts */}
+                    {!isGroup && data.history && (
+                        <>
+                            {data.stats.some(s => s.name.includes('CPU')) && (
+                                <ChartComponent data={data.history.cpu} color="#8884d8" title={`CPU Usage (%)`} />
+                            )}
+                            {data.stats.some(s => s.name.includes('RAM')) && (
+                                <ChartComponent data={data.history.ram} color="#82ca9d" title={`RAM Usage (%)`} />
+                            )}
+                            {data.stats.some(s => s.name.includes('Temp')) && (
+                                <ChartComponent data={data.history.temp} color="#ff7300" title={`Temperature (°C)`} unit="°C" />
+                            )}
+                            {data.stats.some(s => s.name.includes('Net RX')) && (
+                                <ChartComponent data={data.history.net_rx} color="#0088FE" title={`Network RX (B/s)`} unit=" B/s" />
+                            )}
+                            {data.stats.some(s => s.name.includes('Net TX')) && (
+                                <ChartComponent data={data.history.net_tx} color="#00C49F" title={`Network TX (B/s)`} unit=" B/s" />
+                            )}
+                        </>
+                    )}
+
+                    {/* Group Charts */}
+                    {isGroup && data.groupHistory && data.pieStats && (
+                        <>
+                            {/* Pie Chart: Device Status (Healthy vs Critical) */}
+                            <PieChartComponent
+                                data={[
+                                    { label: 'Healthy', value: data.pieStats.healthy, color: '#82ca9d' }, // Green
+                                    { label: 'Critical/Warnings', value: data.pieStats.critical, color: '#ff7300' } // Orange/Red
+                                ]}
+                                title="Device Health Distribution"
+                            />
+
+                            <Text style={{ fontSize: 10, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>Group Average Trends</Text>
+
+                            {/* Line Charts for Group Averages */}
+                            {data.stats.some(s => s.name.includes('CPU')) && (
+                                <ChartComponent data={data.groupHistory.cpu} color="#8884d8" title={`Avg Group CPU (%)`} />
+                            )}
+                            {data.stats.some(s => s.name.includes('RAM')) && (
+                                <ChartComponent data={data.groupHistory.ram} color="#82ca9d" title={`Avg Group RAM (%)`} />
+                            )}
+                            {data.stats.some(s => s.name.includes('Temp')) && (
+                                <ChartComponent data={data.groupHistory.temp} color="#ff7300" title={`Avg Group Temp (°C)`} unit="°C" />
+                            )}
+                        </>
+                    )}
                 </View>
 
                 {/* Footer */}
