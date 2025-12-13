@@ -165,7 +165,7 @@ export default function ReportsPage() {
             let totalCpu = 0;
             let totalRam = 0;
             let totalTemp = 0;
-            let topOffenders = [];
+            let topOffenders: any[] = [];
 
             results.forEach(res => {
                 // Add Device Name to events if group scope
