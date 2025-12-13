@@ -291,6 +291,8 @@ export default function ReportsPage() {
                 device: scope === 'group' ? selectedGroup?.Name || 'Group' : selectedDevice,
                 range: range === 'custom' ? `${customStart} - ${customEnd || 'Now'}` : range,
                 generatedAt: new Date().toLocaleString(),
+                generatedBy: t('footerDescription'),
+                origin: typeof window !== 'undefined' ? window.location.origin : '',
                 summary: {
                     uptime: scope === 'group' ? 'N/A' : results[0].summary.uptime,
                     avgCpu: groupAvgCpu,

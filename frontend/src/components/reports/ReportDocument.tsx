@@ -366,7 +366,7 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
 
 
                 {/* SECTION: DATA TABLES */}
-                <View break>
+                <View>
                     <Text style={styles.title}>{labels.dataTables || "Data Tables"}</Text>
 
                     {/* Table 1: Top Offenders (Group Only) */}
