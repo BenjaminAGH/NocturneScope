@@ -337,6 +337,7 @@ export const translations = {
         criticalTempMsg: "Temperatura promedio excede umbral",
         dataTablesSection: "Tablas de Datos",
 
+        groupHealthReport: "Reporte de Salud del Grupo",
         systemPerformanceReport: "Reporte de Rendimiento del Sistema",
         executiveSummary: "Resumen Ejecutivo",
         topOffenders: "Top Consumo",
@@ -686,6 +687,7 @@ export const translations = {
         // PDF Report Labels
         criticalTemp: "Avg Temperature exceeds threshold",
         dataTablesSection: "Data Tables",
+        groupHealthReport: "Group Health Report",
         groupHealthReport: "Group Health Report",
         systemPerformanceReport: "System Performance Report",
         executiveSummary: "Executive Summary",

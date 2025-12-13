@@ -365,6 +365,7 @@ export default function ReportsPage() {
                     deviceHealthDist: t('deviceHealthDist'),
                     axisTime: t('axisTime'),
                     axisValue: t('axisValue'),
+                    dataTablesSection: t('dataTablesSection'),
                 }
             });
 

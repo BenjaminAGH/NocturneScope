@@ -351,12 +351,23 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
             <Page size="A4" style={styles.page}>
 
                 {/* Header */}
+                {/* Header */}
                 <View style={styles.header}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                        {data.origin && <Image src={`${data.origin}/nocturneDark.svg`} style={{ width: 100, height: 20 }} />}
+                        {data.origin && (
+                            <Image
+                                src={`${data.origin}/nocturneDark.png`}
+                                style={{ width: 100, height: 20 }}
+                            />
+                        )}
+                        {/* Fallback Text if image fails to load/render (React-PDF doesn't fallback easily, but this text is always here if we remove the image or if layout allows) */}
+                        {/* For now, relying on PNG. If user hasn't converted yet, it will be blank. */}
                     </View>
                     <View style={{ flexDirection: 'column', alignItems: 'flex-end', gap: 5 }}>
-                        {data.origin && <Image src={`${data.origin}/img/scope_icon.svg`} style={styles.headerLogo} />}
+                        {/* Scope Icon - assuming PNG available or removed if causing issues */}
+                        {/* <Image src={`${data.origin}/img/scope_icon.png`} style={styles.headerLogo} /> */}
+                        {/* Replacing with text indicator for robustness */}
+                        <Text style={{ fontSize: 10, color: '#666' }}>{isGroup ? "GROUP REPORT" : "DEVICE REPORT"}</Text>
                     </View>
                 </View>
 
@@ -407,10 +418,10 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                             <Text style={styles.subtitle}>{labels.topOffenders}</Text>
                             <View style={styles.table}>
                                 <View style={styles.row}>
-                                    <Text style={styles.colHeader}>{labels.device} (Device)</Text>
-                                    {data.stats.some(s => s.name.includes('CPU')) && <Text style={styles.colHeader}>Avg CPU (%)</Text>}
-                                    {data.stats.some(s => s.name.includes('RAM')) && <Text style={styles.colHeader}>Avg RAM (%)</Text>}
-                                    <Text style={styles.colHeader}>{labels.alerts} (Count)</Text>
+                                    <Text style={styles.colHeader}>{labels.device}</Text>
+                                    {data.stats.some(s => s.name.includes('CPU')) && <Text style={styles.colHeader}>{labels.cpuUsage || 'Avg CPU (%)'}</Text>}
+                                    {data.stats.some(s => s.name.includes('RAM')) && <Text style={styles.colHeader}>{labels.ramUsage || 'Avg RAM (%)'}</Text>}
+                                    <Text style={styles.colHeader}>{labels.alerts}</Text>
                                 </View>
                                 {data.topOffenders.map((dev, i) => (
                                     <View key={i} style={styles.row}>
@@ -430,11 +441,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
 
                     <View style={styles.table}>
                         <View style={styles.row}>
-                            {isGroup && <Text style={styles.colHeader}>{labels.device}</Text>}
-                            <Text style={styles.colHeader}>{labels.time}</Text>
-                            <Text style={styles.colHeader}>{labels.metric} (Type)</Text>
-                            <Text style={styles.colHeader}>{labels.value} (Recorded)</Text>
-                            <Text style={styles.colHeader}>{labels.threshold} (Limit)</Text>
+                            <Text style={styles.colHeader}>{isGroup ? labels.device : labels.time}</Text>
+                            {isGroup && <Text style={styles.colHeader}>{labels.time}</Text>}
+                            <Text style={styles.colHeader}>{labels.metric}</Text>
+                            <Text style={styles.colHeader}>{labels.value}</Text>
+                            <Text style={styles.colHeader}>{labels.threshold}</Text>
                         </View>
                         {data.criticalEvents.length === 0 ? (
                             <Text style={{ margin: 10, fontStyle: 'italic' }}>{labels.noCriticalEvents}</Text>
