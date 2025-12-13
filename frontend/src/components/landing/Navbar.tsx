@@ -18,7 +18,7 @@ import {
   ServerIcon,
   DocumentTextIcon
 } from "@heroicons/react/24/outline";
-import ReportModal from "../reports/ReportModal";
+// import ReportModal from "../reports/ReportModal"; // Deprecated
 import { useNotification } from "@/context/NotificationContext";
 import { useGroup } from "@/context/GroupContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -28,7 +28,7 @@ export const Navbar = () => {
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  // const [isReportModalOpen, setIsReportModalOpen] = useState(false); // Deprecated
   const { notifications, unreadCount, markAllAsRead, clearHistory } = useNotification();
   const { selectedGroup } = useGroup();
   const { t } = useLanguage();
@@ -228,13 +228,13 @@ export const Navbar = () => {
             </Link>
           ) : (
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsReportModalOpen(true)}
+              <Link
+                href="/reports"
                 className="p-2 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 text-muted-foreground hover:text-foreground"
                 title={t('generateReport') || "Generate Report"}
               >
                 <DocumentTextIcon className="w-6 h-6" />
-              </button>
+              </Link>
 
               <Menu as="div" className="relative">
                 <Menu.Button className="flex items-center gap-2 p-1 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20">
@@ -316,7 +316,7 @@ export const Navbar = () => {
             </div>
           )}
 
-          <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
+          {/* <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} /> */}
         </div>
       </nav>
     </div>
