@@ -146,6 +146,7 @@ interface ReportData {
         date: string;
         generatedBy: string;
         metricChartDesc?: string;
+        dataTables?: string;
     };
     history?: {
         cpu: { t: string; v: number }[];
@@ -360,64 +361,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                     {/* Add Net summary if desired, or skip */}
                 </View>
 
-                {/* Group Specific: Top Offenders */}
-                {isGroup && data.topOffenders && (
-                    <>
-                        <Text style={styles.subtitle}>{labels.topOffenders}</Text>
-                        <View style={styles.table}>
-                            <View style={styles.row}>
-                                <Text style={styles.colHeader}>{labels.device}</Text>
-                                {data.stats.some(s => s.name.includes('CPU')) && <Text style={styles.colHeader}>Avg CPU</Text>}
-                                {data.stats.some(s => s.name.includes('RAM')) && <Text style={styles.colHeader}>Avg RAM</Text>}
-                                <Text style={styles.colHeader}>{labels.alerts}</Text>
-                            </View>
-                            {data.topOffenders.map((dev, i) => (
-                                <View key={i} style={styles.row}>
-                                    <Text style={styles.col}>{dev.device}</Text>
-                                    {data.stats.some(s => s.name.includes('CPU')) && <Text style={styles.col}>{dev.cpu.toFixed(1)}%</Text>}
-                                    {data.stats.some(s => s.name.includes('RAM')) && <Text style={styles.col}>{dev.ram.toFixed(1)}%</Text>}
-                                    <Text style={[styles.col, dev.alerts > 0 ? { color: 'red' } : {}]}>{dev.alerts}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    </>
-                )}
 
-                {/* Critical Events */}
-                <Text style={styles.subtitle}>{labels.criticalEventsAnalysis}</Text>
-                <Text style={{ fontSize: 8, color: '#666', marginBottom: 5 }}>{labels.criticalEventsDesc}</Text>
 
-                <View style={styles.table}>
-                    <View style={styles.row}>
-                        {isGroup && <Text style={styles.colHeader}>{labels.device}</Text>}
-                        <Text style={styles.colHeader}>{labels.time}</Text>
-                        <Text style={styles.colHeader}>{labels.metric}</Text>
-                        <Text style={styles.colHeader}>{labels.value}</Text>
-                        <Text style={styles.colHeader}>{labels.threshold}</Text>
-                    </View>
-                    {data.criticalEvents.length === 0 ? (
-                        <Text style={{ margin: 10, fontStyle: 'italic' }}>{labels.noCriticalEvents}</Text>
-                    ) : (
-                        data.criticalEvents.slice(0, 50).map((event, i) => ( // Limit to 50 events in specific view to avoid overflow
-                            <View key={i} style={styles.row}>
-                                {isGroup && <Text style={styles.col}>{event.deviceName}</Text>}
-                                <Text style={styles.col}>{event.time}</Text>
-                                <Text style={styles.col}>{event.metric}</Text>
-                                <Text style={[styles.col, { color: 'red' }]}>{event.value.toFixed(1)}</Text>
-                                <Text style={styles.col}>{event.threshold}</Text>
-                            </View>
-                        ))
-                    )}
-                    {data.criticalEvents.length > 50 && (
-                        <Text style={{ margin: 5, fontSize: 8, fontStyle: 'italic', textAlign: 'center' }}>
-                            ... {data.criticalEvents.length - 50} {labels.moreEventsOmitted} ...
-                        </Text>
-                    )}
-                </View>
-
-                {/* Charts Section (Moved to Bottom) */}
+                {/* SECTION: VISUALIZATIONS */}
                 <View break>
-                    <Text style={styles.subtitle}>{labels.metricChartDesc || "Visualizations"}</Text>
+                    <Text style={styles.title}>{labels.metricChartDesc || "Visualizations"}</Text>
 
                     {/* Single Device Charts */}
                     {!isGroup && data.history && (
@@ -468,31 +416,91 @@ const ReportDocument: React.FC<ReportDocumentProps> = ({ data }) => {
                     )}
                 </View>
 
-                {/* Detailed Statics (Only for Single Device or Global Group Average) */}
-                <Text style={styles.subtitle}>{isGroup ? labels.groupAverages : labels.detailedStatistics}</Text>
-                <View style={styles.table}>
-                    <View style={styles.row}>
-                        <Text style={styles.colHeader}>{labels.metric}</Text>
-                        <Text style={styles.colHeader}>{labels.min}</Text>
-                        <Text style={styles.colHeader}>{labels.max}</Text>
-                        <Text style={styles.colHeader}>{labels.average}</Text>
-                    </View>
-                    {data.stats.map((stat, i) => (
-                        <View key={i} style={styles.row}>
-                            <Text style={styles.col}>{stat.name}</Text>
-                            <Text style={styles.col}>{stat.min.toFixed(1)}</Text>
-                            <Text style={styles.col}>{stat.max.toFixed(1)}</Text>
-                            <Text style={styles.col}>{stat.avg.toFixed(1)}</Text>
+                {/* SECTION: DATA TABLES */}
+                <View break>
+                    <Text style={styles.title}>{labels.dataTables || "Data Tables"}</Text>
+
+                    {/* Table 1: Top Offenders (Group Only) */}
+                    {isGroup && data.topOffenders && (
+                        <>
+                            <Text style={styles.subtitle}>{labels.topOffenders}</Text>
+                            <View style={styles.table}>
+                                <View style={styles.row}>
+                                    <Text style={styles.colHeader}>{labels.device} (Device)</Text>
+                                    {data.stats.some(s => s.name.includes('CPU')) && <Text style={styles.colHeader}>Avg CPU (%)</Text>}
+                                    {data.stats.some(s => s.name.includes('RAM')) && <Text style={styles.colHeader}>Avg RAM (%)</Text>}
+                                    <Text style={styles.colHeader}>{labels.alerts} (Count)</Text>
+                                </View>
+                                {data.topOffenders.map((dev, i) => (
+                                    <View key={i} style={styles.row}>
+                                        <Text style={styles.col}>{dev.device}</Text>
+                                        {data.stats.some(s => s.name.includes('CPU')) && <Text style={styles.col}>{dev.cpu.toFixed(1)}%</Text>}
+                                        {data.stats.some(s => s.name.includes('RAM')) && <Text style={styles.col}>{dev.ram.toFixed(1)}%</Text>}
+                                        <Text style={[styles.col, dev.alerts > 0 ? { color: 'red' } : {}]}>{dev.alerts}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        </>
+                    )}
+
+                    {/* Table 2: Critical Events */}
+                    <Text style={styles.subtitle}>{labels.criticalEventsAnalysis}</Text>
+                    <Text style={{ fontSize: 8, color: '#666', marginBottom: 5 }}>{labels.criticalEventsDesc}</Text>
+
+                    <View style={styles.table}>
+                        <View style={styles.row}>
+                            {isGroup && <Text style={styles.colHeader}>{labels.device}</Text>}
+                            <Text style={styles.colHeader}>{labels.time}</Text>
+                            <Text style={styles.colHeader}>{labels.metric} (Type)</Text>
+                            <Text style={styles.colHeader}>{labels.value} (Recorded)</Text>
+                            <Text style={styles.colHeader}>{labels.threshold} (Limit)</Text>
                         </View>
-                    ))}
+                        {data.criticalEvents.length === 0 ? (
+                            <Text style={{ margin: 10, fontStyle: 'italic' }}>{labels.noCriticalEvents}</Text>
+                        ) : (
+                            data.criticalEvents.slice(0, 50).map((event, i) => (
+                                <View key={i} style={styles.row}>
+                                    {isGroup && <Text style={styles.col}>{event.deviceName}</Text>}
+                                    <Text style={styles.col}>{event.time}</Text>
+                                    <Text style={styles.col}>{event.metric}</Text>
+                                    <Text style={[styles.col, { color: 'red' }]}>{event.value.toFixed(1)}</Text>
+                                    <Text style={styles.col}>{event.threshold}</Text>
+                                </View>
+                            ))
+                        )}
+                        {data.criticalEvents.length > 50 && (
+                            <Text style={{ margin: 5, fontSize: 8, fontStyle: 'italic', textAlign: 'center' }}>
+                                ... {data.criticalEvents.length - 50} {labels.moreEventsOmitted} ...
+                            </Text>
+                        )}
+                    </View>
+
+                    {/* Table 3: Detailed Statistics */}
+                    <Text style={styles.subtitle}>{isGroup ? labels.groupAverages : labels.detailedStatistics}</Text>
+                    <View style={styles.table}>
+                        <View style={styles.row}>
+                            <Text style={styles.colHeader}>{labels.metric} (Name)</Text>
+                            <Text style={styles.colHeader}>{labels.min} (Value)</Text>
+                            <Text style={styles.colHeader}>{labels.max} (Value)</Text>
+                            <Text style={styles.colHeader}>{labels.average} (Mean)</Text>
+                        </View>
+                        {data.stats.map((stat, i) => (
+                            <View key={i} style={styles.row}>
+                                <Text style={styles.col}>{stat.name}</Text>
+                                <Text style={styles.col}>{stat.min.toFixed(1)}</Text>
+                                <Text style={styles.col}>{stat.max.toFixed(1)}</Text>
+                                <Text style={styles.col}>{stat.avg.toFixed(1)}</Text>
+                            </View>
+                        ))}
+                    </View>
                 </View>
 
                 {/* Footer */}
-                <Text style={styles.footer}>
-                    {labels.generatedBy || 'Generated by NocturneScope'} | Necturne Security | {data.generatedAt}
+                <Text style={styles.footer} fixed>
+                    {labels.generatedBy || 'Generated by NocturneScope'} | Necturne Security | {data.generatedAt} | Page <Text render={({ pageNumber, totalPages }) => (`${pageNumber} of ${totalPages}`)} />
                 </Text>
             </Page>
-        </Document>
+        </Document >
     );
 };
 
